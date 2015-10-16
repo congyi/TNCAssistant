@@ -16,6 +16,7 @@
         android:src="@drawable/SERIS_logo"
         android:contentDescription="SERIS_logo"
         android:layout_alignParentEnd="false"
+        android:layout_alignParentLeft="true"
         android:layout_alignParentStart="false" />
 
 </RelativeLayout>
