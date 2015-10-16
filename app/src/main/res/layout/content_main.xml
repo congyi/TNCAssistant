@@ -15,8 +15,11 @@
         android:id="@+id/imageView"
         android:src="@drawable/SERIS_logo"
         android:contentDescription="SERIS_logo"
-        android:layout_alignParentEnd="false"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="false" />
+        android:maxWidth="250dp"
+        android:maxHeight="250dp"
+        android:adjustViewBounds="true"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="70dp" />
 
 </RelativeLayout>
