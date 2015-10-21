@@ -17,7 +17,6 @@
         android:layout_height="wrap_content"
         android:id="@+id/imageView"
         android:src="@drawable/seris_logo"
-        android:contentDescription="@string/seris_logo"
         android:maxWidth="250dp"
         android:maxHeight="250dp"
         android:adjustViewBounds="true"
@@ -28,22 +27,23 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Capture Images"
-        android:id="@+id/capture_images"
+        android:text="New Project"
+        android:id="@+id/new_project"
         android:layout_below="@+id/imageView"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="30dp"
-        android:onClick="captureImageActivity"
+        android:onClick="newProject"
         />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Generate Report"
-        android:id="@+id/generate_report"
-        android:layout_below="@+id/capture_images"
+        android:text="Browse Projects"
+        android:id="@+id/browse_projects"
+        android:layout_below="@+id/new_project"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="20dp"
-        android:onClick="generateReportActivity"
+        android:onClick="browseProjects"
         />
+
 </RelativeLayout>

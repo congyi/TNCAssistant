@@ -1,5 +1,10 @@
 package com.example.congyitan.tncassistant;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
+import android.app.FragmentManager;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -22,18 +27,22 @@ public class MainActivity extends AppCompatActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
 
-        Button captureImages = (Button) findViewById(R.id.capture_images);
-        Button generateReport = (Button) findViewById(R.id.generate_report);
+        Button captureImages = (Button) findViewById(R.id.new_project);
+        Button generateReport = (Button) findViewById(R.id.browse_projects);
 
         return true;
     }
 
-    public void captureImageActivity(View view){
-        Toast.makeText(MainActivity.this, "Capture Images Button Clicked", Toast.LENGTH_SHORT).show();
+    public void newProject(View view){
+        //Toast.makeText(MainActivity.this, "New Project", Toast.LENGTH_SHORT).show();
+
+        FragmentManager manager = getFragmentManager();
+        NewProjectDialog newprojectdialog = new NewProjectDialog();
+        newprojectdialog.show(manager,"New Project Dialog");
     }
 
-    public void generateReportActivity(View view){
-        Toast.makeText(MainActivity.this, "Generate Report Button Clicked", Toast.LENGTH_SHORT).show();
+    public void browseProjects(View view){
+        Toast.makeText(MainActivity.this, "Browse Projects", Toast.LENGTH_SHORT).show();
     }
 
     @Override
