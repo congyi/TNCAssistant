@@ -4,4 +4,5 @@
     <string name="seris_logo">seris_logo</string>
     <string name="new_project_title">Give a name to this project</string>
     <string name="title_activity_new_project_dialog">NewProjectDialog</string>
+    <string name="new_project_hint">E.g. Blk 123 Ah Long Street</string>
 </resources>

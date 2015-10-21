@@ -1,10 +1,6 @@
 package com.example.congyitan.tncassistant;
 
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.app.DialogFragment;
 import android.app.FragmentManager;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -13,7 +9,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements NewProjectDialog.Communicator{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,18 +29,6 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    public void newProject(View view){
-        //Toast.makeText(MainActivity.this, "New Project", Toast.LENGTH_SHORT).show();
-
-        FragmentManager manager = getFragmentManager();
-        NewProjectDialog newprojectdialog = new NewProjectDialog();
-        newprojectdialog.show(manager,"New Project Dialog");
-    }
-
-    public void browseProjects(View view){
-        Toast.makeText(MainActivity.this, "Browse Projects", Toast.LENGTH_SHORT).show();
-    }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -58,5 +42,22 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void newProject(View view){
+        //Toast.makeText(MainActivity.this, "New Project", Toast.LENGTH_SHORT).show();
+
+        FragmentManager manager = getFragmentManager();
+        NewProjectDialog newprojectdialog = new NewProjectDialog();
+        newprojectdialog.show(manager,"New Project Dialog");
+    }
+
+    public void browseProjects(View view){
+        Toast.makeText(MainActivity.this, "Browse Projects", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onDialogMessage(String message) {
+        Toast.makeText(this, message,Toast.LENGTH_SHORT).show();
     }
 }
