@@ -1,58 +1,49 @@
 package com.example.congyitan.tncassistant;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.DialogFragment;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 
-public class NewProjectDialog extends DialogFragment implements View.OnClickListener {
-
-    Button ok, cancel;
-    Communicator communicator;
-
-    @Override
-    public void onAttach(Activity activity){
-        super.onAttach(activity);
-        communicator = (Communicator) activity;
-    }
+public class NewProjectDialog extends DialogFragment{
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
 
-        //create dialog title
-        getDialog().setTitle("Name this project");
+        // Use the Builder class for convenient dialog construction
+        AlertDialog.Builder newProjectDialog = new AlertDialog.Builder(getActivity());
 
-        View view = inflater.inflate(R.layout.new_project_dialog, null);
-
-        ok = (Button) view.findViewById(R.id.ok);
-        cancel = (Button) view.findViewById(R.id.cancel);
-
-        ok.setOnClickListener(this);
-        cancel.setOnClickListener(this);
-
+       //prevent dialog from closing
         setCancelable(false);
 
-        return view;
+       //set dialog title
+        newProjectDialog.setTitle(R.string.new_project_title)
+
+                .setView(R.layout.new_project_dialog)
+
+                //set OK button
+                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                    }
+                })
+
+                //set cancel button
+                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                    }
+                });
+
+
+        // Create the AlertDialog object and return it
+        return newProjectDialog.create();
     }
 
-    @Override
-    public void onClick(View v) {
-        if(v.getId() == R.id.ok){
-            communicator.onDialogMessage("OK was clicked");
-            dismiss();
-        }
-
-        else{
-            communicator.onDialogMessage("Cancel was clicked");
-            dismiss();
-        }
-    }
-
-    interface Communicator
-    {
-        public void onDialogMessage (String message);
-    }
 }

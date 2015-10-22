@@ -9,22 +9,23 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity implements NewProjectDialog.Communicator{
+public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //initialize the two on screen buttons
+        //onclick listeners are attached to activity_main.xml
+        Button newProject = (Button) findViewById(R.id.new_project);
+        Button browseProjects = (Button) findViewById(R.id.browse_projects);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
-
-        Button captureImages = (Button) findViewById(R.id.new_project);
-        Button generateReport = (Button) findViewById(R.id.browse_projects);
 
         return true;
     }
@@ -56,8 +57,5 @@ public class MainActivity extends AppCompatActivity implements NewProjectDialog.
         Toast.makeText(MainActivity.this, "Browse Projects", Toast.LENGTH_SHORT).show();
     }
 
-    @Override
-    public void onDialogMessage(String message) {
-        Toast.makeText(this, message,Toast.LENGTH_SHORT).show();
-    }
+
 }
