@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:orientation="horizontal"
+    tools:context="com.example.congyitan.tncassistant.ProjectBuilder">
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:theme="@style/AppTheme.AppBarOverlay">
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:popupTheme="@style/AppTheme.PopupOverlay"/>
+    </android.support.design.widget.AppBarLayout>
+
+    <HorizontalScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:id="@+id/horizontalScrollView"
+        android:paddingTop="50dp">
+
+        <GridLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/project_image1"
+                android:maxHeight="140dp"
+                android:minHeight="140dp"
+                android:maxWidth="200dp"
+                android:minWidth="200dp"
+                android:layout_row="0"
+                android:layout_column="0"
+                android:layout_margin="5dp"
+                android:focusableInTouchMode="false" />
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/imageButton"
+                android:maxHeight="140dp"
+                android:minHeight="140dp"
+                android:maxWidth="200dp"
+                android:minWidth="200dp"
+                android:layout_row="1"
+                android:layout_column="0"
+                android:layout_margin="5dp"
+                android:focusableInTouchMode="false" />
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/imageButton2"
+                android:maxHeight="140dp"
+                android:minHeight="140dp"
+                android:maxWidth="200dp"
+                android:minWidth="200dp"
+                android:layout_row="0"
+                android:layout_column="1"
+                android:layout_margin="5dp"
+                android:focusableInTouchMode="false" />
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/imageButton3"
+                android:maxHeight="140dp"
+                android:minHeight="140dp"
+                android:maxWidth="200dp"
+                android:minWidth="200dp"
+                android:layout_row="1"
+                android:layout_column="1"
+                android:layout_margin="5dp"
+                android:focusableInTouchMode="false" />
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/imageButton4"
+                android:maxHeight="140dp"
+                android:minHeight="140dp"
+                android:maxWidth="200dp"
+                android:minWidth="200dp"
+                android:layout_row="0"
+                android:layout_column="2"
+                android:layout_margin="5dp"
+                android:focusableInTouchMode="false" />
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/imageButton5"
+                android:maxHeight="140dp"
+                android:minHeight="140dp"
+                android:maxWidth="200dp"
+                android:minWidth="200dp"
+                android:layout_row="1"
+                android:layout_column="2"
+                android:layout_margin="5dp"
+                android:focusableInTouchMode="false" />
+
+        </GridLayout>
+    </HorizontalScrollView>
+</android.support.design.widget.CoordinatorLayout>
+
