@@ -4,17 +4,19 @@ package com.example.congyitan.tncassistant;
  * Created by Congyi Tan on 10/24/2015.
  */
 public class Projects {
-    String ProjectName;
 
-    public Projects(String projectName) {
-        ProjectName = projectName;
+    //internal project name
+    String internalProjectName;
+    String globalProjectName;
+
+    public Projects() {
     }
 
     public String getProjectName() {
-        return ProjectName;
+        return globalProjectName;
     }
 
     public void setProjectName(String projectName) {
-        ProjectName = projectName;
+        internalProjectName = projectName.replaceAll(" ", "_");
     }
 }
