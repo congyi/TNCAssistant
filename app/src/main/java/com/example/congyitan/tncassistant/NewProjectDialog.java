@@ -4,12 +4,9 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.EditText;
 
 public class NewProjectDialog extends DialogFragment{
@@ -19,7 +16,7 @@ public class NewProjectDialog extends DialogFragment{
      * Each method passes the DialogFragment in case the host needs to query it. */
     public interface NewProjectDialogListener {
         public void onDialogOK(String projectTitle);
-        public void onDialogCancel(DialogFragment dialog);
+        public void onDialogCancel();
     }
 
     // Use this instance of the interface to deliver action events
@@ -43,11 +40,6 @@ public class NewProjectDialog extends DialogFragment{
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
-        //inflate view so that findViewbyId on the next line works
-        View view = View.inflate(getActivity(),R.layout.new_project_dialog, null);
-        //Link tempEdit object to the text-edit box so we can retrieve data from it below upon button click
-        final EditText tempEdit = (EditText)view.findViewById(R.id.project_title);
-
         // Use the Builder class for convenient dialog construction
         AlertDialog.Builder newProjectDialog = new AlertDialog.Builder(getActivity());
 
@@ -57,21 +49,26 @@ public class NewProjectDialog extends DialogFragment{
        //set dialog title
         newProjectDialog.setTitle(R.string.new_project_title);
 
+        //inflate view so that findViewbyId on the next line works
+        View view = View.inflate(getActivity(),R.layout.new_project_dialog, null);
+        //Link tempEdit object to the text-edit box so we can retrieve data from it below upon button click
+        final EditText tempEdit = (EditText)view.findViewById(R.id.project_title);
+
         //set the view
-        newProjectDialog.setView(R.layout.new_project_dialog);
+        newProjectDialog.setView(view);
 
         //set OK button
         newProjectDialog.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-               String projectTitle = tempEdit.getText().toString();
-                mListener.onDialogOK(projectTitle);
+                //Toast.makeText(getActivity(), tempEdit.getText().toString(), Toast.LENGTH_SHORT).show();
+                mListener.onDialogOK(tempEdit.getText().toString());
             }
         });
 
         //set cancel button
         newProjectDialog.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                mListener.onDialogCancel(NewProjectDialog.this);
+                mListener.onDialogCancel();
             }
         });
 

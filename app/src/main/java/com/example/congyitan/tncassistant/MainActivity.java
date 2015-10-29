@@ -1,14 +1,12 @@
 package com.example.congyitan.tncassistant;
 
 import android.app.DialogFragment;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity  implements NewProjectDialog.NewProjectDialogListener {
@@ -58,15 +56,13 @@ public class MainActivity extends AppCompatActivity  implements NewProjectDialog
 
     @Override
     public void onDialogOK(String projectTitle) {
-
-        //Toast.makeText(MainActivity.this, "OK", Toast.LENGTH_SHORT).show();
         Toast.makeText(MainActivity.this, projectTitle, Toast.LENGTH_SHORT).show();
         //Intent intent = new Intent("com.example.congyitan.tncassistant.ProjectBuilder");
        //startActivity(intent);
     }
 
     @Override
-    public void onDialogCancel(DialogFragment dialog) {
+    public void onDialogCancel() {
         //user pressed cancel in NewProjectDialog
         Toast.makeText(MainActivity.this, "Cancelled", Toast.LENGTH_SHORT).show();
     }
