@@ -16,6 +16,7 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -24,24 +25,19 @@ public class ProjectBuilder extends AppCompatActivity {
     //Toobar
     private Toolbar toolbar;
 
-    // ImageButton view for showing our image.
-    private ImageButton mThumbnailImageButton;
-
     // Storage for camera image URI components
     private final static String CAPTURED_PHOTO_PATH_KEY = "mCurrentPhotoPath";
     private final static String CAPTURED_PHOTO_URI_KEY = "mCapturedImageURI";
 
     // Required for camera operations in order to save the image file on resume.
-    private String mCurrentPhotoPath = null;
+    String mCurrentPhotoPath;
     private Uri mCapturedImageURI;
-    static final String FILE_URI = "file_uri";
 
     // Activity result key for camera
     static final int REQUEST_IMAGE_CAPTURE= 1;
 
     public static final int MEDIA_TYPE_IMAGE = 1;
     public static final int MEDIA_TYPE_VIDEO = 2;
-
 
 
     @Override
@@ -75,7 +71,7 @@ public class ProjectBuilder extends AppCompatActivity {
         //create an intent to start the native cameraApp
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         // create a file to save the image
-        mCapturedImageURI = getOutputMediaFileUri(MEDIA_TYPE_IMAGE);
+        mCapturedImageURI = getOutputMediaFileUri();
         // set the image file name
         takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, mCapturedImageURI);
 
@@ -86,35 +82,50 @@ public class ProjectBuilder extends AppCompatActivity {
 
     @Override
     public void onSaveInstanceState (Bundle savedInstanceState){
-        savedInstanceState.putString("file_uri", mCapturedImageURI.toString());
+        savedInstanceState.putString("mCapturedImageURI", mCapturedImageURI.toString());
+        // Always call the superclass so it can save the view hierarchy state
+        super.onSaveInstanceState(savedInstanceState);
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        if (savedInstanceState.containsKey("file_uri")) {
-            mCapturedImageURI = Uri.parse(savedInstanceState.getString("file_uri"));
+
+        if (savedInstanceState.containsKey("mCapturedImageURI")) {
+            mCapturedImageURI = Uri.parse(savedInstanceState.getString("mCapturedImageURI"));
         }
+
     }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
+
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
             //addPhotoToGallery();
-            Toast.makeText(this, "Image saved to:\n" + data.getExtras().get("data"), Toast.LENGTH_SHORT).show();
-            setFullImageFromFilePath(getCurrentPhotoPath(),mThumbnailImageButton); //Show the thumb-sized image
+            //Toast.makeText(this, "Image saved to:\n" + data.getExtras().get("data"), Toast.LENGTH_SHORT).show();
+            ImageButton mThumbnailImageButton = (ImageButton)findViewById(R.id.imageButton);
+            setFullImageFromFilePath(mCurrentPhotoPath,mThumbnailImageButton); //Show the thumb-sized image
         } else
             Toast.makeText(ProjectBuilder.this, "Image Capture Failed", Toast.LENGTH_SHORT).show();
 
     }
 
     /** Create a file Uri for saving an image or video */
-    private static Uri getOutputMediaFileUri(int type){
-        return Uri.fromFile(getOutputMediaFile(type));
+    private Uri getOutputMediaFileUri(){
+
+       Uri mUri = null;
+
+        try {
+            mUri =  Uri.fromFile(getOutputMediaFile());
+        } catch (IOException ex) {
+            //leave blank for now
+        }
+        return mUri;
     }
 
     /** Create a File for saving an image or video */
-    private static File getOutputMediaFile(int type){
+    private File getOutputMediaFile() throws IOException {
         // To be safe, you should check that the SDCard is mounted
         // using Environment.getExternalStorageState() before doing this.
         File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
@@ -129,31 +140,33 @@ public class ProjectBuilder extends AppCompatActivity {
                 return null;
             }
         }
-        // Create a media file name
+        // Create an image file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        File mediaFile;
-        if (type == MEDIA_TYPE_IMAGE){
-            mediaFile = new File(mediaStorageDir.getPath() + File.separator +
-                    "IMG_"+ timeStamp + ".jpg");
-        } else if(type == MEDIA_TYPE_VIDEO) {
-            mediaFile = new File(mediaStorageDir.getPath() + File.separator +
-                    "VID_"+ timeStamp + ".mp4");
-        } else {
-            return null;
-        }
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
 
-        return mediaFile;
+        // Save a file: path for use with ACTION_VIEW intents
+        mCurrentPhotoPath = "file:" + image.getAbsolutePath();
+        return image;
     }
 
+    /*
     public String getCurrentPhotoPath() {
         return mCurrentPhotoPath;
     }
-
+    */
     /**
      * Add the picture to the photo gallery.
      * Must be called on all camera images or they will
      * disappear once taken.
      */
+    /*
     protected void addPhotoToGallery() {
         Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
         File f = new File(getCurrentPhotoPath());
@@ -161,7 +174,7 @@ public class ProjectBuilder extends AppCompatActivity {
         mediaScanIntent.setData(contentUri);
         this.sendBroadcast(mediaScanIntent);
     }
-
+    */
     /**
      * Scale the photo down and fit it to our image views.
      *
@@ -169,8 +182,6 @@ public class ProjectBuilder extends AppCompatActivity {
      * Read more:http://developer.android.com/training/camera/photobasics.html
      */
     private void setFullImageFromFilePath(String imagePath, ImageButton imageButton) {
-
-        imageButton = (ImageButton)findViewById(R.id.imageButton);
 
         // Get the dimensions of the View
         int targetW = imageButton.getWidth();
