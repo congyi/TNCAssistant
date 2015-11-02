@@ -1,6 +1,7 @@
 package com.example.congyitan.tncassistant;
 
 import android.app.DialogFragment;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -46,9 +47,6 @@ public class MainActivity extends AppCompatActivity  implements NewProjectDialog
     }
 
     public void newProject(View view) {
-        //Use selected new project, so create a newProject object
-        Projects newProject = new Projects();
-
         //Open up the DialogFragment that prompts user for the title
         DialogFragment newFragment = new NewProjectDialog();
         newFragment.show(getFragmentManager(), "New Project Dialog");
@@ -56,9 +54,10 @@ public class MainActivity extends AppCompatActivity  implements NewProjectDialog
 
     @Override
     public void onDialogOK(String projectTitle) {
-        Toast.makeText(MainActivity.this, projectTitle, Toast.LENGTH_SHORT).show();
-        //Intent intent = new Intent("com.example.congyitan.tncassistant.ProjectBuilder");
-       //startActivity(intent);
+        //Toast.makeText(MainActivity.this, projectTitle, Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(MainActivity.this, ProjectBuilder.class );
+        intent.putExtra("projectTitle", projectTitle);
+        startActivity(intent);
     }
 
     @Override

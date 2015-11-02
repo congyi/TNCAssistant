@@ -5,7 +5,6 @@ package com.example.congyitan.tncassistant;
  */
 public class Projects {
 
-    //internal project name
     String internalProjectName;
     String globalProjectName;
 
