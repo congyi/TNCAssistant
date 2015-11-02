@@ -10,12 +10,12 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
 import java.io.File;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -33,10 +33,16 @@ public class ProjectBuilder extends AppCompatActivity {
 
     // Required for camera operations in order to save the image file on resume.
     private String mCurrentPhotoPath = null;
-    private Uri mCapturedImageURI = null;
+    private Uri mCapturedImageURI;
+    static final String FILE_URI = "file_uri";
 
     // Activity result key for camera
     static final int REQUEST_IMAGE_CAPTURE= 1;
+
+    public static final int MEDIA_TYPE_IMAGE = 1;
+    public static final int MEDIA_TYPE_VIDEO = 2;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,46 +64,89 @@ public class ProjectBuilder extends AppCompatActivity {
 
     }
 
+    //called when imageButton is pressed
     public void takePicture(View view) {
         dispatchTakePictureIntent();
     }
 
+    //starts image capture process
+    private void dispatchTakePictureIntent() {
+
+        //create an intent to start the native cameraApp
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        // create a file to save the image
+        mCapturedImageURI = getOutputMediaFileUri(MEDIA_TYPE_IMAGE);
+        // set the image file name
+        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, mCapturedImageURI);
+
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState (Bundle savedInstanceState){
+        savedInstanceState.putString("file_uri", mCapturedImageURI.toString());
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        if (savedInstanceState.containsKey("file_uri")) {
+            mCapturedImageURI = Uri.parse(savedInstanceState.getString("file_uri"));
+        }
+    }
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
+            //addPhotoToGallery();
+            Toast.makeText(this, "Image saved to:\n" + data.getExtras().get("data"), Toast.LENGTH_SHORT).show();
+            setFullImageFromFilePath(getCurrentPhotoPath(),mThumbnailImageButton); //Show the thumb-sized image
+        } else
+            Toast.makeText(ProjectBuilder.this, "Image Capture Failed", Toast.LENGTH_SHORT).show();
+
+    }
+
+    /** Create a file Uri for saving an image or video */
+    private static Uri getOutputMediaFileUri(int type){
+        return Uri.fromFile(getOutputMediaFile(type));
+    }
+
+    /** Create a File for saving an image or video */
+    private static File getOutputMediaFile(int type){
+        // To be safe, you should check that the SDCard is mounted
+        // using Environment.getExternalStorageState() before doing this.
+        File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_PICTURES), "MyCameraApp");
+        // This location works best if you want the created images to be shared
+        // between applications and persist after your app has been uninstalled.
+
+        // Create the storage directory if it does not exist
+        if (! mediaStorageDir.exists()){
+            if (! mediaStorageDir.mkdirs()){
+                Log.d("MyCameraApp", "failed to create directory");
+                return null;
+            }
+        }
+        // Create a media file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        File mediaFile;
+        if (type == MEDIA_TYPE_IMAGE){
+            mediaFile = new File(mediaStorageDir.getPath() + File.separator +
+                    "IMG_"+ timeStamp + ".jpg");
+        } else if(type == MEDIA_TYPE_VIDEO) {
+            mediaFile = new File(mediaStorageDir.getPath() + File.separator +
+                    "VID_"+ timeStamp + ".mp4");
+        } else {
+            return null;
+        }
+
+        return mediaFile;
+    }
+
     public String getCurrentPhotoPath() {
         return mCurrentPhotoPath;
-    }
-
-    public void setCurrentPhotoPath(String mCurrentPhotoPath) {
-        this.mCurrentPhotoPath = mCurrentPhotoPath;
-    }
-
-    public Uri getCapturedImageURI() {
-        return mCapturedImageURI;
-    }
-
-    public void setCapturedImageURI(Uri mCapturedImageURI) {
-        this.mCapturedImageURI = mCapturedImageURI;
-    }
-
-    /**
-     * Creates the image file to which the image must be saved.
-     * @return
-     * @throws IOException
-     */
-    protected File createImageFile() throws IOException {
-        // Create an image file name
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "JPEG_" + timeStamp + "_";
-        File storageDir = Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES);
-        File image = File.createTempFile(
-                imageFileName,  /* prefix */
-                ".jpg",         /* suffix */
-                storageDir      /* directory */
-        );
-
-        // Save a file: path for use with ACTION_VIEW intents
-        setCurrentPhotoPath("file:" + image.getAbsolutePath());
-        return image;
     }
 
     /**
@@ -144,29 +193,5 @@ public class ProjectBuilder extends AppCompatActivity {
 
         Bitmap bitmap = BitmapFactory.decodeFile(imagePath, bmOptions);
         imageButton.setImageBitmap(bitmap);
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
-            addPhotoToGallery();
-
-            //Show the thumb-sized image
-            setFullImageFromFilePath(getCurrentPhotoPath(),mThumbnailImageButton);
-            // Show the full sized image - I don't need the line below
-            //setFullImageFromFilePath(activity.getCurrentPhotoPath(), mImageView);
-
-        } else {
-            Toast.makeText(ProjectBuilder.this, "Image Capture Failed", Toast.LENGTH_SHORT)
-                    .show();
-        }
-    }
-
-
-    private void dispatchTakePictureIntent() {
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
-        }
     }
 }
