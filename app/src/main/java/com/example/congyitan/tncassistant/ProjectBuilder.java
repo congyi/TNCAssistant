@@ -55,6 +55,7 @@ public class ProjectBuilder extends AppCompatActivity {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(projectTitle);
+
     }
 
     public void takePicture(View view) {
@@ -119,6 +120,9 @@ public class ProjectBuilder extends AppCompatActivity {
      * Read more:http://developer.android.com/training/camera/photobasics.html
      */
     private void setFullImageFromFilePath(String imagePath, ImageButton imageButton) {
+
+        imageButton = (ImageButton)findViewById(R.id.imageButton);
+
         // Get the dimensions of the View
         int targetW = imageButton.getWidth();
         int targetH = imageButton.getHeight();
