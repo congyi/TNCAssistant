@@ -22,6 +22,9 @@ import java.util.Date;
 
 public class ProjectBuilder extends AppCompatActivity {
 
+    //for Log.i ; debugging
+    private static final String TAG = "ProjectBuilder";
+
     //Toobar
     private Toolbar toolbar;
 
@@ -35,10 +38,6 @@ public class ProjectBuilder extends AppCompatActivity {
 
     // Activity result key for camera
     static final int REQUEST_IMAGE_CAPTURE= 1;
-
-    public static final int MEDIA_TYPE_IMAGE = 1;
-    public static final int MEDIA_TYPE_VIDEO = 2;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,11 +70,20 @@ public class ProjectBuilder extends AppCompatActivity {
         //create an intent to start the native cameraApp
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         // create a file to save the image
+        File photoFile = null;
+        try {
+            photoFile = getOutputMediaFile();
+        } catch (IOException ex) {
+            // Error occurred while creating the File
+            Log.d(TAG, "Error creating file");
+        }
         mCapturedImageURI = getOutputMediaFileUri();
+        Log.d(TAG, "mCapturedImageURI is " + mCapturedImageURI);
+
         // set the image file name
         takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, mCapturedImageURI);
 
-        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+        if (photoFile != null) {
             startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
         }
     }
@@ -83,6 +91,7 @@ public class ProjectBuilder extends AppCompatActivity {
     @Override
     public void onSaveInstanceState (Bundle savedInstanceState){
         savedInstanceState.putString("mCapturedImageURI", mCapturedImageURI.toString());
+        savedInstanceState.putString("mCurrentPhotoPath", mCurrentPhotoPath.toString());
         // Always call the superclass so it can save the view hierarchy state
         super.onSaveInstanceState(savedInstanceState);
     }
@@ -95,20 +104,22 @@ public class ProjectBuilder extends AppCompatActivity {
             mCapturedImageURI = Uri.parse(savedInstanceState.getString("mCapturedImageURI"));
         }
 
+        if (savedInstanceState.containsKey("mCurrentPhotoPath")) {
+            mCurrentPhotoPath = savedInstanceState.getString("mCurrentPhotoPath");
+        }
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
             //addPhotoToGallery();
-            //Toast.makeText(this, "Image saved to:\n" + data.getExtras().get("data"), Toast.LENGTH_SHORT).show();
+            Log.d(TAG, "mCurrentPhotoPath in OnActivityResult is " + mCurrentPhotoPath);
             ImageButton mThumbnailImageButton = (ImageButton)findViewById(R.id.imageButton);
             setFullImageFromFilePath(mCurrentPhotoPath,mThumbnailImageButton); //Show the thumb-sized image
         } else
             Toast.makeText(ProjectBuilder.this, "Image Capture Failed", Toast.LENGTH_SHORT).show();
-
+            Log.d(TAG, "Image Capture Failed");
     }
 
     /** Create a file Uri for saving an image or video */
@@ -119,7 +130,7 @@ public class ProjectBuilder extends AppCompatActivity {
         try {
             mUri =  Uri.fromFile(getOutputMediaFile());
         } catch (IOException ex) {
-            //leave blank for now
+            Log.d(TAG, "Error creating mUri");
         }
         return mUri;
     }
@@ -129,38 +140,33 @@ public class ProjectBuilder extends AppCompatActivity {
         // To be safe, you should check that the SDCard is mounted
         // using Environment.getExternalStorageState() before doing this.
         File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES), "MyCameraApp");
+                Environment.DIRECTORY_PICTURES), "TnCAssistant");
         // This location works best if you want the created images to be shared
         // between applications and persist after your app has been uninstalled.
 
         // Create the storage directory if it does not exist
         if (! mediaStorageDir.exists()){
             if (! mediaStorageDir.mkdirs()){
-                Log.d("MyCameraApp", "failed to create directory");
+                Log.d(TAG, "Failed to create directory");
                 return null;
             }
         }
         // Create an image file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = "JPEG_" + timeStamp + "_";
-        File storageDir = Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES);
+
         File image = File.createTempFile(
                 imageFileName,  /* prefix */
                 ".jpg",         /* suffix */
-                storageDir      /* directory */
+                mediaStorageDir     /* directory */
         );
 
         // Save a file: path for use with ACTION_VIEW intents
-        mCurrentPhotoPath = "file:" + image.getAbsolutePath();
+        mCurrentPhotoPath = image.getAbsolutePath();
+        Log.d(TAG, "mCurrentPhotoPath is "+ mCurrentPhotoPath);
         return image;
     }
 
-    /*
-    public String getCurrentPhotoPath() {
-        return mCurrentPhotoPath;
-    }
-    */
     /**
      * Add the picture to the photo gallery.
      * Must be called on all camera images or they will
