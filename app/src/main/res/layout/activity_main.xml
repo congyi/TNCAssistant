@@ -16,7 +16,7 @@
         android:adjustViewBounds="true"
         android:maxHeight="250dp"
         android:maxWidth="250dp"
-        android:src="@drawable/seris_logo" />
+        android:src="@drawable/seris_logo"/>
 
     <Button
         android:id="@+id/new_project"

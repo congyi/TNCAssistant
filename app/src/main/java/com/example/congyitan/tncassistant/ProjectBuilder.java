@@ -35,6 +35,7 @@ public class ProjectBuilder extends AppCompatActivity {
     // Required for camera operations in order to save the image file on resume.
     String mCurrentPhotoPath;
     private Uri mCapturedImageURI;
+    int buttonId;
 
     // Activity result key for camera
     static final int REQUEST_IMAGE_CAPTURE= 1;
@@ -61,8 +62,11 @@ public class ProjectBuilder extends AppCompatActivity {
 
     //called when imageButton is pressed
     public void takePicture(View view) {
+
+        buttonId = view.getId();
         dispatchTakePictureIntent();
     }
+
 
     //starts image capture process
     private void dispatchTakePictureIntent() {
@@ -92,6 +96,7 @@ public class ProjectBuilder extends AppCompatActivity {
     public void onSaveInstanceState (Bundle savedInstanceState){
         savedInstanceState.putString("mCapturedImageURI", mCapturedImageURI.toString());
         savedInstanceState.putString("mCurrentPhotoPath", mCurrentPhotoPath.toString());
+        savedInstanceState.putInt("buttonId", buttonId);
         // Always call the superclass so it can save the view hierarchy state
         super.onSaveInstanceState(savedInstanceState);
     }
@@ -107,6 +112,10 @@ public class ProjectBuilder extends AppCompatActivity {
         if (savedInstanceState.containsKey("mCurrentPhotoPath")) {
             mCurrentPhotoPath = savedInstanceState.getString("mCurrentPhotoPath");
         }
+
+        if (savedInstanceState.containsKey("buttonId")) {
+            buttonId = savedInstanceState.getInt("buttonId");
+        }
     }
 
     @Override
@@ -115,7 +124,7 @@ public class ProjectBuilder extends AppCompatActivity {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
             //addPhotoToGallery();
             Log.d(TAG, "mCurrentPhotoPath in OnActivityResult is " + mCurrentPhotoPath);
-            ImageButton mThumbnailImageButton = (ImageButton)findViewById(R.id.imageButton);
+            ImageButton mThumbnailImageButton = (ImageButton)findViewById(buttonId);
             setFullImageFromFilePath(mCurrentPhotoPath,mThumbnailImageButton); //Show the thumb-sized image
         } else
             Toast.makeText(ProjectBuilder.this, "Image Capture Failed", Toast.LENGTH_SHORT).show();
