@@ -5,17 +5,12 @@ package com.example.congyitan.tncassistant;
  */
 public class Projects {
 
-    String internalProjectName;
-    String globalProjectName;
+    int BlockNo;
+    String StreetName;
+    String TownCouncil;
+
 
     public Projects() {
     }
 
-    public String getProjectName() {
-        return globalProjectName;
-    }
-
-    public void setProjectName(String projectName) {
-        internalProjectName = projectName.replaceAll(" ", "_");
-    }
 }

@@ -1,11 +1,22 @@
 <resources>
+    //Name of the app
     <string name="app_name">TNCAssistant</string>
-    <string name="action_settings">Settings</string>
-    <string name="seris_logo">seris_logo</string>
-    <string name="title_fragment_new_project_dialog">NewProjectDialog</string>
+
+    //Project Builder Activity Name
     <string name="title_activity_project_builder">ProjectBuilder</string>
+    <string name="title_fragment_new_project_dialog">NewProjectDialog</string>
+
+    //Settings (not used)
+    <string name="action_settings">Settings</string>
+
+    //New Project Dialog
     <string name="new_project_title">Name this project</string>
-    <string name="new_project_hint">E.g. Blk 123 Ah Long Street</string>
+
+    <string name="new_project_street_hint">E.g. Kanye West Street</string>
+    <string name="new_project_block_hint">321</string>
+    <string name="new_project_postalcode_hint">654321</string>
+
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
+
 </resources>

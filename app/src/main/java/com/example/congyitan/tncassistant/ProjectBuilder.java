@@ -22,11 +22,8 @@ import java.util.Date;
 
 public class ProjectBuilder extends AppCompatActivity {
 
-    //for Log.i ; debugging
+    //for Log.d ; debugging
     private static final String TAG = "ProjectBuilder";
-
-    //Toobar
-    private Toolbar toolbar;
 
     // Storage for camera image URI components
     private final static String CAPTURED_PHOTO_PATH_KEY = "mCurrentPhotoPath";
@@ -44,13 +41,15 @@ public class ProjectBuilder extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        //Toobar
+        Toolbar toolbar;
+
         //Get message from Intent (specifically the projectTitle)
         Bundle bundle = getIntent().getExtras();
         String projectTitle = bundle.getString("projectTitle");
 
         //Create and initialize the new Project class!
         Projects newProject = new Projects();
-        newProject.setProjectName(projectTitle);
 
         //Set view and populate title for the toolbar
         setContentView(R.layout.activity_project_builder);
@@ -66,7 +65,6 @@ public class ProjectBuilder extends AppCompatActivity {
         buttonId = view.getId();
         dispatchTakePictureIntent();
     }
-
 
     //starts image capture process
     private void dispatchTakePictureIntent() {
@@ -95,7 +93,7 @@ public class ProjectBuilder extends AppCompatActivity {
     @Override
     public void onSaveInstanceState (Bundle savedInstanceState){
         savedInstanceState.putString("mCapturedImageURI", mCapturedImageURI.toString());
-        savedInstanceState.putString("mCurrentPhotoPath", mCurrentPhotoPath.toString());
+        savedInstanceState.putString("mCurrentPhotoPath", mCurrentPhotoPath);
         savedInstanceState.putInt("buttonId", buttonId);
         // Always call the superclass so it can save the view hierarchy state
         super.onSaveInstanceState(savedInstanceState);
@@ -122,13 +120,13 @@ public class ProjectBuilder extends AppCompatActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
-            //addPhotoToGallery();
+            addPhotoToGallery();
             Log.d(TAG, "mCurrentPhotoPath in OnActivityResult is " + mCurrentPhotoPath);
             ImageButton mThumbnailImageButton = (ImageButton)findViewById(buttonId);
             setFullImageFromFilePath(mCurrentPhotoPath,mThumbnailImageButton); //Show the thumb-sized image
         } else
-            Toast.makeText(ProjectBuilder.this, "Image Capture Failed", Toast.LENGTH_SHORT).show();
-            Log.d(TAG, "Image Capture Failed");
+            Toast.makeText(ProjectBuilder.this, "Image Capture Failed or Cancelled", Toast.LENGTH_SHORT).show();
+            Log.d(TAG, "Image Capture Failed or Cancelled");
     }
 
     /** Create a file Uri for saving an image or video */
@@ -181,15 +179,16 @@ public class ProjectBuilder extends AppCompatActivity {
      * Must be called on all camera images or they will
      * disappear once taken.
      */
-    /*
+
     protected void addPhotoToGallery() {
         Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-        File f = new File(getCurrentPhotoPath());
+        File f = new File(mCurrentPhotoPath);
         Uri contentUri = Uri.fromFile(f);
         mediaScanIntent.setData(contentUri);
         this.sendBroadcast(mediaScanIntent);
     }
-    */
+
+
     /**
      * Scale the photo down and fit it to our image views.
      *

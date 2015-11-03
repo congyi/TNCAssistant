@@ -1,21 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout
+<RelativeLayout
 
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
+    <TextView
+        android:id="@+id/blknoTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Blk"
+        android:layout_marginBottom="7dp"
+        android:layout_marginLeft="5dp"
+        android:layout_alignBottom="@+id/blkno"
+        android:layout_alignStart="@+id/streetname" />
+
+    <TextView
+        android:id="@+id/postalcodeTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="7dp"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="S"
+        android:layout_alignBottom="@+id/postalcode"
+        android:layout_centerHorizontal="true" />
+
     <EditText
-        android:id="@+id/project_title"
+        android:id="@+id/blkno"
+        android:layout_width="75dp"
+        android:layout_height="wrap_content"
+        android:hint="@string/new_project_block_hint"
+        android:maxLength="5"
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="10dp"
+        android:layout_toEndOf="@+id/blknoTextView" />
+
+    <EditText
+        android:id="@+id/streetname"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="4dp"
-        android:hint="@string/new_project_hint"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
+        android:hint="@string/new_project_street_hint"
+        android:layout_marginTop="15dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
         android:maxLength="30"
-        />
+        android:layout_below="@+id/blkno"
+        android:layout_centerHorizontal="true" />
 
-</LinearLayout>
+    <EditText
+        android:id="@+id/postalcode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="numberDecimal"
+        android:hint="@string/new_project_postalcode_hint"
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="10dp"
+        android:layout_alignEnd="@+id/streetname"
+        android:layout_toEndOf="@+id/postalcodeTextView" />
+
+
+
+</RelativeLayout>

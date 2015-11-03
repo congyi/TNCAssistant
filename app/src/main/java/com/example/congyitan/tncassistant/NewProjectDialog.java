@@ -9,7 +9,11 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 
+
 public class NewProjectDialog extends DialogFragment{
+
+    //for Log.d ; debugging
+    private static final String TAG = "NewProjectDialog";
 
     /* The activity that creates an instance of this dialog fragment must
      * implement this interface in order to receive event callbacks.
@@ -49,19 +53,25 @@ public class NewProjectDialog extends DialogFragment{
        //set dialog title
         newProjectDialog.setTitle(R.string.new_project_title);
 
-        //inflate view so that findViewbyId on the next line works
-        View view = View.inflate(getActivity(),R.layout.new_project_dialog, null);
-        //Link tempEdit object to the text-edit box so we can retrieve data from it below upon button click
-        final EditText tempEdit = (EditText)view.findViewById(R.id.project_title);
+        //inflate view so that findViewById on the next line works (is using final dangerous)
+        final View view = View.inflate(getActivity(),R.layout.new_project_dialog, null);
 
-        //set the view
         newProjectDialog.setView(view);
 
         //set OK button
         newProjectDialog.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                //Toast.makeText(getActivity(), tempEdit.getText().toString(), Toast.LENGTH_SHORT).show();
-                mListener.onDialogOK(tempEdit.getText().toString());
+
+                EditText blkInput = (EditText) view.findViewById(R.id.blkno);
+                EditText streetInput = (EditText) view.findViewById(R.id.streetname);
+                EditText postalcodeInput  = (EditText) view.findViewById(R.id.postalcode);
+
+                String projectTitle = "Blk " + blkInput.getText().toString() +" "
+                                             + streetInput.getText().toString() +" S("
+                                             + postalcodeInput.getText().toString() +")";
+
+                //Log.d(TAG, "projectTitle in NewProjectDialog is " + projectTitle);
+                mListener.onDialogOK(projectTitle);
             }
         });
 
