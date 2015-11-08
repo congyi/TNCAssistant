@@ -19,4 +19,8 @@
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
 
+    //Project Builder
+    <string name="add_images">Add Images</string>
+    <string name="save_project_builder">Save</string>
+
 </resources>

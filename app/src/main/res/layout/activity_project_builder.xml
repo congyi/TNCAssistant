@@ -7,161 +7,200 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    android:orientation="horizontal"
     android:id="@+id/project_builder"
     tools:context="com.example.congyitan.tncassistant.ProjectBuilder">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#888"
+        android:layout_height="?attr/actionBarSize"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        android:elevation="4dp"
+        android:background= "#2E5CB8"
         app:titleTextAppearance="@style/ToolbarTitle">
     </android.support.v7.widget.Toolbar>
+    <!--app:titleTextAppearance="@style/ToolbarTitle"
+    android:navigationIcon="@drawable/image_icon"-->
 
-    <HorizontalScrollView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/horizontalScrollView"
-        android:layout_below="@+id/toolbar"
-        android:layout_alignParentStart="true">
 
-        <GridLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+<HorizontalScrollView
+   android:layout_width="wrap_content"
+   android:layout_height="wrap_content"
+   android:id="@+id/horizontalScrollView"
+   android:layout_below="@+id/toolbar"
+   android:layout_alignParentStart="true">
 
-                <ImageButton
-                    android:id="@+id/imageButton"
-                    android:layout_width="240dp"
-                    android:layout_height="140dp"
-                    android:layout_margin="5dp"
-                    android:layout_row="0"
-                    android:layout_column="0"
-                    android:scaleType="centerInside"
-                    android:src="@drawable/switchrm"
-                    android:onClick="takePicture"/>
+   <GridLayout
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content">
 
-                <ImageButton
-                    android:id="@+id/imageButton2"
-                    android:layout_width="240dp"
-                    android:layout_height="140dp"
-                    android:layout_margin="5dp"
-                    android:layout_row="1"
-                    android:layout_column="0"
-                    android:scaleType="centerInside"
-                    android:src="@drawable/energymeter"
-                    android:onClick="takePicture"/>
+           <ImageButton
+               android:id="@+id/switchrm"
+               android:layout_width="240dp"
+               android:layout_height="140dp"
+               android:layout_margin="5dp"
+               android:layout_row="0"
+               android:layout_column="0"
+               android:scaleType="centerInside"
+               android:src="@drawable/switchrm"
+               android:onClick="takePicture" />
 
-                <ImageButton
-                    android:id="@+id/imageButton3"
-                    android:layout_width="230dp"
-                    android:layout_height="140dp"
-                    android:layout_margin="5dp"
-                    android:layout_row="0"
-                    android:layout_column="1"
-                    android:scaleType="centerInside"
-                    android:src="@drawable/tilt"
-                    android:onClick="takePicture"/>
+           <ImageButton
+               android:id="@+id/energymeter"
+               android:layout_width="240dp"
+               android:layout_height="140dp"
+               android:layout_margin="5dp"
+               android:layout_row="1"
+               android:layout_column="0"
+               android:scaleType="centerInside"
+               android:src="@drawable/energymeter"
+               android:onClick="takePicture"/>
 
-                <ImageButton
-                    android:id="@+id/imageButton4"
-                    android:layout_width="240dp"
-                    android:layout_height="140dp"
-                    android:layout_margin="5dp"
-                    android:layout_row="1"
-                    android:layout_column="1"
-                    android:scaleType="centerInside"
-                    android:src="@drawable/specs"
-                    android:onClick="takePicture"/>
+           <ImageButton
+               android:id="@+id/tilt"
+               android:layout_width="230dp"
+               android:layout_height="140dp"
+               android:layout_margin="5dp"
+               android:layout_row="0"
+               android:layout_column="1"
+               android:scaleType="centerInside"
+               android:src="@drawable/tilt"
+               android:onClick="takePicture"/>
 
-                <ImageButton
-                    android:id="@+id/imageButton5"
-                    android:layout_width="240dp"
-                    android:layout_height="140dp"
-                    android:layout_margin="5dp"
-                    android:layout_row="0"
-                    android:layout_column="2"
-                    android:scaleType="centerInside"
-                    android:src="@drawable/celltech"
-                    android:onClick="takePicture"/>
+           <ImageButton
+               android:id="@+id/specs"
+               android:layout_width="240dp"
+               android:layout_height="140dp"
+               android:layout_margin="5dp"
+               android:layout_row="1"
+               android:layout_column="1"
+               android:scaleType="centerInside"
+               android:src="@drawable/specs"
+               android:onClick="takePicture"/>
 
-                <ImageButton
-                    android:id="@+id/imageButton6"
-                    android:layout_width="240dp"
-                    android:layout_height="140dp"
-                    android:layout_margin="5dp"
-                    android:layout_row="1"
-                    android:layout_column="2"
-                    android:scaleType="centerInside"
-                    android:src="@drawable/cabling"
-                    android:onClick="takePicture"/>
+       <ImageButton
+           android:id="@+id/continuity"
+           android:layout_width="240dp"
+           android:layout_height="140dp"
+           android:layout_margin="5dp"
+           android:layout_row="0"
+           android:layout_column="2"
+           android:scaleType="centerInside"
+           android:src="@drawable/continuity"
+           android:onClick="takePicture"/>
 
-            <ImageButton
-                android:id="@+id/imageButton7"
-                android:layout_width="240dp"
-                android:layout_height="140dp"
-                android:layout_margin="5dp"
-                android:layout_row="0"
-                android:layout_column="3"
-                android:scaleType="centerInside"
-                android:src="@drawable/ballast"
-                android:onClick="takePicture"/>
+       <ImageButton
+           android:id="@+id/continuityread"
+           android:layout_width="240dp"
+           android:layout_height="140dp"
+           android:layout_margin="5dp"
+           android:layout_row="1"
+           android:layout_column="2"
+           android:scaleType="centerInside"
+           android:src="@drawable/continuityread"
+           android:onClick="takePicture"/>
 
-            <ImageButton
-                android:id="@+id/imageButton8"
-                android:layout_width="240dp"
-                android:layout_height="140dp"
-                android:layout_margin="5dp"
-                android:layout_row="1"
-                android:layout_column="3"
-                android:scaleType="centerInside"
-                android:src="@drawable/elecoverview"
-                android:onClick="takePicture"/>
+           <ImageButton
+               android:id="@+id/celltech"
+               android:layout_width="240dp"
+               android:layout_height="140dp"
+               android:layout_margin="5dp"
+               android:layout_row="0"
+               android:layout_column="3"
+               android:scaleType="centerInside"
+               android:src="@drawable/celltech"
+               android:onClick="takePicture"/>
 
-            <ImageButton
-                android:id="@+id/imageButton9"
-                android:layout_width="230dp"
-                android:layout_height="140dp"
-                android:layout_margin="5dp"
-                android:layout_row="0"
-                android:layout_column="4"
-                android:scaleType="centerInside"
-                android:src="@drawable/surgearrestor"
-                android:onClick="takePicture"/>
+           <ImageButton
+               android:id="@+id/cabling"
+               android:layout_width="240dp"
+               android:layout_height="140dp"
+               android:layout_margin="5dp"
+               android:layout_row="1"
+               android:layout_column="3"
+               android:scaleType="centerInside"
+               android:src="@drawable/cabling"
+               android:onClick="takePicture"/>
 
-            <ImageButton
-                android:id="@+id/imageButton10"
-                android:layout_width="240dp"
-                android:layout_height="140dp"
-                android:layout_margin="5dp"
-                android:layout_row="1"
-                android:layout_column="4"
-                android:scaleType="centerInside"
-                android:src="@drawable/warninglabel"
-                android:onClick="takePicture"/>
+       <ImageButton
+           android:id="@+id/ballast"
+           android:layout_width="240dp"
+           android:layout_height="140dp"
+           android:layout_margin="5dp"
+           android:layout_row="0"
+           android:layout_column="4"
+           android:scaleType="centerInside"
+           android:src="@drawable/ballast"
+           android:onClick="takePicture"/>
 
-            <ImageButton
-                android:id="@+id/imageButton11"
-                android:layout_width="240dp"
-                android:layout_height="140dp"
-                android:layout_margin="5dp"
-                android:layout_row="0"
-                android:layout_column="5"
-                android:scaleType="centerInside"
-                android:src="@drawable/labelling"
-                android:onClick="takePicture"/>
+       <ImageButton
+           android:id="@+id/elecoverview"
+           android:layout_width="240dp"
+           android:layout_height="140dp"
+           android:layout_margin="5dp"
+           android:layout_row="1"
+           android:layout_column="4"
+           android:scaleType="centerInside"
+           android:src="@drawable/elecoverview"
+           android:onClick="takePicture"/>
 
-            <ImageButton
-                android:id="@+id/imageButton12"
-                android:layout_width="240dp"
-                android:layout_height="140dp"
-                android:layout_margin="5dp"
-                android:layout_row="1"
-                android:layout_column="5"
-                android:scaleType="centerInside"
-                android:src="@drawable/elecoverview"
-                android:onClick="takePicture"/>
+       <ImageButton
+           android:id="@+id/surgearrestor"
+           android:layout_width="230dp"
+           android:layout_height="140dp"
+           android:layout_margin="5dp"
+           android:layout_row="0"
+           android:layout_column="5"
+           android:scaleType="centerInside"
+           android:src="@drawable/surgearrestor"
+           android:onClick="takePicture"/>
 
-        </GridLayout>
-    </HorizontalScrollView>
+       <ImageButton
+           android:id="@+id/warninglabel"
+           android:layout_width="240dp"
+           android:layout_height="140dp"
+           android:layout_margin="5dp"
+           android:layout_row="1"
+           android:layout_column="5"
+           android:scaleType="centerInside"
+           android:src="@drawable/warninglabel"
+           android:onClick="takePicture"/>
+
+       <ImageButton
+           android:id="@+id/labelling"
+           android:layout_width="240dp"
+           android:layout_height="140dp"
+           android:layout_margin="5dp"
+           android:layout_row="0"
+           android:layout_column="6"
+           android:scaleType="centerInside"
+           android:src="@drawable/labelling"
+           android:onClick="takePicture"/>
+
+
+       <ImageButton
+           android:id="@+id/pv150"
+           android:layout_width="240dp"
+           android:layout_height="140dp"
+           android:layout_margin="5dp"
+           android:layout_row="1"
+           android:layout_column="6"
+           android:scaleType="centerInside"
+           android:src="@drawable/pv150"
+           android:onClick="takePicture"/>
+
+       <ImageButton
+           android:id="@+id/pv150read"
+           android:layout_width="240dp"
+           android:layout_height="140dp"
+           android:layout_margin="5dp"
+           android:layout_row="0"
+           android:layout_column="7"
+           android:scaleType="centerInside"
+           android:src="@drawable/pv150read"
+           android:onClick="takePicture"/>
+
+   </GridLayout>
+</HorizontalScrollView>
 </RelativeLayout>

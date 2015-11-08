@@ -6,6 +6,7 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 
@@ -19,8 +20,8 @@ public class NewProjectDialog extends DialogFragment{
      * implement this interface in order to receive event callbacks.
      * Each method passes the DialogFragment in case the host needs to query it. */
     public interface NewProjectDialogListener {
-        public void onDialogOK(String projectTitle);
-        public void onDialogCancel();
+        void onDialogOK(String projectTitle);
+        void onDialogCancel();
     }
 
     // Use this instance of the interface to deliver action events
@@ -54,7 +55,7 @@ public class NewProjectDialog extends DialogFragment{
         newProjectDialog.setTitle(R.string.new_project_title);
 
         //inflate view so that findViewById on the next line works (is using final dangerous)
-        final View view = View.inflate(getActivity(),R.layout.new_project_dialog, null);
+        final View view = View.inflate(getActivity(),R.layout.dialog_new_project, null);
 
         newProjectDialog.setView(view);
 
@@ -67,10 +68,10 @@ public class NewProjectDialog extends DialogFragment{
                 EditText postalcodeInput  = (EditText) view.findViewById(R.id.postalcode);
 
                 String projectTitle = "Blk " + blkInput.getText().toString() +" "
-                                             + streetInput.getText().toString() +" S("
-                                             + postalcodeInput.getText().toString() +")";
+                                             + streetInput.getText().toString() +" S"
+                                             + postalcodeInput.getText().toString();
 
-                //Log.d(TAG, "projectTitle in NewProjectDialog is " + projectTitle);
+                Log.d(TAG, "projectTitle in NewProjectDialog is " + projectTitle);
                 mListener.onDialogOK(projectTitle);
             }
         });

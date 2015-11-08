@@ -11,6 +11,8 @@ import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.Toast;
@@ -28,6 +30,7 @@ public class ProjectBuilder extends AppCompatActivity {
     // Storage for camera image URI components
     private final static String CAPTURED_PHOTO_PATH_KEY = "mCurrentPhotoPath";
     private final static String CAPTURED_PHOTO_URI_KEY = "mCapturedImageURI";
+    private final static String BUTTON_ID = "buttonId";
 
     // Required for camera operations in order to save the image file on resume.
     String mCurrentPhotoPath;
@@ -55,8 +58,36 @@ public class ProjectBuilder extends AppCompatActivity {
         setContentView(R.layout.activity_project_builder);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle(projectTitle);
+        toolbar.setNavigationIcon(R.drawable.image_icon);
+        getSupportActionBar().setTitle(R.string.add_images);
+    }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_project_builer, menu);
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_settings:
+                // User chose the "Settings" item, show the app settings UI...
+                return true;
+
+            case R.id.action_favorite:
+                // User chose the "Favorite" action, mark the current item
+                // as a favorite...
+                return true;
+
+            default:
+                // If we got here, the user's action was not recognized.
+                // Invoke the superclass to handle it.
+                return super.onOptionsItemSelected(item);
+
+        }
     }
 
     //called when imageButton is pressed
@@ -88,6 +119,50 @@ public class ProjectBuilder extends AppCompatActivity {
         if (photoFile != null) {
             startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
         }
+    }
+    /** Create a File for saving an image or video */
+    private File getOutputMediaFile() throws IOException {
+        // To be safe, you should check that the SDCard is mounted
+        // using Environment.getExternalStorageState() before doing this.
+        File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_PICTURES), "TnCAssistant");
+        // This location works best if you want the created images to be shared
+        // between applications and persist after your app has been uninstalled.
+
+        // Create the storage directory if it does not exist
+        if (! mediaStorageDir.exists()){
+            if (! mediaStorageDir.mkdirs()){
+                Log.d(TAG, "Failed to create directory");
+                return null;
+            }
+        }
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                mediaStorageDir     /* directory */
+        );
+
+        // Save a file: path for use with ACTION_VIEW intents
+        mCurrentPhotoPath = image.getAbsolutePath();
+        Log.d(TAG, "mCurrentPhotoPath is "+ mCurrentPhotoPath);
+        return image;
+    }
+
+    /** Create a file Uri for saving an image or video */
+    private Uri getOutputMediaFileUri(){
+
+        Uri mUri = null;
+
+        try {
+            mUri =  Uri.fromFile(getOutputMediaFile());
+        } catch (IOException ex) {
+            Log.d(TAG, "Error creating mUri");
+        }
+        return mUri;
     }
 
     @Override
@@ -129,50 +204,6 @@ public class ProjectBuilder extends AppCompatActivity {
             Log.d(TAG, "Image Capture Failed or Cancelled");
     }
 
-    /** Create a file Uri for saving an image or video */
-    private Uri getOutputMediaFileUri(){
-
-       Uri mUri = null;
-
-        try {
-            mUri =  Uri.fromFile(getOutputMediaFile());
-        } catch (IOException ex) {
-            Log.d(TAG, "Error creating mUri");
-        }
-        return mUri;
-    }
-
-    /** Create a File for saving an image or video */
-    private File getOutputMediaFile() throws IOException {
-        // To be safe, you should check that the SDCard is mounted
-        // using Environment.getExternalStorageState() before doing this.
-        File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES), "TnCAssistant");
-        // This location works best if you want the created images to be shared
-        // between applications and persist after your app has been uninstalled.
-
-        // Create the storage directory if it does not exist
-        if (! mediaStorageDir.exists()){
-            if (! mediaStorageDir.mkdirs()){
-                Log.d(TAG, "Failed to create directory");
-                return null;
-            }
-        }
-        // Create an image file name
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "JPEG_" + timeStamp + "_";
-
-        File image = File.createTempFile(
-                imageFileName,  /* prefix */
-                ".jpg",         /* suffix */
-                mediaStorageDir     /* directory */
-        );
-
-        // Save a file: path for use with ACTION_VIEW intents
-        mCurrentPhotoPath = image.getAbsolutePath();
-        Log.d(TAG, "mCurrentPhotoPath is "+ mCurrentPhotoPath);
-        return image;
-    }
 
     /**
      * Add the picture to the photo gallery.
