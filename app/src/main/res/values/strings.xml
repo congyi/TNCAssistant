@@ -20,7 +20,7 @@
     <string name="cancel">Cancel</string>
 
     //Project Builder
-    <string name="add_images">Add Images</string>
+    <string name="new_project_home">Project Builder</string>
     <string name="save_project_builder">Save</string>
 
 </resources>
