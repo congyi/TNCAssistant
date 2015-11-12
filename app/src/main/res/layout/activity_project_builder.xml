@@ -7,7 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    android:id="@+id/project_builder"
+    android:id="@+id/activity_project_builder"
     tools:context="com.example.congyitan.tncassistant.ProjectBuilder">
 
     <android.support.v7.widget.Toolbar

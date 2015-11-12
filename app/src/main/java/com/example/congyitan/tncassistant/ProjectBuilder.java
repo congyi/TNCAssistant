@@ -1,31 +1,22 @@
 package com.example.congyitan.tncassistant;
 
-
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class ProjectBuilder extends AppCompatActivity {
 
     private Toolbar mToolbar;
-    private ProjectBuilderAdapter adapter;
+
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
-    private List<ProjectBuilderListItem> list;
 
     //for Log.d ; debugging
     private static final String TAG = "ProjectBuilder";
@@ -46,8 +37,10 @@ public class ProjectBuilder extends AppCompatActivity {
         getSupportActionBar().setTitle(R.string.new_project_home);
 
         //Build the list of items
-        mRecyclerView = (RecyclerView)findViewById(R.id.project_builder_list);
+        mRecyclerView = (RecyclerView) findViewById(R.id.project_builder_list);
+        mRecyclerView.setHasFixedSize(true);
         mAdapter = new ProjectBuilderAdapter(constructProjectBuilderList());
+        mRecyclerView.setAdapter(mAdapter);
     }
 
     @Override
@@ -78,79 +71,23 @@ public class ProjectBuilder extends AppCompatActivity {
         }
     }
 
-   class ProjectBuilderListItem{
-        int iconId;
-        String title;
-
-       ProjectBuilderListItem  (int iconId, String title){
-           this.iconId = iconId;
-           this.title = title;
-       }
-
-       ProjectBuilderListItem  (){
-       }
-    }
-
     // This method creates an ArrayList that has ProjectBuilderListItem objects
-    public  List<ProjectBuilderListItem> constructProjectBuilderList(){
+    public List<ProjectBuilderListItem> constructProjectBuilderList() {
 
         List<ProjectBuilderListItem> list = new ArrayList<>();
 
         int[] icons = {R.drawable.project_description, R.drawable.image_icon};
         String[] title = {"Project Info", "Add Images"};
 
-        for (int i = 0; i < title.length && i < icons.length; i++){
-            ProjectBuilderListItem currentListItem = new ProjectBuilderListItem();
-            currentListItem.iconId = icons[i];
-            currentListItem.title = title[i];
-            list.add(currentListItem);
+        for (int i = 0; i < title.length && i < icons.length; i++) {
+            ProjectBuilderListItem tempListItem = new ProjectBuilderListItem();
+            tempListItem.iconId = icons[i];
+            tempListItem.title = title[i];
+            list.add(tempListItem);
         }
 
         return list;
     }
-
-    public class ProjectBuilderAdapter extends RecyclerView.Adapter<ProjectBuilderAdapter.ViewHolder>{
-
-        List<ProjectBuilderListItem> myList = Collections.emptyList();
-
-        public class ViewHolder extends RecyclerView.ViewHolder{
-
-            TextView title;
-            ImageView icon;
-
-            public ViewHolder (View itemView){
-                super(itemView);
-                title = (TextView) itemView.findViewById(R.id.itemlist_project_builder_textview);
-                icon = (ImageView) itemView.findViewById(R.id.itemlist_project_builder_imageview);
-            }
-        }
-
-        public ProjectBuilderAdapter(Context context){
-
-            this.myList = myList;
-        }
-
-        @Override
-        public ProjectBuilderAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-
-            View view = LayoutInflater.from(parent.getContext())
-                                      .inflate(R.layout.itemlist_project_builder, parent, false);
-
-            return new ViewHolder(view);
-        }
-
-        @Override
-        public void onBindViewHolder(ViewHolder holder, int position) {
-
-            ProjectBuilderListItem current = myList.get(position);
-
-            holder.title.setText(current.title);
-            holder.icon.setImageResource(current.iconId);
-        }
-
-        @Override
-        public int getItemCount() {
-            return 0;
-        }
-    }
 }
+
+
