@@ -21,7 +21,6 @@ public class MainActivity extends AppCompatActivity  implements NewProjectDialog
         Button browseProjects = (Button) findViewById(R.id.browse_projects);
     }
 
-
     public void newProject(View view) {
         //Open up the DialogFragment that prompts user for the title
         DialogFragment newFragment = new NewProjectDialog();

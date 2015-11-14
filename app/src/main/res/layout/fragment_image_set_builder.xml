@@ -19,8 +19,6 @@
         android:background= "#2E5CB8"
         app:titleTextAppearance="@style/ToolbarTitle">
     </android.support.v7.widget.Toolbar>
-    <!--app:titleTextAppearance="@style/ToolbarTitle"
-    android:navigationIcon="@drawable/image_icon"-->
 
     <HorizontalScrollView
         android:layout_width="wrap_content"

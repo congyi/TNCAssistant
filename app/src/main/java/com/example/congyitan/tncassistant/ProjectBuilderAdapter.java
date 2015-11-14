@@ -18,6 +18,10 @@ public class ProjectBuilderAdapter extends RecyclerView.Adapter<ProjectBuilderAd
 
     private List<ProjectBuilderListItem> myList = Collections.emptyList();
 
+    public ProjectBuilderAdapter(List<ProjectBuilderListItem> inputList) {
+        myList = inputList;
+    }
+
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
         TextView title;
@@ -30,27 +34,24 @@ public class ProjectBuilderAdapter extends RecyclerView.Adapter<ProjectBuilderAd
         }
     }
 
-    public ProjectBuilderAdapter(List<ProjectBuilderListItem> inputList) {
-
-        myList = inputList;
-    }
-
     @Override
-    public ProjectBuilderAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.itemlist_project_builder, parent, false);
 
-        return new ViewHolder(view);
+        ViewHolder VH = new ViewHolder(view);
+
+        return VH;
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
 
-        ProjectBuilderListItem current = myList.get(position);
+        ProjectBuilderListItem currentListItem = myList.get(position);
 
-        holder.title.setText(current.title);
-        holder.icon.setImageResource(current.iconId);
+        holder.title.setText(currentListItem.title);
+        holder.icon.setImageResource(currentListItem.iconId);
     }
 
     @Override

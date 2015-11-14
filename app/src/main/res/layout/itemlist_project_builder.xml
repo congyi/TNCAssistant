@@ -9,7 +9,7 @@
         android:id= "@+id/itemlist_project_builder_imageview"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
-        android:src="@drawable/image_icon"
+        android:src="@drawable/ic_bookmark"
         android:padding="10dp">
 
     </ImageView>
@@ -18,9 +18,8 @@
         android:id= "@+id/itemlist_project_builder_textview"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Placeholder text"
-        android:padding="10dp">
+        android:padding="16dp">
 
     </TextView>
 

@@ -2,6 +2,7 @@ package com.example.congyitan.tncassistant;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -26,19 +27,23 @@ public class ProjectBuilder extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         //Get message from Intent (specifically the projectTitle)
-        Bundle bundle = getIntent().getExtras();
-        String projectTitle = bundle.getString("projectTitle");
+        //Bundle bundle = getIntent().getExtras();
+        //String projectTitle = bundle.getString("projectTitle");
 
         //Set view and populate title for the toolbar
         setContentView(R.layout.activity_project_builder);
-        mToolbar = (Toolbar) findViewById(R.id.project_builder_toolbar);
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
-        mToolbar.setNavigationIcon(R.drawable.new_project_home);
+        mToolbar.setNavigationIcon(R.drawable.ic_home);
         getSupportActionBar().setTitle(R.string.new_project_home);
 
         //Build the list of items
         mRecyclerView = (RecyclerView) findViewById(R.id.project_builder_list);
         mRecyclerView.setHasFixedSize(true);
+
+        mLayoutManager = new LinearLayoutManager(this);
+        mRecyclerView.setLayoutManager(mLayoutManager);
+
         mAdapter = new ProjectBuilderAdapter(constructProjectBuilderList());
         mRecyclerView.setAdapter(mAdapter);
     }
@@ -76,16 +81,15 @@ public class ProjectBuilder extends AppCompatActivity {
 
         List<ProjectBuilderListItem> list = new ArrayList<>();
 
-        int[] icons = {R.drawable.project_description, R.drawable.image_icon};
-        String[] title = {"Project Info", "Add Images"};
+        int[] icons = {R.drawable.ic_file_dark, R.drawable.ic_camera_dark, R.drawable.ic_measurements_dark,
+                       R.drawable.ic_add_edit_files_dark, R.drawable.ic_code_dark, R.drawable.ic_print_dark};
+        String[] title = {"Project Info", "Add/Edit Images", "Add/Edit Measurements", "Add/Remove Attachments",
+                          "View/Edit LaTeX code", "View/Generate Report"};
 
         for (int i = 0; i < title.length && i < icons.length; i++) {
-            ProjectBuilderListItem tempListItem = new ProjectBuilderListItem();
-            tempListItem.iconId = icons[i];
-            tempListItem.title = title[i];
+            ProjectBuilderListItem tempListItem = new ProjectBuilderListItem(icons[i],title[i]);
             list.add(tempListItem);
         }
-
         return list;
     }
 }

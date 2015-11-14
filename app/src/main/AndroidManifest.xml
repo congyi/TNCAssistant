@@ -30,8 +30,7 @@
         <activity
             android:name=".ProjectBuilder"
             android:label="@string/title_activity_project_builder"
-            android:parentActivityName="com.example.congyitan.tncassistant.MainActivity"
-            android:screenOrientation="landscape">
+            android:parentActivityName="com.example.congyitan.tncassistant.MainActivity">
             <intent-filter>
                 <action android:name="com.example.congyitan.tncassistant.ProjectBuilder" />
                 <category android:name="android.intent.category.DEFAULT" />

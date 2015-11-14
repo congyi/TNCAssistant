@@ -29,9 +29,4 @@ class ProjectBuilderListItem {
         this.iconId = iconId;
         this.title = title;
     }
-
-    ProjectBuilderListItem() {
-        this.iconId = 0;
-        this.title = "Dummy text";
-    }
 }

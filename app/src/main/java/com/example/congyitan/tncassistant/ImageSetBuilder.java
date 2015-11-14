@@ -91,7 +91,7 @@ public class ImageSetBuilder extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_image_set_builder, container, false);
         Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.menu_image_set_builder);
-        toolbar.setNavigationIcon(R.drawable.image_icon);
+        toolbar.setNavigationIcon(R.drawable.ic_image);
 
         return view;
     }
