@@ -1,23 +1,29 @@
 package com.example.congyitan.tncassistant;
-
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ProjectBuilder extends AppCompatActivity {
+public class ProjectBuilder extends AppCompatActivity implements ProjectBuilderAdapter.ProjectBuilderClickListener {
 
     private Toolbar mToolbar;
+    private Context thisContext;
 
     private RecyclerView mRecyclerView;
-    private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
+
+    private ProjectBuilderAdapter myProjectBuilderAdapter;
 
     //for Log.d ; debugging
     private static final String TAG = "ProjectBuilder";
@@ -25,6 +31,8 @@ public class ProjectBuilder extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        thisContext = ProjectBuilder.this;
 
         //Get message from Intent (specifically the projectTitle)
         //Bundle bundle = getIntent().getExtras();
@@ -37,16 +45,18 @@ public class ProjectBuilder extends AppCompatActivity {
         mToolbar.setNavigationIcon(R.drawable.ic_home);
         getSupportActionBar().setTitle(R.string.new_project_home);
 
-        //Build the list of items
+        //Build the list of items in RecyclerView
         mRecyclerView = (RecyclerView) findViewById(R.id.project_builder_list);
         mRecyclerView.setHasFixedSize(true);
 
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-        mAdapter = new ProjectBuilderAdapter(constructProjectBuilderList());
-        mRecyclerView.setAdapter(mAdapter);
+        myProjectBuilderAdapter = new ProjectBuilderAdapter(constructProjectBuilderList(),thisContext);
+        mRecyclerView.setAdapter(myProjectBuilderAdapter);
+        myProjectBuilderAdapter.setProjectBuilderClickListener(this);
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -91,6 +101,22 @@ public class ProjectBuilder extends AppCompatActivity {
             list.add(tempListItem);
         }
         return list;
+    }
+
+    @Override
+    public void onListItemClicked(View view, int position) {
+
+
+        ImageSetBuilder newFragment = new ImageSetBuilder();
+
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.add(R.id.activity_project_builder, newFragment,"ImageSetBuilderFragment");
+
+        Log.d(TAG, "I'm here in ProjectBuilder's onListItemClicked - before commit()");
+        fragmentTransaction.commit();
+        Log.d(TAG, "I'm here in ProjectBuilder's onListItemClicked - after commit()");
+
     }
 }
 

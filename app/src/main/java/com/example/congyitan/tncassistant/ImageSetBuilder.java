@@ -2,6 +2,7 @@ package com.example.congyitan.tncassistant;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -34,12 +35,6 @@ import java.util.Date;
  */
 public class ImageSetBuilder extends Fragment {
 
-
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
     //for Log.d ; debugging
     private static final String TAG = "ImageSetBuilder";
 
@@ -58,36 +53,39 @@ public class ImageSetBuilder extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment ImageSetBuilder.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static ImageSetBuilder newInstance(String param1, String param2) {
-        ImageSetBuilder fragment = new ImageSetBuilder();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
+    //Fragment constructor
+    public static ImageSetBuilder newInstance()
+    {
+        return  new ImageSetBuilder();
     }
 
-    public ImageSetBuilder() {
-        // Required empty public constructor
+    @Override
+    public void onAttach(Context context) {
+
+        Log.d(TAG,"I'm here in ImageSetBuilder's OnAttach");
+
+        super.onAttach(context);
+        try {
+            mListener = (OnFragmentInteractionListener) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(context.toString()
+                    + " must implement OnFragmentInteractionListener");
+        }
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Log.d(TAG, "I'm here in ImageSetBuilder's OnCreate");
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+        Log.d(TAG,"I'm here in ImageSetBuilder's OnCreateView");
 
         View view = inflater.inflate(R.layout.fragment_image_set_builder, container, false);
         Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.menu_image_set_builder);
@@ -96,21 +94,40 @@ public class ImageSetBuilder extends Fragment {
         return view;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        if (savedInstanceState.containsKey("mCapturedImageURI")) {
+            mCapturedImageURI = Uri.parse(savedInstanceState.getString("mCapturedImageURI"));
+        }
+
+        if (savedInstanceState.containsKey("mCurrentPhotoPath")) {
+            mCurrentPhotoPath = savedInstanceState.getString("mCurrentPhotoPath");
+        }
+
+        if (savedInstanceState.containsKey("buttonId")) {
+            buttonId = savedInstanceState.getInt("buttonId");
         }
     }
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        try {
-            mListener = (OnFragmentInteractionListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement OnFragmentInteractionListener");
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
+            addPhotoToGallery();
+            Log.d(TAG, "mCurrentPhotoPath in OnActivityResult is " + mCurrentPhotoPath);
+            ImageButton mThumbnailImageButton = (ImageButton) getActivity().findViewById(buttonId);
+            setFullImageFromFilePath(mCurrentPhotoPath, mThumbnailImageButton); //Show the thumb-sized image
+        } else
+            Toast.makeText(getActivity(),"Image Capture Failed or Cancelled", Toast.LENGTH_SHORT).show();
+        Log.d(TAG, "Image Capture Failed or Cancelled");
+    }
+
+    // TODO: Rename method, update argument and hook method into UI event
+    public void onButtonPressed(Uri uri) {
+        if (mListener != null) {
+            mListener.onFragmentInteraction(uri);
         }
     }
 
@@ -132,6 +149,15 @@ public class ImageSetBuilder extends Fragment {
                 return super.onOptionsItemSelected(item);
 
         }
+    }
+
+    @Override
+    public void onSaveInstanceState (Bundle savedInstanceState){
+        savedInstanceState.putString("mCapturedImageURI", mCapturedImageURI.toString());
+        savedInstanceState.putString("mCurrentPhotoPath", mCurrentPhotoPath);
+        savedInstanceState.putInt("buttonId", buttonId);
+        // Always call the superclass so it can save the view hierarchy state
+        super.onSaveInstanceState(savedInstanceState);
     }
 
     @Override
@@ -230,46 +256,6 @@ public class ImageSetBuilder extends Fragment {
         return mUri;
     }
 
-    @Override
-    public void onSaveInstanceState (Bundle savedInstanceState){
-        savedInstanceState.putString("mCapturedImageURI", mCapturedImageURI.toString());
-        savedInstanceState.putString("mCurrentPhotoPath", mCurrentPhotoPath);
-        savedInstanceState.putInt("buttonId", buttonId);
-        // Always call the superclass so it can save the view hierarchy state
-        super.onSaveInstanceState(savedInstanceState);
-    }
-
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-        if (savedInstanceState.containsKey("mCapturedImageURI")) {
-            mCapturedImageURI = Uri.parse(savedInstanceState.getString("mCapturedImageURI"));
-        }
-
-        if (savedInstanceState.containsKey("mCurrentPhotoPath")) {
-            mCurrentPhotoPath = savedInstanceState.getString("mCurrentPhotoPath");
-        }
-
-        if (savedInstanceState.containsKey("buttonId")) {
-            buttonId = savedInstanceState.getInt("buttonId");
-        }
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-
-        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
-            addPhotoToGallery();
-            Log.d(TAG, "mCurrentPhotoPath in OnActivityResult is " + mCurrentPhotoPath);
-            ImageButton mThumbnailImageButton = (ImageButton) getActivity().findViewById(buttonId);
-            setFullImageFromFilePath(mCurrentPhotoPath, mThumbnailImageButton); //Show the thumb-sized image
-        } else
-            Toast.makeText(getActivity(),"Image Capture Failed or Cancelled", Toast.LENGTH_SHORT).show();
-        Log.d(TAG, "Image Capture Failed or Cancelled");
-    }
-
-
     /**
      * Add the picture to the photo gallery.
      * Must be called on all camera images or they will
@@ -283,7 +269,6 @@ public class ImageSetBuilder extends Fragment {
         mediaScanIntent.setData(contentUri);
         getActivity().sendBroadcast(mediaScanIntent);
     }
-
 
     /**
      * Scale the photo down and fit it to our image views.

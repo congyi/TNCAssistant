@@ -1,6 +1,9 @@
 package com.example.congyitan.tncassistant;
 
+
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,13 +19,21 @@ import java.util.List;
  */
 public class ProjectBuilderAdapter extends RecyclerView.Adapter<ProjectBuilderAdapter.ViewHolder> {
 
+    //for Log.d ; debugging
+    private static final String TAG = "ProjectBuilderAdapter";
+
+    private Context myContext = null;
     private List<ProjectBuilderListItem> myList = Collections.emptyList();
 
-    public ProjectBuilderAdapter(List<ProjectBuilderListItem> inputList) {
-        myList = inputList;
+    private ProjectBuilderClickListener myClickListener;
+
+    //Constructor for ProjectBuilderAdapter
+    public ProjectBuilderAdapter(List<ProjectBuilderListItem> inputList, Context thisContext) {
+        this.myContext = thisContext;
+        this.myList = inputList;
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         TextView title;
         ImageView icon;
@@ -31,6 +42,18 @@ public class ProjectBuilderAdapter extends RecyclerView.Adapter<ProjectBuilderAd
             super(itemView);
             title = (TextView) itemView.findViewById(R.id.itemlist_project_builder_textview);
             icon = (ImageView) itemView.findViewById(R.id.itemlist_project_builder_imageview);
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+
+            Log.d(TAG, "I'm here in Adapter's onClick and getAdapterPosition is " + getAdapterPosition());
+
+            if(myClickListener == null)
+                Log.d(TAG, "myClickListender was NULL");
+            else
+                myClickListener.onListItemClicked(v, getAdapterPosition());
         }
     }
 
@@ -58,4 +81,13 @@ public class ProjectBuilderAdapter extends RecyclerView.Adapter<ProjectBuilderAd
     public int getItemCount() {
         return myList.size();
     }
+
+    public interface ProjectBuilderClickListener{
+        void onListItemClicked(View view, int position);
+    }
+
+    public void setProjectBuilderClickListener(final ProjectBuilderClickListener inputClickListener){
+        this.myClickListener = inputClickListener;
+    }
+
 }
