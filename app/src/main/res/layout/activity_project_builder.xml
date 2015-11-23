@@ -10,7 +10,7 @@
     tools:context="com.example.congyitan.tncassistant.ProjectBuilder">
 
     <android.support.v7.widget.Toolbar
-        android:id="@+id/toolbar"
+        android:id="@+id/toolbar_project_builder"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="#2E5CB8"
@@ -22,6 +22,6 @@
         android:id="@+id/project_builder_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/toolbar"/>
+        android:layout_below="@+id/toolbar_project_builder"/>
 
 </RelativeLayout>

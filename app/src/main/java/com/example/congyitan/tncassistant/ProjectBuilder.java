@@ -34,16 +34,15 @@ public class ProjectBuilder extends AppCompatActivity implements ProjectBuilderA
 
         thisContext = ProjectBuilder.this;
 
-        //Get message from Intent (specifically the projectTitle)
-        //Bundle bundle = getIntent().getExtras();
-        //String projectTitle = bundle.getString("projectTitle");
-
         //Set view and populate title for the toolbar
         setContentView(R.layout.activity_project_builder);
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(mToolbar);
-        mToolbar.setNavigationIcon(R.drawable.ic_home);
-        getSupportActionBar().setTitle(R.string.new_project_home);
+        mToolbar = (Toolbar) findViewById(R.id.toolbar_project_builder);
+
+        if(mToolbar != null) {
+            setSupportActionBar(mToolbar);
+            mToolbar.setNavigationIcon(R.drawable.ic_home);
+            getSupportActionBar().setTitle(R.string.new_project_home);
+        }
 
         //Build the list of items in RecyclerView
         mRecyclerView = (RecyclerView) findViewById(R.id.project_builder_list);
@@ -106,17 +105,25 @@ public class ProjectBuilder extends AppCompatActivity implements ProjectBuilderA
     @Override
     public void onListItemClicked(View view, int position) {
 
-
+       //Test newFragment = new Test();
         ImageSetBuilder newFragment = new ImageSetBuilder();
 
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.add(R.id.activity_project_builder, newFragment,"ImageSetBuilderFragment");
 
-        Log.d(TAG, "I'm here in ProjectBuilder's onListItemClicked - before commit()");
+        fragmentTransaction.add(R.id.activity_project_builder, newFragment,"ImageSetBuilderFragment");
         fragmentTransaction.commit();
         Log.d(TAG, "I'm here in ProjectBuilder's onListItemClicked - after commit()");
 
+    }
+
+    @Override
+    public void onSaveInstanceState (Bundle savedInstanceState){
+        // Always call the superclass so it can save the view hierarchy state
+        super.onSaveInstanceState(savedInstanceState);
+
+        Log.d(TAG, "I'm here in ProjectBuilder's onSaveInstanceState");
+        //getSupportFragmentManager().putFragment(savedInstanceState, "ImageSetBuilder", newFragment);
     }
 }
 

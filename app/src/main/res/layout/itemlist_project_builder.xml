@@ -10,17 +10,13 @@
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         android:src="@drawable/ic_bookmark"
-        android:padding="10dp">
-
-    </ImageView>
+        android:padding="10dp"/>
 
     <TextView
         android:id= "@+id/itemlist_project_builder_textview"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         android:text="Placeholder text"
-        android:padding="16dp">
-
-    </TextView>
+        android:padding="16dp"/>
 
 </LinearLayout>
