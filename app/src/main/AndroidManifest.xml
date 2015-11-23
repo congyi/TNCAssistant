@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.congyitan.tncassistant">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.congyitan.tncassistant" >
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-
     <uses-permission android:name="android.permission.CAMERA" />
+
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
 
@@ -14,15 +13,16 @@
         android:icon="@mipmap/seris_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme" >
 
         <!-- The main/home activity (it has no parent activity) -->
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -30,13 +30,20 @@
         <activity
             android:name=".ProjectBuilder"
             android:label="@string/title_activity_project_builder"
-            android:parentActivityName="com.example.congyitan.tncassistant.MainActivity">
+            android:parentActivityName=".MainActivity" >
             <intent-filter>
                 <action android:name="com.example.congyitan.tncassistant.ProjectBuilder" />
+
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".ImageCollector"
+            android:label="@string/title_activity_image_collector"
+            android:parentActivityName=".ProjectBuilder" >
+            android:theme="@style/AppTheme" >
+        </activity>
     </application>
 
 </manifest>

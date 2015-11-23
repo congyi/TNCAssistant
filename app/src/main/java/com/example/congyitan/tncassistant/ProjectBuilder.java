@@ -1,7 +1,7 @@
 package com.example.congyitan.tncassistant;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -20,6 +20,14 @@ public class ProjectBuilder extends AppCompatActivity implements ProjectBuilderA
     private Toolbar mToolbar;
     private Context thisContext;
 
+    // Required for camera operations in order to save the image file on resume.
+    String mCurrentPhotoPath;
+    private Uri mCapturedImageURI;
+    int buttonId;
+
+    // Activity result key for camera
+    static final int REQUEST_IMAGE_CAPTURE = 1;
+
     private RecyclerView mRecyclerView;
     private RecyclerView.LayoutManager mLayoutManager;
 
@@ -36,7 +44,7 @@ public class ProjectBuilder extends AppCompatActivity implements ProjectBuilderA
 
         //Set view and populate title for the toolbar
         setContentView(R.layout.activity_project_builder);
-        mToolbar = (Toolbar) findViewById(R.id.toolbar_project_builder);
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
 
         if(mToolbar != null) {
             setSupportActionBar(mToolbar);
@@ -56,12 +64,10 @@ public class ProjectBuilder extends AppCompatActivity implements ProjectBuilderA
         myProjectBuilderAdapter.setProjectBuilderClickListener(this);
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_project_builder, menu);
-
         return true;
     }
 
@@ -81,7 +87,6 @@ public class ProjectBuilder extends AppCompatActivity implements ProjectBuilderA
                 // If we got here, the user's action was not recognized.
                 // Invoke the superclass to handle it.
                 return super.onOptionsItemSelected(item);
-
         }
     }
 
@@ -104,27 +109,21 @@ public class ProjectBuilder extends AppCompatActivity implements ProjectBuilderA
 
     @Override
     public void onListItemClicked(View view, int position) {
+        Log.d(TAG, "I'm here in ProjectBuilder's onListItemClicked");
 
-       //Test newFragment = new Test();
-        ImageSetBuilder newFragment = new ImageSetBuilder();
-
-        FragmentManager fragmentManager = getFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-
-        fragmentTransaction.add(R.id.activity_project_builder, newFragment,"ImageSetBuilderFragment");
-        fragmentTransaction.commit();
-        Log.d(TAG, "I'm here in ProjectBuilder's onListItemClicked - after commit()");
-
+        if(position == 1) {
+            Intent intent = new Intent(ProjectBuilder.this, ImageCollector.class);
+            startActivity(intent);
+        }
     }
 
     @Override
     public void onSaveInstanceState (Bundle savedInstanceState){
         // Always call the superclass so it can save the view hierarchy state
         super.onSaveInstanceState(savedInstanceState);
-
         Log.d(TAG, "I'm here in ProjectBuilder's onSaveInstanceState");
-        //getSupportFragmentManager().putFragment(savedInstanceState, "ImageSetBuilder", newFragment);
     }
+
 }
 
 
