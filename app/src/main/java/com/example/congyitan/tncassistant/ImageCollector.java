@@ -25,15 +25,8 @@ import java.util.Date;
 
 public class ImageCollector extends AppCompatActivity {
 
-    Toolbar mToolbar;
-
     //for Log.d ; debugging
     private static final String TAG = "ImageCollector";
-
-    // Storage for camera image components
-    private final static String CAPTURED_PHOTO_PATH_KEY = "mCurrentPhotoPath";
-    private final static String CAPTURED_PHOTO_URI_KEY = "mCapturedImageURI";
-    private final static String BUTTON_ID = "buttonId";
 
     // Required for camera operations in order to save the image file on resume.
     String mCurrentPhotoPath = null;
@@ -54,7 +47,7 @@ public class ImageCollector extends AppCompatActivity {
 
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar mToolbar = (Toolbar) findViewById(R.id.toolbar);
 
         if (mToolbar == null)
             Log.d(TAG, "mToolbar in ImageCollector's OnCreateView returned null");
@@ -169,9 +162,7 @@ public class ImageCollector extends AppCompatActivity {
         }
     }
 
-    /**
-     * Create a File for saving an image or video
-     */
+     //Create a File for saving an image or video
     private File getOutputMediaFile() throws IOException {
         // To be safe, you should check that the SDCard is mounted
         // using Environment.getExternalStorageState() before doing this.
@@ -203,9 +194,7 @@ public class ImageCollector extends AppCompatActivity {
         return image;
     }
 
-    /**
-     * Create a file Uri for saving an image or video
-     */
+     //Create a file Uri for saving an image or video
     private Uri getOutputMediaFileUri() {
 
         Uri mUri = null;
@@ -218,12 +207,7 @@ public class ImageCollector extends AppCompatActivity {
         return mUri;
     }
 
-    /**
-     * Add the picture to the photo gallery.
-     * Must be called on all camera images or they will
-     * disappear once taken.
-     */
-
+     //Add the picture to the photo gallery. Must be called on all camera images or they will disappear
     protected void addPhotoToGallery() {
         Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
         File f = new File(mCurrentPhotoPath);
@@ -232,12 +216,7 @@ public class ImageCollector extends AppCompatActivity {
         sendBroadcast(mediaScanIntent);
     }
 
-    /**
-     * Scale the photo down and fit it to our image views.
-     * <p/>
-     * "Drastically increases performance" to set images using this technique.
-     * Read more:http://developer.android.com/training/camera/photobasics.html
-     */
+     //Scale the photo down and fit it to our image views. Drastically increases performance
     private void setFullImageFromFilePath(String imagePath, ImageButton imageButton) {
 
         // Get the dimensions of the View

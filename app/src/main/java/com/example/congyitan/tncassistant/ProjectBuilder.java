@@ -17,9 +17,6 @@ import java.util.List;
 
 public class ProjectBuilder extends AppCompatActivity implements ProjectBuilderAdapter.ProjectBuilderClickListener {
 
-    private Toolbar mToolbar;
-    private Context thisContext;
-
     // Required for camera operations in order to save the image file on resume.
     String mCurrentPhotoPath;
     private Uri mCapturedImageURI;
@@ -40,11 +37,13 @@ public class ProjectBuilder extends AppCompatActivity implements ProjectBuilderA
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        thisContext = ProjectBuilder.this;
+        Context thisContext = ProjectBuilder.this;
 
-        //Set view and populate title for the toolbar
+        //Set view
         setContentView(R.layout.activity_project_builder);
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+
+        //Set toolbar
+        Toolbar mToolbar = (Toolbar) findViewById(R.id.toolbar);
 
         if(mToolbar != null) {
             setSupportActionBar(mToolbar);
@@ -111,6 +110,10 @@ public class ProjectBuilder extends AppCompatActivity implements ProjectBuilderA
     public void onListItemClicked(View view, int position) {
         Log.d(TAG, "I'm here in ProjectBuilder's onListItemClicked");
 
+        if(position == 0) {
+            Intent intent = new Intent(ProjectBuilder.this, ProjectInfo.class);
+            startActivity(intent);
+        }
         if(position == 1) {
             Intent intent = new Intent(ProjectBuilder.this, ImageCollector.class);
             startActivity(intent);

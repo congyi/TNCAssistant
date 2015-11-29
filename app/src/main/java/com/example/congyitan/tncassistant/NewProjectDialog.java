@@ -6,7 +6,6 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 
@@ -20,7 +19,7 @@ public class NewProjectDialog extends DialogFragment{
      * implement this interface in order to receive event callbacks.
      * Each method passes the DialogFragment in case the host needs to query it. */
     public interface NewProjectDialogListener {
-        void onDialogOK(String projectTitle);
+        void onDialogOK(Bundle myData);
         void onDialogCancel();
     }
 
@@ -45,6 +44,9 @@ public class NewProjectDialog extends DialogFragment{
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
+        //Bundle to save data
+        final Bundle myData = new Bundle();
+
         // Use the Builder class for convenient dialog construction
         AlertDialog.Builder newProjectDialog = new AlertDialog.Builder(getActivity());
 
@@ -67,12 +69,11 @@ public class NewProjectDialog extends DialogFragment{
                 EditText streetInput = (EditText) view.findViewById(R.id.streetname);
                 EditText postalcodeInput  = (EditText) view.findViewById(R.id.postalcode);
 
-                String projectTitle = "Blk " + blkInput.getText().toString() +" "
-                                             + streetInput.getText().toString() +" S"
-                                             + postalcodeInput.getText().toString();
+                myData.putString("blkno", blkInput.getText().toString());
+                myData.putString("street", streetInput.getText().toString());
+                myData.putInt("postalcode",Integer.parseInt(postalcodeInput.getText().toString()));
 
-                Log.d(TAG, "projectTitle in NewProjectDialog is " + projectTitle);
-                mListener.onDialogOK(projectTitle);
+                mListener.onDialogOK(myData);
             }
         });
 
@@ -86,4 +87,5 @@ public class NewProjectDialog extends DialogFragment{
         // Create the AlertDialog object and return it
         return newProjectDialog.create();
     }
+
 }
