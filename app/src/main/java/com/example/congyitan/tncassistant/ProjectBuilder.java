@@ -39,6 +39,7 @@ public class ProjectBuilder extends AppCompatActivity implements ProjectBuilderA
 
         Context thisContext = ProjectBuilder.this;
 
+
         //Set view
         setContentView(R.layout.activity_project_builder);
 
@@ -108,14 +109,19 @@ public class ProjectBuilder extends AppCompatActivity implements ProjectBuilderA
 
     @Override
     public void onListItemClicked(View view, int position) {
+
         Log.d(TAG, "I'm here in ProjectBuilder's onListItemClicked");
+
+        Bundle myData = getIntent().getExtras();
 
         if(position == 0) {
             Intent intent = new Intent(ProjectBuilder.this, ProjectInfo.class);
+            intent.putExtras(myData);
             startActivity(intent);
         }
         if(position == 1) {
             Intent intent = new Intent(ProjectBuilder.this, ImageCollector.class);
+            intent.putExtras(myData);
             startActivity(intent);
         }
     }

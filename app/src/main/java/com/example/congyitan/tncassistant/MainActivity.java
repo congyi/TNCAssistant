@@ -11,6 +11,8 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity  implements NewProjectDialog.NewProjectDialogListener {
 
@@ -37,6 +39,7 @@ public class MainActivity extends AppCompatActivity  implements NewProjectDialog
     public void onDialogOK(Bundle myData) {
         createProjectFile(myData);
         Intent intent = new Intent(MainActivity.this, ProjectBuilder.class );
+        intent.putExtras(myData);
         startActivity(intent);
     }
 
@@ -52,19 +55,34 @@ public class MainActivity extends AppCompatActivity  implements NewProjectDialog
 
     private boolean createProjectFile(Bundle newProjectData){
 
+        String blkno = newProjectData.getString("blkno");
+        String street = newProjectData.getString("street");
         String postalcode = String.valueOf(newProjectData.getInt("postalcode"));
-        File newProjectFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS),"TNCAssistant/" + postalcode);
+
+        File newProjectDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS),"TNCAssistant/" + postalcode);
 
         // Create the storage directory if it does not exist
-        if (newProjectFile.exists() == false) {
-            if (newProjectFile.mkdirs( )== false) {
+        if (!newProjectDir.exists()) {
+            if (!newProjectDir.mkdirs()) {
                 Log.d(TAG, "Failed to create directory");
                 return false;
             }
         }
+        //debugging test to see if directory was created
+        Log.d(TAG, "Directory is:" + newProjectDir.getAbsolutePath());
 
-        Log.d(TAG, "Directory is:" + newProjectFile.getAbsolutePath());
+        File newProjectFile = new File (newProjectDir, "info.txt");
+
+        try {
+            FileWriter newFileWriter = new FileWriter(newProjectFile);
+            newFileWriter.write(postalcode + "\n" + street + "\n" + blkno );
+            newFileWriter.flush();
+            newFileWriter.close();
+        } catch (IOException ex) {
+                // Error occurred while creating the File
+                Log.d(TAG, "Error creating/writing file");
+            }
+
         return true;
     }
-
 }

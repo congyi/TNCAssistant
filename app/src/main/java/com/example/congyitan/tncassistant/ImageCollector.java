@@ -71,7 +71,7 @@ public class ImageCollector extends AppCompatActivity {
         Log.d(TAG, "I'm here in ImageCollector's onActivityResult");
 
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
-            addPhotoToGallery();
+            addPhotoToProjectFolder();
             Log.d(TAG, "mCurrentPhotoPath in OnActivityResult is " + mCurrentPhotoPath);
             ImageButton mThumbnailImageButton = (ImageButton) findViewById(buttonId);
             setFullImageFromFilePath(mCurrentPhotoPath, mThumbnailImageButton); //Show the thumb-sized image
@@ -208,12 +208,29 @@ public class ImageCollector extends AppCompatActivity {
     }
 
      //Add the picture to the photo gallery. Must be called on all camera images or they will disappear
-    protected void addPhotoToGallery() {
-        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+    protected void addPhotoToProjectFolder() {
+
+        Bundle myData = getIntent().getExtras();
+
+        String postalcode = String.valueOf(myData.getInt("postalcode"));
+        File photoDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),"TNCAssistant/" + postalcode);
+
+        // Create the storage directory if it does not exist
+        if (!photoDir.exists()) {
+            if (!photoDir.mkdirs()) {
+                Log.d(TAG, "Failed to create directory");
+            }
+        }
+        //debugging test to see if directory was created
+        Log.d(TAG, "Directory is:" + photoDir.getAbsolutePath());
+
+        //TODO: implement save picture to file//
+        /*Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
         File f = new File(mCurrentPhotoPath);
         Uri contentUri = Uri.fromFile(f);
         mediaScanIntent.setData(contentUri);
         sendBroadcast(mediaScanIntent);
+        */
     }
 
      //Scale the photo down and fit it to our image views. Drastically increases performance
