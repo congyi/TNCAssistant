@@ -19,6 +19,7 @@ import android.view.View;
 import android.widget.ImageButton;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -62,6 +63,7 @@ public class ImageCollector extends AppCompatActivity {
     public void takePicture(View view) {
 
         buttonId = view.getId();
+        Log.d(TAG, "I'm here in takePicture and buttonId =" + String.valueOf(buttonId));
         dispatchTakePictureIntent();
     }
 
@@ -71,11 +73,29 @@ public class ImageCollector extends AppCompatActivity {
         Log.d(TAG, "I'm here in ImageCollector's onActivityResult");
 
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
-            addPhotoToProjectFolder();
+
             Log.d(TAG, "mCurrentPhotoPath in OnActivityResult is " + mCurrentPhotoPath);
+
+            //Identify which picture was taken
             ImageButton mThumbnailImageButton = (ImageButton) findViewById(buttonId);
-            setFullImageFromFilePath(mCurrentPhotoPath, mThumbnailImageButton); //Show the thumb-sized image
+
+            // Set Bitmap options
+            BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+            bmOptions.inJustDecodeBounds = true;
+            BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
+            int photoW = bmOptions.outWidth;
+            int photoH = bmOptions.outHeight;
+
+            //Get the Bitmap image from camera
+            Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
+
+            //Add to project folder
+            addPhotoToProjectFolder(bitmap);
+
+            //Show the thumb-sized image
+            setFullImageFromFilePath(bitmap, mThumbnailImageButton);
         }
+
         else
             Log.d(TAG, "Image Capture Failed or Cancelled");
     }
@@ -139,7 +159,7 @@ public class ImageCollector extends AppCompatActivity {
     }
 
     //starts image capture process
-    private void dispatchTakePictureIntent() {
+    private void dispatchTakePictureIntent(){
 
         //create an intent to start the native cameraApp
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -208,7 +228,7 @@ public class ImageCollector extends AppCompatActivity {
     }
 
      //Add the picture to the photo gallery. Must be called on all camera images or they will disappear
-    protected void addPhotoToProjectFolder() {
+    protected void addPhotoToProjectFolder(Bitmap bitmap) {
 
         Bundle myData = getIntent().getExtras();
 
@@ -224,7 +244,18 @@ public class ImageCollector extends AppCompatActivity {
         //debugging test to see if directory was created
         Log.d(TAG, "Directory is:" + photoDir.getAbsolutePath());
 
-        //TODO: implement save picture to file//
+        File photoFile = new File(photoDir, String.valueOf(buttonId) + ".jpg");
+        Log.d(TAG, "File is:" + photoFile.getAbsolutePath());
+        try {
+            FileOutputStream output = new FileOutputStream(photoFile);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 90, output);
+            output.flush();
+            output.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         /*Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
         File f = new File(mCurrentPhotoPath);
         Uri contentUri = Uri.fromFile(f);
@@ -234,16 +265,16 @@ public class ImageCollector extends AppCompatActivity {
     }
 
      //Scale the photo down and fit it to our image views. Drastically increases performance
-    private void setFullImageFromFilePath(String imagePath, ImageButton imageButton) {
+    private void setFullImageFromFilePath(Bitmap bitmap, ImageButton imageButton) {
 
-        // Get the dimensions of the View
+        // Get the dimensions of the ImageButton
         int targetW = imageButton.getWidth();
         int targetH = imageButton.getHeight();
 
         // Get the dimensions of the bitmap
         BitmapFactory.Options bmOptions = new BitmapFactory.Options();
         bmOptions.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(imagePath, bmOptions);
+        BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
         int photoW = bmOptions.outWidth;
         int photoH = bmOptions.outHeight;
 
@@ -255,7 +286,7 @@ public class ImageCollector extends AppCompatActivity {
         bmOptions.inSampleSize = scaleFactor;
         //bmOptions.inPurgeable = true;
 
-        Bitmap bitmap = BitmapFactory.decodeFile(imagePath, bmOptions);
+        bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
         imageButton.setImageBitmap(bitmap);
     }
 }
