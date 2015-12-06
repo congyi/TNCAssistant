@@ -19,10 +19,6 @@ import android.view.View;
 import android.widget.ImageButton;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 public class ImageCollector extends AppCompatActivity {
 
@@ -33,6 +29,7 @@ public class ImageCollector extends AppCompatActivity {
     String mCurrentPhotoPath = null;
     private Uri mCapturedImageURI = null;
     int buttonId = -1;
+    String buttonTag = null;
 
     // Activity result key for camera
     static final int REQUEST_IMAGE_CAPTURE = 1;
@@ -63,8 +60,46 @@ public class ImageCollector extends AppCompatActivity {
     public void takePicture(View view) {
 
         buttonId = view.getId();
+        buttonTag = view.getTag().toString();
+
         Log.d(TAG, "I'm here in takePicture and buttonId =" + String.valueOf(buttonId));
         dispatchTakePictureIntent();
+    }
+
+    //starts image capture process
+    private void dispatchTakePictureIntent() {
+
+        Bundle myData = getIntent().getExtras();
+        String postalcode = String.valueOf(myData.getInt("postalcode"));
+
+        Log.d(TAG, "I'm here in ImageCollector's dispatchTakePictureIntent");
+
+        //create an intent to start the native cameraApp
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+        File photoDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),"TNCAssistant/" + postalcode);
+
+        // Create the storage directory if it does not exist
+        if (!photoDir.exists()) {
+            if (!photoDir.mkdirs()) {
+                Log.d(TAG, "Failed to create directory");
+            }
+        }
+
+        File photoFile = new File(photoDir, buttonTag + ".jpg");
+        mCurrentPhotoPath = photoFile.getAbsolutePath();
+        Log.d(TAG, "File is:" + photoFile.getAbsolutePath());
+
+        //creates the Uri to be input as part of Camera Activity Intent
+        mCapturedImageURI = Uri.fromFile(photoFile);
+        Log.d(TAG, "mCapturedImageURI is " + mCapturedImageURI);
+
+        // set the image file name
+        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, mCapturedImageURI);
+
+        if (photoFile != null) {
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+        }
     }
 
     @Override
@@ -74,30 +109,45 @@ public class ImageCollector extends AppCompatActivity {
 
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
 
-            Log.d(TAG, "mCurrentPhotoPath in OnActivityResult is " + mCurrentPhotoPath);
-
             //Identify which picture was taken
             ImageButton mThumbnailImageButton = (ImageButton) findViewById(buttonId);
 
-            // Set Bitmap options
-            BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-            bmOptions.inJustDecodeBounds = true;
-            BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
-            int photoW = bmOptions.outWidth;
-            int photoH = bmOptions.outHeight;
-
-            //Get the Bitmap image from camera
-            Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
-
-            //Add to project folder
-            addPhotoToProjectFolder(bitmap);
-
             //Show the thumb-sized image
-            setFullImageFromFilePath(bitmap, mThumbnailImageButton);
+            setImageFromFilePath(mThumbnailImageButton);
+
         }
 
         else
             Log.d(TAG, "Image Capture Failed or Cancelled");
+    }
+
+    //Scale the photo down and fit it to our image views. Drastically increases performance
+    private void setImageFromFilePath(ImageButton imageButton) {
+
+        Log.d(TAG, "I'm here in ImageCollector's setFullImageFromFilePath");
+
+        // Get the dimensions of the ImageButton
+        int targetW = imageButton.getWidth();
+        int targetH = imageButton.getHeight();
+
+        // Set Bitmap options
+        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+        bmOptions.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
+        int photoW = bmOptions.outWidth;
+        int photoH = bmOptions.outHeight;
+
+        // Determine how much to scale down the image
+        int scaleFactor = Math.min(photoW / targetW, photoH / targetH);
+
+        // Decode the image file into a Bitmap sized to fill the View
+        bmOptions.inJustDecodeBounds = false;
+        bmOptions.inSampleSize = scaleFactor;
+        //bmOptions.inPurgeable = true;
+
+        //Get the Bitmap image from camera
+        Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
+        imageButton.setImageBitmap(bitmap);
     }
 
     @Override
@@ -156,137 +206,5 @@ public class ImageCollector extends AppCompatActivity {
             if (savedInstanceState.getInt("buttonId") != -1)
                 buttonId = savedInstanceState.getInt("buttonId");
         }
-    }
-
-    //starts image capture process
-    private void dispatchTakePictureIntent(){
-
-        //create an intent to start the native cameraApp
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        // create a file to save the image
-        File photoFile = null;
-        try {
-            photoFile = getOutputMediaFile();
-        } catch (IOException ex) {
-            // Error occurred while creating the File
-            Log.d(TAG, "Error creating file");
-        }
-        mCapturedImageURI = getOutputMediaFileUri();
-        Log.d(TAG, "mCapturedImageURI is " + mCapturedImageURI);
-
-        // set the image file name
-        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, mCapturedImageURI);
-
-        if (photoFile != null) {
-            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
-        }
-    }
-
-     //Create a File for saving an image or video
-    private File getOutputMediaFile() throws IOException {
-        // To be safe, you should check that the SDCard is mounted
-        // using Environment.getExternalStorageState() before doing this.
-        File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES), "TnCAssistant");
-        // This location works best if you want the created images to be shared
-        // between applications and persist after your app has been uninstalled.
-
-        // Create the storage directory if it does not exist
-        if (!mediaStorageDir.exists()) {
-            if (!mediaStorageDir.mkdirs()) {
-                Log.d(TAG, "Failed to create directory");
-                return null;
-            }
-        }
-        // Create an image file name
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "JPEG_" + timeStamp + "_";
-
-        File image = File.createTempFile(
-                imageFileName,  /* prefix */
-                ".jpg",         /* suffix */
-                mediaStorageDir     /* directory */
-        );
-
-        // Save a file: path for use with ACTION_VIEW intents
-        mCurrentPhotoPath = image.getAbsolutePath();
-        Log.d(TAG, "mCurrentPhotoPath is " + mCurrentPhotoPath);
-        return image;
-    }
-
-     //Create a file Uri for saving an image or video
-    private Uri getOutputMediaFileUri() {
-
-        Uri mUri = null;
-
-        try {
-            mUri = Uri.fromFile(getOutputMediaFile());
-        } catch (IOException ex) {
-            Log.d(TAG, "Error creating mUri");
-        }
-        return mUri;
-    }
-
-     //Add the picture to the photo gallery. Must be called on all camera images or they will disappear
-    protected void addPhotoToProjectFolder(Bitmap bitmap) {
-
-        Bundle myData = getIntent().getExtras();
-
-        String postalcode = String.valueOf(myData.getInt("postalcode"));
-        File photoDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),"TNCAssistant/" + postalcode);
-
-        // Create the storage directory if it does not exist
-        if (!photoDir.exists()) {
-            if (!photoDir.mkdirs()) {
-                Log.d(TAG, "Failed to create directory");
-            }
-        }
-        //debugging test to see if directory was created
-        Log.d(TAG, "Directory is:" + photoDir.getAbsolutePath());
-
-        File photoFile = new File(photoDir, String.valueOf(buttonId) + ".jpg");
-        Log.d(TAG, "File is:" + photoFile.getAbsolutePath());
-        try {
-            FileOutputStream output = new FileOutputStream(photoFile);
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 90, output);
-            output.flush();
-            output.close();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        /*Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-        File f = new File(mCurrentPhotoPath);
-        Uri contentUri = Uri.fromFile(f);
-        mediaScanIntent.setData(contentUri);
-        sendBroadcast(mediaScanIntent);
-        */
-    }
-
-     //Scale the photo down and fit it to our image views. Drastically increases performance
-    private void setFullImageFromFilePath(Bitmap bitmap, ImageButton imageButton) {
-
-        // Get the dimensions of the ImageButton
-        int targetW = imageButton.getWidth();
-        int targetH = imageButton.getHeight();
-
-        // Get the dimensions of the bitmap
-        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-        bmOptions.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
-        int photoW = bmOptions.outWidth;
-        int photoH = bmOptions.outHeight;
-
-        // Determine how much to scale down the image
-        int scaleFactor = Math.min(photoW / targetW, photoH / targetH);
-
-        // Decode the image file into a Bitmap sized to fill the View
-        bmOptions.inJustDecodeBounds = false;
-        bmOptions.inSampleSize = scaleFactor;
-        //bmOptions.inPurgeable = true;
-
-        bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
-        imageButton.setImageBitmap(bitmap);
     }
 }
