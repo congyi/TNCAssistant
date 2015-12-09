@@ -10,13 +10,14 @@
         android:id="@+id/imageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="39dp"
+        android:layout_marginTop="40dp"
         android:adjustViewBounds="true"
         android:maxHeight="250dp"
         android:maxWidth="250dp"
         android:src="@drawable/seris_logo"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="10dp" />
 
     <Button
         android:id="@+id/new_project"
@@ -26,7 +27,7 @@
         android:text="New Project"
         android:layout_below="@+id/imageView"
         android:layout_centerHorizontal="true"
-        android:layout_margin="15dp" />
+        android:layout_margin="7dp" />
 
     <Button
         android:id="@+id/browse_projects"
@@ -36,7 +37,7 @@
         android:text="Browse Projects"
         android:layout_below="@+id/new_project"
         android:layout_centerHorizontal="true"
-        android:layout_margin="15dp" />
+        android:layout_margin="7dp" />
 
     <Button
         android:id="@+id/auth_button"
@@ -46,6 +47,6 @@
         android:text="Connect to Dropbox"
         android:layout_below="@+id/browse_projects"
         android:layout_centerHorizontal="true"
-        android:layout_margin="15dp" />
+        android:layout_margin="7dp" />
 
 </RelativeLayout>

@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent" android:fitsSystemWindows="true"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical"
     tools:context="com.example.congyitan.tncassistant.ProjectInfo">
 
     <android.support.v7.widget.Toolbar
@@ -15,4 +18,149 @@
         android:theme="@style/ThemeOverlay.AppCompat.Dark"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
 
-</android.support.design.widget.CoordinatorLayout>
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/scrollView"
+        android:layout_below="@+id/toolbar"
+        android:layout_alignParentStart="true">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/projectphase"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="Project Phase"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="10dp" />
+
+            <RadioGroup
+                android:id="@+id/phase_group"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/projectphase"
+                android:orientation="horizontal"
+                android:layout_marginLeft="10dp"
+                android:layout_marginBottom="5dp"
+                android:layout_marginTop="5dp">
+
+                <RadioButton
+                    android:id="@+id/phase5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Ph 5 (5MW)"
+                    android:checked="false"
+                    android:onClick="onPhaseRadioButtonClicked"/>
+
+                <RadioButton
+                    android:id="@+id/phase6"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Ph 6 (20MW)"
+                    android:checked="false"
+                    android:onClick="onPhaseRadioButtonClicked"
+                    android:layout_marginLeft="10dp" />
+
+                <RadioButton
+                    android:id="@+id/sn1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="SolarNova 1"
+                    android:checked="false"
+                    android:onClick="onPhaseRadioButtonClicked"
+                    android:layout_marginLeft="10dp" />
+
+            </RadioGroup>
+
+            <View
+                android:id="@+id/divider1"
+                android:layout_below="@id/phase_group"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="?android:attr/listDivider"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="Town Council/Area"
+                android:id="@+id/towncouncilarea"
+                android:layout_below="@+id/divider1"
+                android:layout_alignParentStart="true"
+                android:layout_margin="10dp" />
+
+            <Spinner
+                android:id="@+id/tc_spinner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/towncouncilarea"
+                android:spinnerMode="dialog"
+                android:layout_margin="5dp" />
+
+            <View
+                android:id="@+id/divider2"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_margin="5dp"
+                android:layout_below="@+id/tc_spinner"
+                android:background="?android:attr/listDivider"/>
+
+            <TextView
+                android:id="@+id/blkno"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="Blk No"
+                android:layout_below="@id/divider2"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="10dp" />
+
+            <EditText
+                android:id="@+id/blknoET"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:ems="6"
+                android:layout_below="@+id/blkno"
+                android:layout_alignStart="@+id/projectphase" />
+
+            <TextView
+                android:id="@+id/postalcode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="Postal Code"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:paddingBottom="10dp"
+                android:layout_below="@+id/divider2"
+                android:layout_toEndOf="@+id/towncouncilarea"
+                android:paddingTop="10dp" />
+
+            <EditText
+                android:id="@+id/postalcodeET"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:ems="6"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:paddingBottom="10dp"
+                android:layout_alignParentBottom="true"
+                android:layout_alignStart="@+id/postalcode" />
+
+            <View
+                android:id="@+id/divider3"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="?android:attr/listDivider"
+                android:layout_below="@id/blknoET"/>
+
+        </RelativeLayout>
+    </ScrollView>
+</LinearLayout>

@@ -1,8 +1,10 @@
 package com.example.congyitan.tncassistant;
 
+
 import android.app.DialogFragment;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
@@ -18,9 +20,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import com.dropbox.client2.DropboxAPI;
-import com.dropbox.client2.android.AndroidAuthSession;
-import com.dropbox.client2.android.AuthActivity;
+
 import com.dropbox.client2.exception.DropboxException;
 import com.dropbox.client2.session.AccessTokenPair;
 import com.dropbox.client2.session.AppKeyPair;
@@ -43,12 +43,11 @@ public class MainActivity extends AppCompatActivity  implements NewProjectDialog
 
     private boolean mLoggedIn;
 
-    private Button newProject;
-    private Button browseProjects;
     private Button dropBox;
 
     //for Log.d ; debugging
     private static final String TAG = "MainActivity";
+    private String mErrorMsg;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,8 +64,6 @@ public class MainActivity extends AppCompatActivity  implements NewProjectDialog
 
         //initialize the on-screen buttons
         //onclick listeners are attached to activity_main.xml
-        newProject = (Button) findViewById(R.id.new_project);
-        browseProjects = (Button) findViewById(R.id.browse_projects);
         dropBox = (Button)findViewById(R.id.auth_button);
     }
 
@@ -100,7 +97,11 @@ public class MainActivity extends AppCompatActivity  implements NewProjectDialog
             logOut();
         } else {
             // Start the remote authentication
-            mApi.getSession().startOAuth2Authentication(MainActivity.this);
+            if (USE_OAUTH1) {
+                mApi.getSession().startAuthentication(MainActivity.this);
+            } else {
+                mApi.getSession().startOAuth2Authentication(MainActivity.this);
+            }
         }
     }
 
@@ -117,15 +118,11 @@ public class MainActivity extends AppCompatActivity  implements NewProjectDialog
                 // Mandatory call to complete the auth
                 session.finishAuthentication();
 
-                //show user login name
-                DropboxAPI.Account mAccount = new DropboxAPI(session).accountInfo();
-                showToast(mAccount.email);
-
                 // Store it locally in our app for later use
                 storeAuth(session);
                 setLoggedIn(true);
 
-            } catch (IllegalStateException|DropboxException e) {
+            } catch (IllegalStateException e) {
                 showToast("Couldn't authenticate with Dropbox:" + e.getLocalizedMessage());
                 Log.d(TAG, "Error authenticating", e);
             }
@@ -210,8 +207,7 @@ public class MainActivity extends AppCompatActivity  implements NewProjectDialog
             session.setOAuth2AccessToken(secret);
         } else {
             // Still support using old OAuth 1 tokens.
-            showToast("In loadAuth oauth1 session. Something is wrong");
-            //session.setAccessTokenPair(new AccessTokenPair(key, secret));
+            session.setAccessTokenPair(new AccessTokenPair(key, secret));
         }
     }
 
@@ -252,13 +248,32 @@ public class MainActivity extends AppCompatActivity  implements NewProjectDialog
     private void setLoggedIn(boolean loggedIn) {
         mLoggedIn = loggedIn;
         if (loggedIn) {
-
+            new DisplayLoggedinUser().execute();
             dropBox.setText("Unlink from Dropbox");
-            //mDisplay.setVisibility(View.VISIBLE);
         } else {
             dropBox.setText("Link to Dropbox");
-            //mDisplay.setVisibility(View.GONE);
-           // mImage.setImageDrawable(null);
+        }
+    }
+
+    private class DisplayLoggedinUser extends AsyncTask<Void, Void, String>{
+
+        @Override
+        protected String doInBackground(Void... params) {
+            String s = new String();
+
+            try {
+                s = mApi.accountInfo().email.toString();
+
+            }catch (DropboxException e) {
+                e.printStackTrace();
+            }
+            return s;
+        }
+
+        /** The system calls this to perform work in the UI thread and delivers
+         * the result from doInBackground() */
+        protected void onPostExecute(String s) {
+            showToast("Logged in as: " + s);
         }
     }
 }

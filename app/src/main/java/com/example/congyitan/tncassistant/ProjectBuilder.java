@@ -17,14 +17,6 @@ import java.util.List;
 
 public class ProjectBuilder extends AppCompatActivity implements ProjectBuilderAdapter.ProjectBuilderClickListener {
 
-    // Required for camera operations in order to save the image file on resume.
-    String mCurrentPhotoPath;
-    private Uri mCapturedImageURI;
-    int buttonId;
-
-    // Activity result key for camera
-    static final int REQUEST_IMAGE_CAPTURE = 1;
-
     private RecyclerView mRecyclerView;
     private RecyclerView.LayoutManager mLayoutManager;
 
@@ -38,7 +30,6 @@ public class ProjectBuilder extends AppCompatActivity implements ProjectBuilderA
         super.onCreate(savedInstanceState);
 
         Context thisContext = ProjectBuilder.this;
-
 
         //Set view
         setContentView(R.layout.activity_project_builder);

@@ -27,4 +27,23 @@
     //Project Info
     <string name="project_info">Project Info</string>
 
+    <string-array name="phase5_array">
+        <item>Hougang</item>
+        <item>Anchorvale</item>
+        <item>Ang Mo Kio</item>
+        <item>Serangoon</item>
+    </string-array>
+
+    <string-array name="phase6_array">
+        <item>Tampines</item>
+        <item>Sembawang</item>
+        <item>Jurong</item>
+        <item>Marine Parade</item>
+        <item>Comm-Indst</item>
+    </string-array>
+
+    <string-array name="sn1_array">
+        <item>Default</item>
+    </string-array>
+
 </resources>
