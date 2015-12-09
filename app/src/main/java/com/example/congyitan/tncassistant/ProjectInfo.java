@@ -17,12 +17,10 @@ public class ProjectInfo extends AppCompatActivity {
 
         setContentView(R.layout.activity_project_info);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
         //Set toolbar
         Toolbar mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(mToolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         if(mToolbar != null) {
             setSupportActionBar(mToolbar);
