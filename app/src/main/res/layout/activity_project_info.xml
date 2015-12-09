@@ -99,7 +99,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/towncouncilarea"
                 android:spinnerMode="dialog"
-                android:layout_margin="5dp" />
+                android:layout_margin="10dp" />
 
             <View
                 android:id="@+id/divider2"
@@ -117,17 +117,15 @@
                 android:text="Blk No"
                 android:layout_below="@id/divider2"
                 android:layout_marginLeft="10dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginRight="10dp" />
+                android:layout_marginTop="10dp" />
 
             <EditText
                 android:id="@+id/blknoET"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:inputType="number"
                 android:ems="6"
                 android:layout_below="@+id/blkno"
-                android:layout_alignStart="@+id/projectphase" />
+                android:layout_alignStart="@+id/blkno" />
 
             <TextView
                 android:id="@+id/postalcode"
@@ -135,12 +133,10 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:text="Postal Code"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
-                android:paddingBottom="10dp"
                 android:layout_below="@+id/divider2"
                 android:layout_toEndOf="@+id/towncouncilarea"
-                android:paddingTop="10dp" />
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="10dp" />
 
             <EditText
                 android:id="@+id/postalcodeET"
@@ -148,10 +144,7 @@
                 android:layout_height="wrap_content"
                 android:inputType="number"
                 android:ems="6"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
-                android:paddingBottom="10dp"
-                android:layout_alignParentBottom="true"
+                android:layout_above="@+id/divider3"
                 android:layout_alignStart="@+id/postalcode" />
 
             <View
@@ -160,6 +153,27 @@
                 android:layout_height="2dp"
                 android:background="?android:attr/listDivider"
                 android:layout_below="@id/blknoET"/>
+
+            <TextView
+                android:id="@+id/streetname"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="Street name"
+                android:layout_marginLeft="10dp"
+                android:layout_below="@+id/divider3"
+                android:layout_marginTop="10dp" />
+
+            <EditText
+                android:id="@+id/streetnameET"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/streetname"
+                android:layout_alignStart="@+id/streetname"
+                android:singleLine="true"
+                android:editable="false"
+                android:layout_marginRight="10dp"
+                android:layout_alignParentEnd="true" />
 
         </RelativeLayout>
     </ScrollView>
