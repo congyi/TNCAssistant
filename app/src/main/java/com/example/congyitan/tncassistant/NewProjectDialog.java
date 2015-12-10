@@ -65,12 +65,7 @@ public class NewProjectDialog extends DialogFragment{
         newProjectDialog.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
 
-                EditText blkInput = (EditText) view.findViewById(R.id.blkno);
-                EditText streetInput = (EditText) view.findViewById(R.id.streetname);
-                EditText postalcodeInput  = (EditText) view.findViewById(R.id.postalcode);
-
-                myData.putString("blkno", blkInput.getText().toString());
-                myData.putString("street", streetInput.getText().toString());
+                EditText postalcodeInput  = (EditText) view.findViewById(R.id.postalcodeET);
                 myData.putInt("postalcode",Integer.parseInt(postalcodeInput.getText().toString()));
 
                 mListener.onDialogOK(myData);

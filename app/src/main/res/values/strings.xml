@@ -10,16 +10,15 @@
     <string name="title_activity_image_collector">Image Collector</string>
     <string name="title_activity_project_info">Project Info</string>
 
-
     //Settings (not used)
     <string name="action_settings">Settings</string>
 
     //New Project Dialog
-    <string name="new_project_title">Name this project</string>
+    <string name="new_project_title">Project ID:</string>
 
     <string name="new_project_street_hint">E.g. Kanye West Street</string>
     <string name="new_project_block_hint">321</string>
-    <string name="new_project_postalcode_hint">654321</string>
+    <string name="new_project_postalcode_hint">117574</string>
 
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>

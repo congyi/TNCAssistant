@@ -150,8 +150,6 @@ public class MainActivity extends AppCompatActivity  implements NewProjectDialog
     private boolean createProjectFile(Bundle newProjectData) {
 
         //get the Bundle data from NewProjectDialog
-        String blkno = newProjectData.getString("blkno");
-        String street = newProjectData.getString("street");
         String postalcode = String.valueOf(newProjectData.getInt("postalcode"));
 
         //Create the required directory for file
@@ -173,7 +171,7 @@ public class MainActivity extends AppCompatActivity  implements NewProjectDialog
         //Write data into the txt file
         try {
             FileWriter newFileWriter = new FileWriter(newProjectFile);
-            newFileWriter.write(postalcode + "\n" + street + "\n" + blkno);
+            newFileWriter.write(postalcode);
             newFileWriter.flush();
             newFileWriter.close();
         } catch (IOException ex) {

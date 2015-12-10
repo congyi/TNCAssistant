@@ -37,22 +37,21 @@ public class ImageCollector extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_image_collector);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
         Log.d(TAG, "I'm here in ImageCollector's OnCreateView");
 
+        //inflate layout
+        setContentView(R.layout.activity_image_collector);
+
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 
+        //set up toolbar
         Toolbar mToolbar = (Toolbar) findViewById(R.id.toolbar);
 
-        if (mToolbar == null)
-            Log.d(TAG, "mToolbar in ImageCollector's OnCreateView returned null");
-        else
-        {
+        if (mToolbar != null){
+            setSupportActionBar(mToolbar);
             mToolbar.setNavigationIcon(R.drawable.ic_image);
-            mToolbar.setTitle("Acquire these pictures");
+            getSupportActionBar().setTitle("Acquire these pictures");
         }
     }
 
@@ -116,7 +115,6 @@ public class ImageCollector extends AppCompatActivity {
             setImageFromFilePath(mThumbnailImageButton);
 
         }
-
         else
             Log.d(TAG, "Image Capture Failed or Cancelled");
     }
@@ -143,7 +141,6 @@ public class ImageCollector extends AppCompatActivity {
         // Decode the image file into a Bitmap sized to fill the View
         bmOptions.inJustDecodeBounds = false;
         bmOptions.inSampleSize = scaleFactor;
-        //bmOptions.inPurgeable = true;
 
         //Get the Bitmap image from camera
         Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);

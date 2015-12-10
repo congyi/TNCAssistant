@@ -1,4 +1,5 @@
 package com.example.congyitan.tncassistant;
+import android.app.DialogFragment;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -12,6 +13,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,6 +24,9 @@ public class ProjectBuilder extends AppCompatActivity implements ProjectBuilderA
 
     private ProjectBuilderAdapter myProjectBuilderAdapter;
 
+    private File[] filestoUpload;
+
+    Bundle myData;
     //for Log.d ; debugging
     private static final String TAG = "ProjectBuilder";
 
@@ -29,9 +34,10 @@ public class ProjectBuilder extends AppCompatActivity implements ProjectBuilderA
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        myData = getIntent().getExtras();
         Context thisContext = ProjectBuilder.this;
 
-        //Set view
+        //inflate layout
         setContentView(R.layout.activity_project_builder);
 
         //Set toolbar
@@ -103,16 +109,16 @@ public class ProjectBuilder extends AppCompatActivity implements ProjectBuilderA
 
         Log.d(TAG, "I'm here in ProjectBuilder's onListItemClicked");
 
-        Bundle myData = getIntent().getExtras();
-
         if(position == 0) {
             Intent intent = new Intent(ProjectBuilder.this, ProjectInfo.class);
-            intent.putExtras(myData);
+            if(myData != null)
+                intent.putExtras(myData);
             startActivity(intent);
         }
         if(position == 1) {
             Intent intent = new Intent(ProjectBuilder.this, ImageCollector.class);
-            intent.putExtras(myData);
+            if(myData != null)
+                intent.putExtras(myData);
             startActivity(intent);
         }
     }
@@ -122,8 +128,21 @@ public class ProjectBuilder extends AppCompatActivity implements ProjectBuilderA
         // Always call the superclass so it can save the view hierarchy state
         super.onSaveInstanceState(savedInstanceState);
         Log.d(TAG, "I'm here in ProjectBuilder's onSaveInstanceState");
+
+        if (myData != null)
+            savedInstanceState.putBundle("myData", myData);
     }
 
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        Log.d(TAG, "I'm here in ImageCollector's onActivityCreated");
+
+        if (savedInstanceState != null){
+                myData = savedInstanceState.getBundle("myData");
+        }
+    }
 }
 
 
