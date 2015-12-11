@@ -74,10 +74,10 @@ public class MainActivity extends AppCompatActivity  implements NewProjectDialog
     }
 
     @Override
-    public void onDialogOK(Bundle myData) {
-        createProjectFile(myData);
+    public void onDialogOK(Bundle mData) {
+        createProjectFile(mData);
         Intent intent = new Intent(MainActivity.this, ProjectBuilder.class);
-        intent.putExtras(myData);
+        intent.putExtras(mData);
         startActivity(intent);
     }
 

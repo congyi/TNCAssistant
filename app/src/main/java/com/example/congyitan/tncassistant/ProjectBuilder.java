@@ -26,16 +26,24 @@ public class ProjectBuilder extends AppCompatActivity implements ProjectBuilderA
 
     private File[] filestoUpload;
 
-    Bundle myData;
+    Bundle mData;
+    int mPostalcode;
+
     //for Log.d ; debugging
     private static final String TAG = "ProjectBuilder";
+
+    static final int PROJECTBUILDER_REQUEST = 1; //the request code
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        myData = getIntent().getExtras();
+        Log.d(TAG, "I'm here in ProjectBuilder's onCreate");
+        
         Context thisContext = ProjectBuilder.this;
+
+        mData = getIntent().getExtras();
+        mPostalcode = mData.getInt("postalcode");
 
         //inflate layout
         setContentView(R.layout.activity_project_builder);
@@ -111,15 +119,27 @@ public class ProjectBuilder extends AppCompatActivity implements ProjectBuilderA
 
         if(position == 0) {
             Intent intent = new Intent(ProjectBuilder.this, ProjectInfo.class);
-            if(myData != null)
-                intent.putExtras(myData);
-            startActivity(intent);
+
+            mData.putInt("postalcode", mPostalcode);
+            intent.putExtras(mData);
+            startActivityForResult(intent, PROJECTBUILDER_REQUEST);
         }
+
         if(position == 1) {
             Intent intent = new Intent(ProjectBuilder.this, ImageCollector.class);
-            if(myData != null)
-                intent.putExtras(myData);
+            if(mData != null)
+                intent.putExtras(mData);
             startActivity(intent);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // Check which request we're responding to
+        if (requestCode == PROJECTBUILDER_REQUEST) {
+            // Make sure the request was successful
+            if (resultCode == RESULT_OK)
+                mPostalcode = data.getExtras().getInt("postalcode");
         }
     }
 
@@ -129,18 +149,18 @@ public class ProjectBuilder extends AppCompatActivity implements ProjectBuilderA
         super.onSaveInstanceState(savedInstanceState);
         Log.d(TAG, "I'm here in ProjectBuilder's onSaveInstanceState");
 
-        if (myData != null)
-            savedInstanceState.putBundle("myData", myData);
+        if (mData != null)
+            savedInstanceState.putBundle("myData", mData);
     }
 
     @Override
     public void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
 
-        Log.d(TAG, "I'm here in ImageCollector's onActivityCreated");
+        Log.d(TAG, "I'm here in ProjectBuilder's onRestoreInstanceState");
 
         if (savedInstanceState != null){
-                myData = savedInstanceState.getBundle("myData");
+                mData = savedInstanceState.getBundle("myData");
         }
     }
 }

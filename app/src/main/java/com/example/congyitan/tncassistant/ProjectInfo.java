@@ -1,6 +1,7 @@
 package com.example.congyitan.tncassistant;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
@@ -29,17 +30,23 @@ public class ProjectInfo extends AppCompatActivity {
     EditText postalcode;
     EditText streetname;
 
+    //Strings
     Integer mPostalcode;
     String mBlkno;
     String mStreetname;
 
+    Bundle mData;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        Log.d(TAG, "I'm here in ProjectInfo's onCreate");
+
         super.onCreate(savedInstanceState);
 
-        Bundle myData = getIntent().getExtras();
-        if (myData != null)
-            mPostalcode = myData.getInt("postalcode");
+        mData = getIntent().getExtras();
+        mPostalcode = mData.getInt("postalcode");
+        Log.d(TAG, "Postal code in Bundle mData is: " + String.valueOf(mPostalcode));
 
         //inflate layout
         setContentView(R.layout.activity_project_info);
@@ -56,7 +63,6 @@ public class ProjectInfo extends AppCompatActivity {
             setSupportActionBar(mToolbar);
             mToolbar.setNavigationIcon(R.drawable.ic_file);
             getSupportActionBar().setTitle(R.string.project_info);
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
         updateTextFields();
@@ -121,6 +127,7 @@ public class ProjectInfo extends AppCompatActivity {
         Log.d(TAG, "I'm here in ProjectInfo's onBackPressed");
 
         //get the text from the EditText boxes
+        mPostalcode = Integer.parseInt(postalcode.getText().toString());
         mBlkno = blkno.getText().toString();
         mStreetname = streetname.getText().toString();
 
@@ -150,10 +157,27 @@ public class ProjectInfo extends AppCompatActivity {
             // Error occurred while creating the File
             Log.d(TAG, "Error creating/writing file");
         }
+
+        //Put data to be passed back into a Bundle
+        mData.putInt("postalcode", mPostalcode);
+
+        if(blkno.getText() != null)
+            mData.putString("blkno", mBlkno);
+
+        if(streetname.getText() != null)
+            mData.putString("streetname", mStreetname);
+
+        //store the data to return back to ProjectBuilder and close this Activity
+        Intent output = new Intent();
+        output.putExtras(mData);
+        setResult(RESULT_OK, output);
+        finish();
     }
 
     //this method updates the EditText fields if a Project already exists
     private void updateTextFields () {
+
+        Log.d(TAG, "I'm here in ProjectInfo's updateTextFields");
 
         //get the file and directory
         File projectInfoDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);

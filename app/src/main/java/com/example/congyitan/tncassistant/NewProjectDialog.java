@@ -6,6 +6,7 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 
@@ -45,7 +46,7 @@ public class NewProjectDialog extends DialogFragment{
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
         //Bundle to save data
-        final Bundle myData = new Bundle();
+        final Bundle mData = new Bundle();
 
         // Use the Builder class for convenient dialog construction
         AlertDialog.Builder newProjectDialog = new AlertDialog.Builder(getActivity());
@@ -66,9 +67,10 @@ public class NewProjectDialog extends DialogFragment{
             public void onClick(DialogInterface dialog, int id) {
 
                 EditText postalcodeInput  = (EditText) view.findViewById(R.id.postalcodeET);
-                myData.putInt("postalcode",Integer.parseInt(postalcodeInput.getText().toString()));
+                mData.putInt("postalcode",Integer.parseInt(postalcodeInput.getText().toString()));
+                Log.d(TAG,"User input postal code: " + Integer.parseInt(postalcodeInput.getText().toString()));
 
-                mListener.onDialogOK(myData);
+                mListener.onDialogOK(mData);
             }
         });
 
