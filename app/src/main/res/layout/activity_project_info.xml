@@ -137,11 +137,11 @@
                 android:id="@+id/postalcodeET"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:inputType="number"
-                android:ems="6"
+                android:inputType="none"
+                android:focusable="false"
                 android:layout_above="@+id/divider3"
                 android:layout_alignStart="@+id/postalcode"
-                android:editable="false"/>
+                android:layout_alignParentEnd="false" />
 
             <View
                 android:id="@+id/divider3"

@@ -133,6 +133,7 @@ public class ProjectBuilder extends AppCompatActivity implements ProjectBuilderA
         }
     }
 
+    //We just came back from ProjectInfo. Retrieve the postalcode from it so we know
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // Check which request we're responding to
