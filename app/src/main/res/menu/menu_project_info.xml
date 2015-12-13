@@ -6,11 +6,6 @@
     android:orientation="horizontal">
 
     <!-- "Mark Favorite", should appear as action button if possible -->
-    <item
-        android:id="@+id/save_to_dropbox"
-        android:icon="@drawable/ic_sdcard"
-        android:title="@string/save_project_builder"
-        app:showAsAction="always"/>
 
     <!-- Settings, should always be in the overflow -->
     <item android:id="@+id/action_settings"

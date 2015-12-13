@@ -10,6 +10,10 @@
     <string name="title_activity_image_collector">Image Collector</string>
     <string name="title_activity_project_info">Project Info</string>
 
+    //Dropbox App Key and Secret
+    <string name="app_key">oipcgzvnkmgvy0v</string>
+    <string name="app_secret">seizvlgz3jguucc</string>
+
     //Settings (not used)
     <string name="action_settings">Settings</string>
 

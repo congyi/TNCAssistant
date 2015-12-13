@@ -4,6 +4,7 @@ package com.example.congyitan.tncassistant;
 import android.app.DialogFragment;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
@@ -28,26 +29,20 @@ import com.dropbox.client2.session.AppKeyPair;
 public class MainActivity extends AppCompatActivity  implements NewProjectDialog.NewProjectDialogListener {
 
     // Replace this with your app key and secret assigned by Dropbox.
-    // Note that this is a really insecure way to do this - How to solve?
-    private static final String APP_KEY = "oipcgzvnkmgvy0v";
-    private static final String APP_SECRET = "seizvlgz3jguucc";
+    private final String APP_KEY = "oipcgzvnkmgvy0v";
+    private final String APP_SECRET = "seizvlgz3jguucc";
 
-    // You don't need to change these, leave them alone.
+    // Dropbox API stuff. You don't need to change these, leave them alone.
     private static final String ACCOUNT_PREFS_NAME = "prefs";
     private static final String ACCESS_KEY_NAME = "ACCESS_KEY";
     private static final String ACCESS_SECRET_NAME = "ACCESS_SECRET";
-
     private static final boolean USE_OAUTH1 = false;
-
-    DropboxAPI<AndroidAuthSession> mApi;
-
     private boolean mLoggedIn;
-
     private Button dropBox;
+    DropboxAPI<AndroidAuthSession> mApi;
 
     //for Log.d ; debugging
     private static final String TAG = "MainActivity";
-    private String mErrorMsg;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,41 +51,29 @@ public class MainActivity extends AppCompatActivity  implements NewProjectDialog
         // We create a new AuthSession so that we can use the Dropbox API.
         AndroidAuthSession session = buildSession();
         mApi = new DropboxAPI<AndroidAuthSession>(session);
-
-        checkAppKeySetup();
+        checkAppKeySetup(); //check to see if appKey has been changed from the default CHANGE_X
 
         //inflate the layout
         setContentView(R.layout.activity_main);
 
-        //initialize the on-screen buttons
-        //onclick listeners are attached to activity_main.xml
+        //initialize the on-screen button. onClick listeners are attached to activity_main.xml
         dropBox = (Button)findViewById(R.id.auth_button);
     }
 
+    //called when user presses the "New Project" button on MainActivity
     public void newProject(View view) {
         //Open up the DialogFragment that prompts user for the title
         DialogFragment newFragment = new NewProjectDialog();
         newFragment.show(getFragmentManager(), "New Project Dialog");
     }
 
-    @Override
-    public void onDialogOK(Bundle mData) {
-        createProjectFile(mData);
-        Intent intent = new Intent(MainActivity.this, ProjectBuilder.class);
-        intent.putExtras(mData);
-        startActivity(intent);
-    }
-
-    @Override
-    public void onDialogCancel() {
-        //user pressed cancel in NewProjectDialog
-        Toast.makeText(MainActivity.this, "Cancelled", Toast.LENGTH_SHORT).show();
-    }
-
+    //called when user presses the "Browse Projects" button on MainActivity
+    //TODO: code the browseProjects activity
     public void browseProjects(View view) throws DropboxException {
         Toast.makeText(MainActivity.this, "Browse Projects", Toast.LENGTH_SHORT).show();
     }
 
+    //called when user presses the "Connect to Dropbox" button on MainActivity
     public void dropboxAuth(View view) {
 
         if (mLoggedIn) {
@@ -103,6 +86,26 @@ public class MainActivity extends AppCompatActivity  implements NewProjectDialog
                 mApi.getSession().startOAuth2Authentication(MainActivity.this);
             }
         }
+    }
+
+    //called when user keys in postal code in NewProjectDialog and pressed OK
+    @Override
+    public void onDialogOK(Bundle mData) {
+
+        //write file to storage
+        createProjectFile(mData);
+
+        //start activity to build project: ProjectBuilder
+        Intent intent = new Intent(MainActivity.this, ProjectBuilder.class);
+        intent.putExtras(mData);
+        startActivity(intent);
+    }
+
+    //called when user pressed cancel in NewProjectDialog
+    @Override
+    public void onDialogCancel() {
+        //user pressed cancel in NewProjectDialog
+        Toast.makeText(MainActivity.this, "Cancelled", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -147,6 +150,8 @@ public class MainActivity extends AppCompatActivity  implements NewProjectDialog
         }
     }
 
+    //creates directory for the new project
+    //creates the file info.txt in the directory. info.txt has postalcode of the new project written into it
     private boolean createProjectFile(Bundle newProjectData) {
 
         //get the Bundle data from NewProjectDialog
@@ -182,6 +187,7 @@ public class MainActivity extends AppCompatActivity  implements NewProjectDialog
         return true;
     }
 
+    //for Dropbox API to work - do not change
     private AndroidAuthSession buildSession() {
         AppKeyPair appKeyPair = new AppKeyPair(APP_KEY, APP_SECRET);
         AndroidAuthSession session = new AndroidAuthSession(appKeyPair);
@@ -195,20 +201,21 @@ public class MainActivity extends AppCompatActivity  implements NewProjectDialog
      * time (which is not to be done, ever).
      */
     private void loadAuth(AndroidAuthSession session) {
-        SharedPreferences prefs = getSharedPreferences(ACCOUNT_PREFS_NAME, 0);
-        String key = prefs.getString(ACCESS_KEY_NAME, null);
-        String secret = prefs.getString(ACCESS_SECRET_NAME, null);
-        if (key == null || secret == null || key.length() == 0 || secret.length() == 0) return;
+            SharedPreferences prefs = getSharedPreferences(ACCOUNT_PREFS_NAME, 0);
+            String key = prefs.getString(ACCESS_KEY_NAME, null);
+            String secret = prefs.getString(ACCESS_SECRET_NAME, null);
+            if (key == null || secret == null || key.length() == 0 || secret.length() == 0) return;
 
-        if (key.equals("oauth2:")) {
-            // If the key is set to "oauth2:", then we can assume the token is for OAuth 2.
-            session.setOAuth2AccessToken(secret);
-        } else {
-            // Still support using old OAuth 1 tokens.
-            session.setAccessTokenPair(new AccessTokenPair(key, secret));
-        }
+            if (key.equals("oauth2:")) {
+                // If the key is set to "oauth2:", then we can assume the token is for OAuth 2.
+                session.setOAuth2AccessToken(secret);
+            } else {
+                // Still support using old OAuth 1 tokens.
+                session.setAccessTokenPair(new AccessTokenPair(key, secret));
+            }
     }
 
+    //for Dropbox API to work - do not change
     private void checkAppKeySetup() {
         // Check to make sure that we have a valid app key
         if (APP_KEY.startsWith("CHANGE") ||
@@ -219,11 +226,13 @@ public class MainActivity extends AppCompatActivity  implements NewProjectDialog
         }
     }
 
+    //simple method to show a Toast in this Activity
     private void showToast(String msg) {
         Toast error = Toast.makeText(this, msg, Toast.LENGTH_SHORT);
         error.show();
     }
 
+    //called when user presses "Unlink from Dropbox" in Activity
     private void logOut() {
         // Remove credentials from the session
         mApi.getSession().unlink();
@@ -253,6 +262,7 @@ public class MainActivity extends AppCompatActivity  implements NewProjectDialog
         }
     }
 
+    //shows in MainActivity the user that is logged into Dropbox
     private class DisplayLoggedinUser extends AsyncTask<Void, Void, String>{
 
         @Override
