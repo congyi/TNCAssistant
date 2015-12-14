@@ -192,8 +192,14 @@ public class ProjectBuilder extends AppCompatActivity implements ProjectBuilderA
                 "TNCAssistant/" + String.valueOf(mPostalcode));
 
         //extract project info from info.txt. this gives us the required info to form the Dropbox upload directory.
-        File projectInfoFile = new File(projectDir, "TNCAssistant/" + String.valueOf(mPostalcode) + "/info.txt");
-        extractProjectInfo(projectInfoFile);
+        File projectInfoFile = new File(projectDir,"/info.txt");
+
+        if(projectInfoFile.exists())
+            extractProjectInfo(projectInfoFile);
+        else{
+            showToast("Something went wrong locating your project file");
+            return;
+        }
 
         //if required info not present, just exit immediately
         if(mTownCouncil == null || mProjectPhase == null || mBlkno == null){
@@ -204,14 +210,15 @@ public class ProjectBuilder extends AppCompatActivity implements ProjectBuilderA
         //create an arraylist of files in the local documents directory
         ArrayList<File> filesToUpload = new ArrayList<File>(Arrays.asList(projectDir.listFiles()));
 
-
         //get the local directory for the project images
         File imageDir = new File (Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
                 "TNCAssistant/" + String.valueOf(mPostalcode));
 
         //store list of files in a temp array
         File[] tempArray = imageDir.listFiles();
-        Integer directorySize = getNumOfFiles(imageDir); //gets the number of files in the local image directory
+        int directorySize = tempArray.length; //gets the number of files in the local image directory
+
+        Log.d(TAG,"Image directorySize is: " + directorySize);
 
         //consolidate this in my arraylist
         for(int i = 0; i < directorySize; i++)
@@ -224,27 +231,6 @@ public class ProjectBuilder extends AppCompatActivity implements ProjectBuilderA
         //upload all the files
         UploadFiles upload = new UploadFiles(this, mApi, uploadDir, filesToUpload);
         upload.execute();
-    }
-
-    private int getNumOfFiles(File directory){
-
-        int numOfFiles = 0;
-
-        if (directory.exists()) {
-            long result = 0;
-            File[] fileList = directory.listFiles();
-            for(int i = 0; i < fileList.length; i++) {
-                // Recursive call if it's a directory
-                if(fileList[i].isDirectory()) {
-                    result += getNumOfFiles(fileList[i]);
-                } else {
-                    // Sum the file size in bytes
-                    result += fileList[i].length();
-                }
-            }
-            return numOfFiles; // return the file size
-        } else
-            return 0;
     }
 
     private void extractProjectInfo(File fileToExtract){

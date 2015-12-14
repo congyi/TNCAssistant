@@ -17,6 +17,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import java.io.File;
 
@@ -81,10 +82,11 @@ public class ImageCollector extends AppCompatActivity {
 
         // Create the storage directory if it does not exist
         if (!imageDir.exists()) {
-            if (!imageDir.mkdirs()) {
-                Log.d(TAG, "Failed to create directory");
+                Log.d(TAG, "Image directory doesn't exist");
+                showToast("Image directory doesn't exist");
+            return;
             }
-        }
+
 
         File imageFile = new File(imageDir, buttonTag + ".jpg");
         mCurrentPhotoPath = imageFile.getAbsolutePath();
@@ -199,5 +201,11 @@ public class ImageCollector extends AppCompatActivity {
             if (savedInstanceState.getInt("buttonId") != -1)
                 buttonId = savedInstanceState.getInt("buttonId");
         }
+    }
+
+    //simple method to show a Toast in this Activity
+    private void showToast(String msg) {
+        Toast toastMessage = Toast.makeText(this, msg, Toast.LENGTH_SHORT);
+        toastMessage.show();
     }
 }

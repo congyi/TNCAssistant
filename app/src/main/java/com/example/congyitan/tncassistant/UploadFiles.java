@@ -44,14 +44,17 @@ public class UploadFiles extends AsyncTask<Void, Integer, Boolean> {
                        ArrayList<File> files) {
 
         mContext = context.getApplicationContext(); //Get context this way so we don't accidentally leak activities
-        mApi = api;
-        mDirSize = files.size(); //get the size of arraylist
+        mApi = api; //get the Dropbox API
         mPath = dropboxPath;
 
+        mFiles = files;
+        mDirSize = files.size(); //get the size of arraylist
+        counter = 0;
 
         //sets progress dialog
         mDialog = new ProgressDialog(context);
         mDialog.setMax(100);
+        //TODO : update progress dialog
         mDialog.setMessage("Uploading " + files.get(counter).getName());
         mDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         mDialog.setProgress(0);
@@ -68,7 +71,6 @@ public class UploadFiles extends AsyncTask<Void, Integer, Boolean> {
     @Override
     protected Boolean doInBackground(Void... params) {
         try {
-
             // By creating a request, we get a handle to the putFile operation,
             // so we can cancel it later if we want to
             for(counter = 0; counter < mDirSize; counter++){
@@ -80,7 +82,7 @@ public class UploadFiles extends AsyncTask<Void, Integer, Boolean> {
                     new ProgressListener() {
                         @Override
                         public long progressInterval() {
-                            return 1000;    // Update the progress bar every second or so
+                            return 500;    // Update the progress bar every half-second or so
                         }
                         @Override
                         public void onProgress(long bytes, long total) {
@@ -88,11 +90,12 @@ public class UploadFiles extends AsyncTask<Void, Integer, Boolean> {
                         }
                     });
 
-                if (mRequest != null) {
-                    mRequest.upload();
-                    return true;
-                }
+                if (mRequest != null)
+                     mRequest.upload();
             }
+
+            if (counter == mDirSize) //return success if counter reached size of file array (upload success)
+                return true;
 
         } catch (DropboxUnlinkedException e) {
             // This session wasn't authenticated properly or user unlinked
@@ -150,7 +153,7 @@ public class UploadFiles extends AsyncTask<Void, Integer, Boolean> {
 
     @Override
     protected void onPostExecute(Boolean result) {
-        //TODO fix this
+
         mDialog.dismiss();
         if (result) {
             showToast("Files successfully uploaded");
