@@ -76,27 +76,28 @@ public class ImageCollector extends AppCompatActivity {
         //create an intent to start the native cameraApp
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
-        File photoDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),"TNCAssistant/" + postalcode);
+        File imageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
+                "TNCAssistant/" + postalcode);
 
         // Create the storage directory if it does not exist
-        if (!photoDir.exists()) {
-            if (!photoDir.mkdirs()) {
+        if (!imageDir.exists()) {
+            if (!imageDir.mkdirs()) {
                 Log.d(TAG, "Failed to create directory");
             }
         }
 
-        File photoFile = new File(photoDir, buttonTag + ".jpg");
-        mCurrentPhotoPath = photoFile.getAbsolutePath();
-        Log.d(TAG, "File is:" + photoFile.getAbsolutePath());
+        File imageFile = new File(imageDir, buttonTag + ".jpg");
+        mCurrentPhotoPath = imageFile.getAbsolutePath();
+        Log.d(TAG, "File is:" + imageFile.getAbsolutePath());
 
         //creates the Uri to be input as part of Camera Activity Intent
-        mCapturedImageURI = Uri.fromFile(photoFile);
+        mCapturedImageURI = Uri.fromFile(imageFile);
         Log.d(TAG, "mCapturedImageURI is " + mCapturedImageURI);
 
         // set the image file name
         takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, mCapturedImageURI);
 
-        if (photoFile != null) {
+        if (imageFile != null) {
             startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
         }
     }

@@ -19,17 +19,20 @@ import com.dropbox.client2.exception.DropboxUnlinkedException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 
 /**
  * Created by Congyi Tan on 09/12/2015.
  */
-public class UploadFiles extends AsyncTask<Void, Long, Boolean> {
+public class UploadFiles extends AsyncTask<Void, Integer, Boolean> {
 
     private DropboxAPI<?> mApi;
     private String mPath;
-    private File mFile;
+    private ArrayList<File> mFiles;
 
-    private long mFileLen;
+    private int counter;
+    private long mDirSize;
+
     private DropboxAPI.UploadRequest mRequest;
     private Context mContext;
     private final ProgressDialog mDialog;
@@ -38,21 +41,18 @@ public class UploadFiles extends AsyncTask<Void, Long, Boolean> {
 
     //Constructor for class
     public UploadFiles(Context context, DropboxAPI<?> api, String dropboxPath,
-                       File[] files, Integer directorysize) {
+                       ArrayList<File> files) {
 
-        Integer counter = 0;
-
-        // We get the context this way so we don't accidentally leak activities
-        mContext = context.getApplicationContext();
-
-        mFileLen = files[counter].length();
+        mContext = context.getApplicationContext(); //Get context this way so we don't accidentally leak activities
         mApi = api;
+        mDirSize = files.size(); //get the size of arraylist
         mPath = dropboxPath;
-        mFile = files[counter];
 
+
+        //sets progress dialog
         mDialog = new ProgressDialog(context);
         mDialog.setMax(100);
-        mDialog.setMessage("Uploading " + files[counter].getName());
+        mDialog.setMessage("Uploading " + files.get(counter).getName());
         mDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         mDialog.setProgress(0);
         mDialog.setButton(ProgressDialog.BUTTON_POSITIVE, "Cancel", new DialogInterface.OnClickListener() {
@@ -68,11 +68,15 @@ public class UploadFiles extends AsyncTask<Void, Long, Boolean> {
     @Override
     protected Boolean doInBackground(Void... params) {
         try {
+
             // By creating a request, we get a handle to the putFile operation,
             // so we can cancel it later if we want to
-            FileInputStream fis = new FileInputStream(mFile);
-            String path = mPath + mFile.getName();
-            mRequest = mApi.putFileOverwriteRequest(path, fis, mFile.length(),
+            for(counter = 0; counter < mDirSize; counter++){
+
+                FileInputStream fis = new FileInputStream(mFiles.get(counter));
+                String path = mPath + mFiles.get(counter).getName();
+                mRequest = mApi.putFileOverwriteRequest(path, fis, mFiles.get(counter).length(),
+
                     new ProgressListener() {
                         @Override
                         public long progressInterval() {
@@ -80,13 +84,14 @@ public class UploadFiles extends AsyncTask<Void, Long, Boolean> {
                         }
                         @Override
                         public void onProgress(long bytes, long total) {
-                            publishProgress(bytes);
+                            publishProgress(counter);
                         }
                     });
 
-            if (mRequest != null) {
-                mRequest.upload();
-                return true;
+                if (mRequest != null) {
+                    mRequest.upload();
+                    return true;
+                }
             }
 
         } catch (DropboxUnlinkedException e) {
@@ -116,7 +121,7 @@ public class UploadFiles extends AsyncTask<Void, Long, Boolean> {
                 // user is over quota
                 showToast("Not enough storage space on Dropbox.");
             } else {
-                // Something else
+                showToast("Generic error.");
             }
             // This gets the Dropbox error, translated into the user's language
             mErrorMsg = e.body.userError;
@@ -138,13 +143,14 @@ public class UploadFiles extends AsyncTask<Void, Long, Boolean> {
     }
 
     @Override
-    protected void onProgressUpdate(Long... progress) {
-        int percent = (int)(100.0*(double)progress[0]/mFileLen + 0.5);
+    protected void onProgressUpdate(Integer... progress) {
+        int percent = (int)(counter/mDirSize * 100);
         mDialog.setProgress(percent);
     }
 
     @Override
     protected void onPostExecute(Boolean result) {
+        //TODO fix this
         mDialog.dismiss();
         if (result) {
             showToast("Files successfully uploaded");

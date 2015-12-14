@@ -184,6 +184,17 @@ public class MainActivity extends AppCompatActivity  implements NewProjectDialog
             Log.d(TAG, "Error creating/writing file");
         }
 
+        //create directory to store images
+        File imageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
+                "TNCAssistant/" + postalcode);
+
+        // Create the storage directory if it does not exist
+        if (!imageDir.exists()) {
+            if (!imageDir.mkdirs()) {
+                Log.d(TAG, "Failed to create directory");
+            }
+        }
+
         return true;
     }
 

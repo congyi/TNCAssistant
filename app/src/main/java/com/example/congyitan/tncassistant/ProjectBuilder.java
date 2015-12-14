@@ -27,6 +27,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class ProjectBuilder extends AppCompatActivity implements ProjectBuilderAdapter.ProjectBuilderClickListener {
@@ -190,7 +191,7 @@ public class ProjectBuilder extends AppCompatActivity implements ProjectBuilderA
         File projectDir = new File (Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS),
                 "TNCAssistant/" + String.valueOf(mPostalcode));
 
-        //extract project info from info.txt. this tells us where to upload files in Dropbox
+        //extract project info from info.txt. this gives us the required info to form the Dropbox upload directory.
         File projectInfoFile = new File(projectDir, "TNCAssistant/" + String.valueOf(mPostalcode) + "/info.txt");
         extractProjectInfo(projectInfoFile);
 
@@ -200,45 +201,34 @@ public class ProjectBuilder extends AppCompatActivity implements ProjectBuilderA
             return;
         }
 
-        //size up the above directory
-        Integer directorySize = getNumOfFiles(projectDir);
+        //create an arraylist of files in the local documents directory
+        ArrayList<File> filesToUpload = new ArrayList<File>(Arrays.asList(projectDir.listFiles()));
 
-        //create an array of files in above directory
-        File[] filesToUpload = projectDir.listFiles();
-
-        //define Dropbox directory to upload to
-        String uploadDir = "/HDB Testing and Commissioning/" +
-                    mProjectPhase + "/Blocks/" + mTownCouncil + "/" + mBlkno + "/" ;
-
-        //upload all the files in the Documents folder
-        UploadFiles newUpload = new UploadFiles(this, mApi, uploadDir, filesToUpload, directorySize);
-        newUpload.execute();
-
-        //**we have uploaded the project documents above**//
-        //** we have to upload the project images below**//
 
         //get the local directory for the project images
         File imageDir = new File (Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
                 "TNCAssistant/" + String.valueOf(mPostalcode));
 
-        //size up the above directory
-        directorySize = getNumOfFiles(imageDir);
+        //store list of files in a temp array
+        File[] tempArray = imageDir.listFiles();
+        Integer directorySize = getNumOfFiles(imageDir); //gets the number of files in the local image directory
 
-        //create an array of files in above directory
-        filesToUpload = projectDir.listFiles();
+        //consolidate this in my arraylist
+        for(int i = 0; i < directorySize; i++)
+            filesToUpload.add(tempArray[i]);
 
         //define Dropbox directory to upload to
-        uploadDir = "/HDB Testing and Commissioning/" +
-                mProjectPhase + "/Blocks/" + mTownCouncil + "/" + mBlkno + "/images/" ;
+        String uploadDir = "/HDB Testing and Commissioning/" +
+                mProjectPhase + "/Blocks/" + mTownCouncil + "/" + mBlkno + "/" ;
 
-        //upload all the files in the Documents folder
-        newUpload = new UploadFiles(this, mApi, uploadDir, filesToUpload, directorySize);
-        newUpload.execute();
+        //upload all the files
+        UploadFiles upload = new UploadFiles(this, mApi, uploadDir, filesToUpload);
+        upload.execute();
     }
 
-    private Integer getNumOfFiles(File directory){
+    private int getNumOfFiles(File directory){
 
-        Integer numOfFiles = 0;
+        int numOfFiles = 0;
 
         if (directory.exists()) {
             long result = 0;

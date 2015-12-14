@@ -36,8 +36,8 @@
                 android:layout_row="0"
                 android:layout_column="0"
                 android:scaleType="centerInside"
-                android:src="@drawable/switchrm"
-                android:tag="switchrm"
+                android:src="@drawable/img_switchrm"
+                android:tag="img_switchrm"
                 android:onClick="takePicture" />
 
             <ImageButton
@@ -48,8 +48,8 @@
                 android:layout_row="1"
                 android:layout_column="0"
                 android:scaleType="centerInside"
-                android:src="@drawable/energymeter"
-                android:tag="energymeter"
+                android:src="@drawable/img_energymeter"
+                android:tag="img_energymeter"
                 android:onClick="takePicture"/>
 
             <ImageButton
@@ -60,8 +60,8 @@
                 android:layout_row="0"
                 android:layout_column="1"
                 android:scaleType="centerInside"
-                android:src="@drawable/tilt"
-                android:tag="tilt"
+                android:src="@drawable/img_tilt"
+                android:tag="img_tilt"
                 android:onClick="takePicture"/>
 
             <ImageButton
@@ -72,8 +72,8 @@
                 android:layout_row="1"
                 android:layout_column="1"
                 android:scaleType="centerInside"
-                android:src="@drawable/specs"
-                android:tag="specs"
+                android:src="@drawable/img_specs"
+                android:tag="img_specs"
                 android:onClick="takePicture"/>
 
             <ImageButton
@@ -84,8 +84,8 @@
                 android:layout_row="0"
                 android:layout_column="2"
                 android:scaleType="centerInside"
-                android:src="@drawable/continuity"
-                android:tag="continuity"
+                android:src="@drawable/img_continuity"
+                android:tag="img_continuity"
                 android:onClick="takePicture"/>
 
             <ImageButton
@@ -96,8 +96,8 @@
                 android:layout_row="1"
                 android:layout_column="2"
                 android:scaleType="centerInside"
-                android:src="@drawable/continuityread"
-                android:tag="continuityread"
+                android:src="@drawable/img_continuityread"
+                android:tag="img_continuityread"
                 android:onClick="takePicture"/>
 
             <ImageButton
@@ -108,8 +108,8 @@
                 android:layout_row="0"
                 android:layout_column="3"
                 android:scaleType="centerInside"
-                android:src="@drawable/celltech"
-                android:tag="celltech"
+                android:src="@drawable/img_celltech"
+                android:tag="img_celltech"
                 android:onClick="takePicture"/>
 
             <ImageButton
@@ -120,8 +120,8 @@
                 android:layout_row="1"
                 android:layout_column="3"
                 android:scaleType="centerInside"
-                android:src="@drawable/cabling"
-                android:tag="cabling"
+                android:src="@drawable/img_cabling"
+                android:tag="img_cabling"
                 android:onClick="takePicture"/>
 
             <ImageButton
@@ -132,8 +132,8 @@
                 android:layout_row="0"
                 android:layout_column="4"
                 android:scaleType="centerInside"
-                android:src="@drawable/ballast"
-                android:tag="ballast"
+                android:src="@drawable/img_ballast"
+                android:tag="img_ballast"
                 android:onClick="takePicture"/>
 
             <ImageButton
@@ -144,8 +144,8 @@
                 android:layout_row="1"
                 android:layout_column="4"
                 android:scaleType="centerInside"
-                android:src="@drawable/elecoverview"
-                android:tag="elecoverview"
+                android:src="@drawable/img_elecoverview"
+                android:tag="img_elecoverview"
                 android:onClick="takePicture"/>
 
             <ImageButton
@@ -156,8 +156,8 @@
                 android:layout_row="0"
                 android:layout_column="5"
                 android:scaleType="centerInside"
-                android:src="@drawable/surgearrestor"
-                android:tag="surgearrestor"
+                android:src="@drawable/img_surgearrestor"
+                android:tag="img_surgearrestor"
                 android:onClick="takePicture"/>
 
             <ImageButton
@@ -168,8 +168,8 @@
                 android:layout_row="1"
                 android:layout_column="5"
                 android:scaleType="centerInside"
-                android:src="@drawable/warninglabel"
-                android:tag="warninglabel"
+                android:src="@drawable/img_warninglabel"
+                android:tag="img_warninglabel"
                 android:onClick="takePicture"/>
 
             <ImageButton
@@ -180,8 +180,8 @@
                 android:layout_row="0"
                 android:layout_column="6"
                 android:scaleType="centerInside"
-                android:src="@drawable/labelling"
-                android:tag="labelling"
+                android:src="@drawable/img_labelling"
+                android:tag="img_labelling"
                 android:onClick="takePicture"/>
 
 
@@ -193,8 +193,8 @@
                 android:layout_row="1"
                 android:layout_column="6"
                 android:scaleType="centerInside"
-                android:src="@drawable/pv150"
-                android:tag="pv150"
+                android:src="@drawable/img_pv150"
+                android:tag="img_pv150"
                 android:onClick="takePicture"/>
 
             <ImageButton
@@ -205,8 +205,8 @@
                 android:layout_row="0"
                 android:layout_column="7"
                 android:scaleType="centerInside"
-                android:src="@drawable/pv150read"
-                android:tag="pv150read"
+                android:src="@drawable/img_pv150read"
+                android:tag="img_pv150read"
                 android:onClick="takePicture"/>
 
         </GridLayout>
