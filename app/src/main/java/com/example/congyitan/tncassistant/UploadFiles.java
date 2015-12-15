@@ -31,7 +31,7 @@ public class UploadFiles extends AsyncTask<Void, Integer, Boolean> {
     private ArrayList<File> mFiles;
 
     private int counter;
-    private long mDirSize;
+    private int mDirSize;
 
     private DropboxAPI.UploadRequest mRequest;
     private Context mContext;
@@ -53,9 +53,9 @@ public class UploadFiles extends AsyncTask<Void, Integer, Boolean> {
 
         //sets progress dialog
         mDialog = new ProgressDialog(context);
-        mDialog.setMax(100);
+        mDialog.setMax(mDirSize);
         //TODO : update progress dialog
-        mDialog.setMessage("Uploading " + files.get(counter).getName());
+        mDialog.setMessage("Uploading " + mFiles.get(counter).getName());
         mDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         mDialog.setProgress(0);
         mDialog.setButton(ProgressDialog.BUTTON_POSITIVE, "Cancel", new DialogInterface.OnClickListener() {
@@ -70,6 +70,7 @@ public class UploadFiles extends AsyncTask<Void, Integer, Boolean> {
 
     @Override
     protected Boolean doInBackground(Void... params) {
+
         try {
             // By creating a request, we get a handle to the putFile operation,
             // so we can cancel it later if we want to
@@ -141,12 +142,15 @@ public class UploadFiles extends AsyncTask<Void, Integer, Boolean> {
             // Unknown error
             mErrorMsg = "Unknown error.  Try again.";
         } catch (FileNotFoundException e) {
+
+            mErrorMsg = "File Not Found Exception error.  Try again.";
         }
         return false;
     }
 
     @Override
     protected void onProgressUpdate(Integer... progress) {
+        mDialog.setMessage("Uploading " + mFiles.get(counter).getName());
         int percent = (int)(counter/mDirSize * 100);
         mDialog.setProgress(percent);
     }
