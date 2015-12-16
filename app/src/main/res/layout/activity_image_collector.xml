@@ -135,29 +135,28 @@
                 android:src="@drawable/img_ballast"
                 android:tag="img_ballast"
                 android:onClick="takePicture"/>
-
             <ImageButton
-                android:id="@+id/elecoverview"
+                android:id="@+id/overview"
                 android:layout_width="240dp"
                 android:layout_height="140dp"
                 android:layout_margin="5dp"
                 android:layout_row="1"
                 android:layout_column="4"
                 android:scaleType="centerInside"
-                android:src="@drawable/img_elecoverview"
-                android:tag="img_elecoverview"
+                android:src="@drawable/img_overview"
+                android:tag="img_overview"
                 android:onClick="takePicture"/>
 
             <ImageButton
-                android:id="@+id/surgearrestor"
+                android:id="@+id/surge"
                 android:layout_width="230dp"
                 android:layout_height="140dp"
                 android:layout_margin="5dp"
                 android:layout_row="0"
                 android:layout_column="5"
                 android:scaleType="centerInside"
-                android:src="@drawable/img_surgearrestor"
-                android:tag="img_surgearrestor"
+                android:src="@drawable/img_surge"
+                android:tag="img_surge"
                 android:onClick="takePicture"/>
 
             <ImageButton
@@ -184,7 +183,6 @@
                 android:tag="img_labelling"
                 android:onClick="takePicture"/>
 
-
             <ImageButton
                 android:id="@+id/pv150"
                 android:layout_width="240dp"
@@ -198,16 +196,29 @@
                 android:onClick="takePicture"/>
 
             <ImageButton
-                android:id="@+id/pv150read"
+                android:id="@+id/earth"
                 android:layout_width="240dp"
                 android:layout_height="140dp"
                 android:layout_margin="5dp"
                 android:layout_row="0"
                 android:layout_column="7"
                 android:scaleType="centerInside"
-                android:src="@drawable/img_pv150read"
-                android:tag="img_pv150read"
+                android:src="@drawable/img_earth"
+                android:tag="img_earth"
                 android:onClick="takePicture"/>
+
+            <ImageButton
+                android:id="@+id/lightningtape"
+                android:layout_width="240dp"
+                android:layout_height="140dp"
+                android:layout_margin="5dp"
+                android:layout_row="1"
+                android:layout_column="7"
+                android:scaleType="centerInside"
+                android:src="@drawable/img_lightningtape"
+                android:tag="img_lightningtape"
+                android:onClick="takePicture"/>
+
 
         </GridLayout>
     </HorizontalScrollView>

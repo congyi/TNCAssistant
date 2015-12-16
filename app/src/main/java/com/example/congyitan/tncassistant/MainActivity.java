@@ -155,7 +155,7 @@ public class MainActivity extends AppCompatActivity  implements NewProjectDialog
     private boolean createProjectFile(Bundle newProjectData) {
 
         //get the Bundle data from NewProjectDialog
-        String postalcode = String.valueOf(newProjectData.getInt("postalcode"));
+        String postalcode = newProjectData.getString("postalcode");
 
         //Create the required directory for file
         File newProjectDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS), "TNCAssistant/" + postalcode);
@@ -184,7 +184,7 @@ public class MainActivity extends AppCompatActivity  implements NewProjectDialog
             Log.d(TAG, "Error creating/writing file");
         }
 
-        //create directory to store images
+        //Get directory to store images
         File imageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
                 "TNCAssistant/" + postalcode);
 

@@ -38,8 +38,7 @@ public class ProjectBuilder extends AppCompatActivity implements ProjectBuilderA
 
     //variables to store data
     Bundle mData;
-    int mPostalcode;
-    String mTownCouncil, mProjectPhase, mBlkno, mStreetname;
+    String mTownCouncil, mProjectPhase, mBlkno, mStreetname, mPostalcode;
 
     // Dropbox API stuff. You don't need to change these, leave them alone.
     private static final String ACCOUNT_PREFS_NAME = "prefs";
@@ -65,7 +64,7 @@ public class ProjectBuilder extends AppCompatActivity implements ProjectBuilderA
         Context thisContext = ProjectBuilder.this;
 
         mData = getIntent().getExtras();
-        mPostalcode = mData.getInt("postalcode");
+        mPostalcode = mData.getString("postalcode");
 
         //inflate layout
         setContentView(R.layout.activity_project_builder);
@@ -143,7 +142,7 @@ public class ProjectBuilder extends AppCompatActivity implements ProjectBuilderA
         if(position == 0) {
             Intent intent = new Intent(ProjectBuilder.this, ProjectInfo.class);
 
-            mData.putInt("postalcode", mPostalcode);
+            mData.putString("postalcode", mPostalcode);
             intent.putExtras(mData);
             startActivityForResult(intent, PROJECTBUILDER_REQUEST);
         }
@@ -163,7 +162,7 @@ public class ProjectBuilder extends AppCompatActivity implements ProjectBuilderA
         if (requestCode == PROJECTBUILDER_REQUEST) {
             // Make sure the request was successful
             if (resultCode == RESULT_OK)
-                mPostalcode = data.getExtras().getInt("postalcode");
+                mPostalcode = data.getExtras().getString("postalcode");
         }
     }
 
@@ -246,7 +245,7 @@ public class ProjectBuilder extends AppCompatActivity implements ProjectBuilderA
             String tempString = buf.readLine();
 
             if (tempString != null) {
-                mPostalcode = Integer.parseInt(tempString);
+                mPostalcode = tempString;
                 tempString = null; //reset tempString
             }
 
@@ -302,7 +301,7 @@ public class ProjectBuilder extends AppCompatActivity implements ProjectBuilderA
 
         Log.d(TAG, "I'm here in ProjectBuilder's onSaveInstanceState");
 
-        savedInstanceState.putInt("postalcode", mPostalcode);
+        savedInstanceState.putString("postalcode", mPostalcode);
         savedInstanceState.putString("blkno", mBlkno);
         savedInstanceState.putString("streetname", mStreetname);
         savedInstanceState.putString("towncouncil", mTownCouncil);
@@ -315,7 +314,7 @@ public class ProjectBuilder extends AppCompatActivity implements ProjectBuilderA
 
         Log.d(TAG, "I'm here in ProjectBuilder's onRestoreInstanceState");
 
-        mPostalcode = savedInstanceState.getInt("postalcode");
+        mPostalcode = savedInstanceState.getString("postalcode");
         mBlkno = savedInstanceState.getString("blkno");
         mStreetname = savedInstanceState.getString("streetname");
         mTownCouncil = savedInstanceState.getString("towncouncil");

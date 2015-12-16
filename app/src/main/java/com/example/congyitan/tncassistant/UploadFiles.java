@@ -54,7 +54,6 @@ public class UploadFiles extends AsyncTask<Void, Integer, Boolean> {
         //sets progress dialog
         mDialog = new ProgressDialog(context);
         mDialog.setMax(mDirSize);
-        //TODO : update progress dialog
         mDialog.setMessage("Uploading " + mFiles.get(counter).getName());
         mDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         mDialog.setProgress(0);
@@ -71,13 +70,20 @@ public class UploadFiles extends AsyncTask<Void, Integer, Boolean> {
     @Override
     protected Boolean doInBackground(Void... params) {
 
+        String path = "";
+
         try {
             // By creating a request, we get a handle to the putFile operation,
             // so we can cancel it later if we want to
             for(counter = 0; counter < mDirSize; counter++){
 
                 FileInputStream fis = new FileInputStream(mFiles.get(counter));
-                String path = mPath + mFiles.get(counter).getName();
+
+                if (mFiles.get(counter).getName().contains("img_"))
+                    path = mPath + "/images/" + mFiles.get(counter).getName();
+                else
+                    path = mPath + mFiles.get(counter).getName();
+
                 mRequest = mApi.putFileOverwriteRequest(path, fis, mFiles.get(counter).length(),
 
                     new ProgressListener() {
@@ -151,7 +157,7 @@ public class UploadFiles extends AsyncTask<Void, Integer, Boolean> {
     @Override
     protected void onProgressUpdate(Integer... progress) {
         mDialog.setMessage("Uploading " + mFiles.get(counter).getName());
-        int percent = (int)(counter/mDirSize * 100);
+        int percent = (int)((counter/mDirSize * 100) + 0.5);
         mDialog.setProgress(percent);
     }
 

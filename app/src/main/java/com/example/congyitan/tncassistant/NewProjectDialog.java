@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 
 
 public class NewProjectDialog extends DialogFragment{
@@ -43,7 +44,7 @@ public class NewProjectDialog extends DialogFragment{
     }
 
     @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
+    public Dialog onCreateDialog(final Bundle savedInstanceState) {
 
         //Bundle to save data
         final Bundle mData = new Bundle();
@@ -66,11 +67,19 @@ public class NewProjectDialog extends DialogFragment{
         newProjectDialog.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
 
-                EditText postalcodeInput  = (EditText) view.findViewById(R.id.postalcodeET);
-                mData.putInt("postalcode",Integer.parseInt(postalcodeInput.getText().toString()));
-                Log.d(TAG,"User input postal code: " + Integer.parseInt(postalcodeInput.getText().toString()));
+                EditText postalcode = (EditText) view.findViewById(R.id.postalcodeET);
+                TextView error = (TextView) view.findViewById(R.id.error_display);
 
-                mListener.onDialogOK(mData);
+                Log.d(TAG, "User input postal code: " + postalcode.getText().toString());
+
+                if (postalcode.getText().length() != 6) {
+                    error.setText("Postal code must be exactly 6 digits");
+                    onCreate(savedInstanceState);
+                    return;
+                } else {
+                    mData.putString("postalcode", postalcode.getText().toString());
+                    mListener.onDialogOK(mData);
+                }
             }
         });
 
