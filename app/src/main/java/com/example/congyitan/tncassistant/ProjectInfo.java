@@ -32,8 +32,7 @@ public class ProjectInfo extends AppCompatActivity {
     Spinner tcspinner;
 
     //variables to store data
-    Integer mPostalcode;
-    String mBlkno, mStreetname, mProjectPhase, mTownCouncil;
+    String mPostalcode, mBlkno, mStreetname, mProjectPhase, mTownCouncil;
     Bundle mData;
 
     @Override
@@ -44,7 +43,7 @@ public class ProjectInfo extends AppCompatActivity {
 
         //retrieve intent data from calling activity
         mData = getIntent().getExtras();
-        mPostalcode = mData.getInt("postalcode");
+        mPostalcode = mData.getString("postalcode");
         Log.d(TAG, "Postal code in Bundle mData is: " + String.valueOf(mPostalcode));
 
         //inflate layout
@@ -127,7 +126,7 @@ public class ProjectInfo extends AppCompatActivity {
         Log.d(TAG, "I'm here in ProjectInfo's onBackPressed");
 
         //gather all the required info
-        mPostalcode = Integer.parseInt(postalcode.getText().toString());
+        mPostalcode = postalcode.getText().toString();
         mBlkno = blkno.getText().toString();
         mStreetname = streetname.getText().toString();
         if(tcspinner.getSelectedItem() != null)
@@ -173,7 +172,7 @@ public class ProjectInfo extends AppCompatActivity {
         }
 
         //Put data to be passed back into a Bundle
-        mData.putInt("postalcode", mPostalcode);
+        mData.putString("postalcode", mPostalcode);
 
         if(blkno.getText() != null)
             mData.putString("blkno", mBlkno);
@@ -329,7 +328,7 @@ public class ProjectInfo extends AppCompatActivity {
         Log.d(TAG, "I'm here in ProjectInfo's onSaveInstanceState");
 
         if (mPostalcode != null)
-            savedInstanceState.putInt("postalcode", mPostalcode);
+            savedInstanceState.putString("postalcode", mPostalcode);
         if (mBlkno != null)
             savedInstanceState.putString("blkno", mBlkno);
         if (mStreetname != null)
@@ -346,7 +345,7 @@ public class ProjectInfo extends AppCompatActivity {
 
         Log.d(TAG, "I'm here in ProjectInfo's onRestoreInstanceState");
 
-        mPostalcode = savedInstanceState.getInt("postalcode");
+        mPostalcode = savedInstanceState.getString("postalcode");
         mBlkno = savedInstanceState.getString("blkno");
         mStreetname = savedInstanceState.getString("streetname");
         tcspinner.setSelection(savedInstanceState.getInt("tcspinner"));
