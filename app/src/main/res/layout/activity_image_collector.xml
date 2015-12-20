@@ -219,7 +219,6 @@
                 android:tag="img_lightningtape"
                 android:onClick="takePicture"/>
 
-
         </GridLayout>
     </HorizontalScrollView>
 </RelativeLayout>

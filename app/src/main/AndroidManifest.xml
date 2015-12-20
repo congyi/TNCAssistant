@@ -52,20 +52,30 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.congyitan.tncassistant.ProjectBuilder" />
         </activity>
-
         <activity
             android:name="com.dropbox.client2.android.AuthActivity"
-            android:launchMode="singleTask"
-            android:configChanges="orientation|keyboard">
+            android:configChanges="orientation|keyboard"
+            android:launchMode="singleTask" >
             <intent-filter>
+
                 <!-- Change this to be db- followed by your app key -->
                 <data android:scheme="db-oipcgzvnkmgvy0v" />
+
                 <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.BROWSABLE"/>
+
+                <category android:name="android.intent.category.BROWSABLE" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-
+        <activity
+            android:name=".BrowseProjects"
+            android:label="@string/title_activity_browse_projects"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.congyitan.tncassistant.MainActivity" />
+        </activity>
     </application>
 
 </manifest>

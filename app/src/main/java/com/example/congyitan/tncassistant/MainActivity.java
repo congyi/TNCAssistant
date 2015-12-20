@@ -62,15 +62,14 @@ public class MainActivity extends AppCompatActivity  implements NewProjectDialog
 
     //called when user presses the "New Project" button on MainActivity
     public void newProject(View view) {
-        //Open up the DialogFragment that prompts user for the title
         DialogFragment newFragment = new NewProjectDialog();
         newFragment.show(getFragmentManager(), "New Project Dialog");
     }
 
     //called when user presses the "Browse Projects" button on MainActivity
-    //TODO: code the browseProjects activity
     public void browseProjects(View view) throws DropboxException {
-        Toast.makeText(MainActivity.this, "Browse Projects", Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(MainActivity.this, BrowseProjects.class);
+        startActivity(intent);
     }
 
     //called when user presses the "Connect to Dropbox" button on MainActivity

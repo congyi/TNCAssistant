@@ -27,7 +27,7 @@ public class ImageCollector extends AppCompatActivity {
     private static final String TAG = "ImageCollector";
 
     // Required for camera operations in order to save the image file on resume.
-    String mCurrentPhotoPath = null;
+    String mCurrentPhotoPath, postalcode;
     private Uri mCapturedImageURI = null;
     int buttonId = -1;
     String buttonTag = null;
@@ -41,9 +41,11 @@ public class ImageCollector extends AppCompatActivity {
 
         Log.d(TAG, "I'm here in ImageCollector's OnCreateView");
 
+        Bundle mData = getIntent().getExtras();
+        postalcode = mData.getString("postalcode");
+
         //inflate layout
         setContentView(R.layout.activity_image_collector);
-
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 
         //set up toolbar
@@ -69,8 +71,7 @@ public class ImageCollector extends AppCompatActivity {
     //starts image capture process
     private void dispatchTakePictureIntent() {
 
-        Bundle myData = getIntent().getExtras();
-        String postalcode = String.valueOf(myData.getInt("postalcode"));
+
 
         Log.d(TAG, "I'm here in ImageCollector's dispatchTakePictureIntent");
 
@@ -185,6 +186,9 @@ public class ImageCollector extends AppCompatActivity {
             savedInstanceState.putString("mCurrentPhotoPath", mCurrentPhotoPath);
         if (buttonId != -1)
             savedInstanceState.putInt("buttonId", buttonId);
+        if (postalcode != null)
+            savedInstanceState.putString("postalcode", postalcode);
+
     }
 
     @Override
@@ -200,6 +204,8 @@ public class ImageCollector extends AppCompatActivity {
                 mCurrentPhotoPath = savedInstanceState.getString("mCurrentPhotoPath");
             if (savedInstanceState.getInt("buttonId") != -1)
                 buttonId = savedInstanceState.getInt("buttonId");
+            if (savedInstanceState.getString("postalcode") != null)
+                postalcode = savedInstanceState.getString("postalcode");
         }
     }
 

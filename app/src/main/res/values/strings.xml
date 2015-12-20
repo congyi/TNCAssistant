@@ -3,6 +3,9 @@
     <string name="app_name">TNCAssistant</string>
 
     //Project Builder
+    <string name="browse_projects">Browse Projects</string>
+
+    //Project Builder
     <string name="title_activity_project_builder">ProjectBuilder</string>
     <string name="title_fragment_new_project_dialog">NewProjectDialog</string>
     <string name="new_project_home">Project Builder</string>
@@ -48,5 +51,6 @@
     <string-array name="sn1_array">
         <item>Default</item>
     </string-array>
+    <string name="title_activity_browse_projects">BrowseProjects</string>
 
 </resources>

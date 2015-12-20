@@ -197,7 +197,7 @@ public class ProjectInfo extends AppCompatActivity {
 
         //get the file and directory
         File projectInfoDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
-        File projectInfoFile = new File(projectInfoDir, "TNCAssistant/" + String.valueOf(mPostalcode) + "/info.txt");
+        File projectInfoFile = new File(projectInfoDir, "TNCAssistant/" + mPostalcode + "/info.txt");
 
         //get the RadioButtons
         RadioButton phase5 = (RadioButton) findViewById(R.id.phase5);
