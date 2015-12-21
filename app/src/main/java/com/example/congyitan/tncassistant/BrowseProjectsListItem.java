@@ -7,15 +7,20 @@ package com.example.congyitan.tncassistant;
 
 class BrowseProjectsListItem {
 
-    String title;
+    String postalcode;
 
+    //getter
     public String getTitle() {
-        return title;
+        return postalcode;
     }
+
+    //setter
     public void setTitle(String title) {
-        this.title = title;
+        this.postalcode = title;
     }
-    BrowseProjectsListItem(String title) {
-        this.title = title;
+
+    //constructor
+    BrowseProjectsListItem(String postalcode) {
+        this.postalcode = postalcode;
     }
 }

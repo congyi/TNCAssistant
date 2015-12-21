@@ -46,8 +46,7 @@ public class NewProjectDialog extends DialogFragment{
     @Override
     public Dialog onCreateDialog(final Bundle savedInstanceState) {
 
-        //Bundle to save data
-        final Bundle mData = new Bundle();
+        Boolean showError = getArguments().getBoolean("showerror");
 
         // Use the Builder class for convenient dialog construction
         AlertDialog.Builder newProjectDialog = new AlertDialog.Builder(getActivity());
@@ -61,25 +60,29 @@ public class NewProjectDialog extends DialogFragment{
         //inflate view so that findViewById on the next line works (is using final dangerous)
         final View view = View.inflate(getActivity(),R.layout.dialog_new_project, null);
 
+        if(showError)
+        {
+            TextView showErrorText = (TextView) view.findViewById(R.id.error_display);
+            showErrorText.setText("Postal code must be 6 digits long");
+        }
+
         newProjectDialog.setView(view);
 
         //set OK button
         newProjectDialog.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
 
-                EditText postalcode = (EditText) view.findViewById(R.id.postalcodeET);
-                TextView error = (TextView) view.findViewById(R.id.error_display);
+                Bundle mData = new Bundle();
 
-                Log.d(TAG, "User input postal code: " + postalcode.getText().toString());
+                //get the text that the user just input
+                EditText postalcodeET = (EditText) view.findViewById(R.id.postalcodeET);
+                String postalcode = postalcodeET.getText().toString();
 
-                if (postalcode.getText().length() != 6) {
-                    error.setText("Postal code must be exactly 6 digits");
-                    onCreate(savedInstanceState);
-                    return;
-                } else {
-                    mData.putString("postalcode", postalcode.getText().toString());
-                    mListener.onDialogOK(mData);
-                }
+                Log.d(TAG, "User input postal code: " + postalcode); //for debugging
+
+                //put it in a bundle to be passed back
+                mData.putString("postalcode", postalcode);
+                mListener.onDialogOK(mData);
             }
         });
 

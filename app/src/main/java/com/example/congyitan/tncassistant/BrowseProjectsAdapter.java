@@ -35,11 +35,11 @@ public class BrowseProjectsAdapter extends RecyclerView.Adapter<BrowseProjectsAd
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        TextView title;
+        TextView postalcode;
 
         public ViewHolder(View itemView) {
             super(itemView);
-            title = (TextView) itemView.findViewById(R.id.itemlist_browse_projects_textview);
+            postalcode = (TextView) itemView.findViewById(R.id.itemlist_browse_projects_textview);
             itemView.setOnClickListener(this);
         }
 
@@ -70,7 +70,7 @@ public class BrowseProjectsAdapter extends RecyclerView.Adapter<BrowseProjectsAd
     public void onBindViewHolder(ViewHolder holder, int position) {
 
         BrowseProjectsListItem currentListItem = mList.get(position);
-        holder.title.setText(currentListItem.title);
+        holder.postalcode.setText(currentListItem.postalcode);
     }
 
     @Override
@@ -78,9 +78,6 @@ public class BrowseProjectsAdapter extends RecyclerView.Adapter<BrowseProjectsAd
         return mList.size();
     }
 
-    public interface BrowseProjetsClickListener{
-        void onListItemClicked(View view, int position);
-    }
 
     public void setBrowseProjectsClickListener(final BrowseProjects inputClickListener){
         this.mClickListener = inputClickListener;

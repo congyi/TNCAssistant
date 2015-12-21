@@ -6,6 +6,7 @@ import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -39,7 +40,7 @@ public class ImageCollector extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Log.d(TAG, "I'm here in ImageCollector's OnCreateView");
+        Log.d(TAG, "I'm here in ImageCollector's OnCreate");
 
         Bundle mData = getIntent().getExtras();
         postalcode = mData.getString("postalcode");
@@ -56,6 +57,46 @@ public class ImageCollector extends AppCompatActivity {
             mToolbar.setNavigationIcon(R.drawable.ic_image);
             getSupportActionBar().setTitle("Acquire these pictures");
         }
+
+        //get the parent view of all the thumbnails
+        //TODO: resolve View and ViewGroups?
+        View view = findViewById(R.id.image_collector_grid);
+
+    }
+
+    private void updateThumbnails(View view){
+
+        Log.d(TAG, "I'm here in ImageCollector's updateThumbnails");
+
+        File imageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
+                "TNCAssistant/" + postalcode);
+
+        Log.d(TAG, "imageDir is: " + imageDir.toString());
+
+        File[] tempFileArray = imageDir.listFiles();
+        int directorySize = tempFileArray.length;
+
+        Log.d(TAG, "directorySize: " + String.valueOf(directorySize));
+
+        if (directorySize == 0) //means there are no images to update
+                return;
+
+        for (int i = 0; i < directorySize; i++) {
+
+            int endIndex= tempFileArray[i].getName().indexOf('.'); //get index so i can remove .jpg below
+
+            // i expect start index to be 0, imageName should be img_xxxyyyzz
+            String imageName = tempFileArray[i].getName().substring(0, endIndex);
+            Log.d(TAG, "Image name is: " + imageName);
+
+            mCurrentPhotoPath = tempFileArray[i].getAbsolutePath();
+            Log.d(TAG, "File is:" + tempFileArray[i].getAbsolutePath());
+
+            ImageButton mImageButton = (ImageButton) view.findViewWithTag(imageName);
+
+            if (mImageButton != null)
+                setImageFromFilePath(mImageButton);
+        }
     }
 
     //called when imageButton is pressed
@@ -63,15 +104,12 @@ public class ImageCollector extends AppCompatActivity {
 
         buttonId = view.getId();
         buttonTag = view.getTag().toString();
-
         Log.d(TAG, "I'm here in takePicture and buttonId =" + String.valueOf(buttonId));
         dispatchTakePictureIntent();
     }
 
     //starts image capture process
     private void dispatchTakePictureIntent() {
-
-
 
         Log.d(TAG, "I'm here in ImageCollector's dispatchTakePictureIntent");
 
@@ -87,7 +125,6 @@ public class ImageCollector extends AppCompatActivity {
                 showToast("Image directory doesn't exist");
             return;
             }
-
 
         File imageFile = new File(imageDir, buttonTag + ".jpg");
         mCurrentPhotoPath = imageFile.getAbsolutePath();
@@ -113,11 +150,10 @@ public class ImageCollector extends AppCompatActivity {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
 
             //Identify which picture was taken
-            ImageButton mThumbnailImageButton = (ImageButton) findViewById(buttonId);
+            ImageButton mImageButton = (ImageButton) findViewById(buttonId);
 
             //Show the thumb-sized image
-            setImageFromFilePath(mThumbnailImageButton);
-
+            setImageFromFilePath(mImageButton);
         }
         else
             Log.d(TAG, "Image Capture Failed or Cancelled");
@@ -131,6 +167,9 @@ public class ImageCollector extends AppCompatActivity {
         // Get the dimensions of the ImageButton
         int targetW = imageButton.getWidth();
         int targetH = imageButton.getHeight();
+
+        Log.d(TAG, "ImageButton height is " + String.valueOf(targetH) +
+                " , and ImageButton width is " + String.valueOf(targetW));
 
         // Set Bitmap options
         BitmapFactory.Options bmOptions = new BitmapFactory.Options();

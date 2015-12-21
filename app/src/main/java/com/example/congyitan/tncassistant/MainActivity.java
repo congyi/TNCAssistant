@@ -2,6 +2,7 @@ package com.example.congyitan.tncassistant;
 
 
 import android.app.DialogFragment;
+import android.app.FragmentManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
@@ -41,6 +42,9 @@ public class MainActivity extends AppCompatActivity  implements NewProjectDialog
     private Button dropBox;
     DropboxAPI<AndroidAuthSession> mApi;
 
+    private View buttonView;
+    private Boolean showError = false;
+
     //for Log.d ; debugging
     private static final String TAG = "MainActivity";
 
@@ -62,8 +66,27 @@ public class MainActivity extends AppCompatActivity  implements NewProjectDialog
 
     //called when user presses the "New Project" button on MainActivity
     public void newProject(View view) {
-        DialogFragment newFragment = new NewProjectDialog();
-        newFragment.show(getFragmentManager(), "New Project Dialog");
+
+        buttonView = view;
+
+        if (!showError) {
+
+            Bundle bundle = new Bundle();
+            bundle.putBoolean("showerror", false);
+
+            DialogFragment newFragment = new NewProjectDialog();
+            newFragment.setArguments(bundle);
+            newFragment.show(getFragmentManager(), "New Project Dialog");
+
+        } else {
+
+            Bundle bundle = new Bundle();
+            bundle.putBoolean("showerror", true);
+
+            DialogFragment newFragment = new NewProjectDialog();
+            newFragment.setArguments(bundle);
+            newFragment.show(getFragmentManager(), "New Project Dialog Error");
+        }
     }
 
     //called when user presses the "Browse Projects" button on MainActivity
@@ -91,6 +114,15 @@ public class MainActivity extends AppCompatActivity  implements NewProjectDialog
     @Override
     public void onDialogOK(Bundle mData) {
 
+        String testString = mData.getString("postalcode");
+
+        if (testString == null || testString.length() != 6) {
+
+            showError = true;
+            newProject(buttonView);
+
+        } else {
+
         //write file to storage
         createProjectFile(mData);
 
@@ -98,13 +130,14 @@ public class MainActivity extends AppCompatActivity  implements NewProjectDialog
         Intent intent = new Intent(MainActivity.this, ProjectBuilder.class);
         intent.putExtras(mData);
         startActivity(intent);
+        }
     }
 
     //called when user pressed cancel in NewProjectDialog
     @Override
     public void onDialogCancel() {
         //user pressed cancel in NewProjectDialog
-        Toast.makeText(MainActivity.this, "Cancelled", Toast.LENGTH_SHORT).show();
+        showError = false;
     }
 
     @Override
@@ -259,7 +292,6 @@ public class MainActivity extends AppCompatActivity  implements NewProjectDialog
         edit.clear();
         edit.commit();
     }
-
 
     //Convenience function to change UI state based on being logged in
     private void setLoggedIn(boolean loggedIn) {

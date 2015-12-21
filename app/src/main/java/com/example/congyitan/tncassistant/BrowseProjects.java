@@ -12,6 +12,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -70,15 +71,15 @@ public class BrowseProjects extends AppCompatActivity implements BrowseProjectsA
         File[] tempFileArray =  projectDir.listFiles(); //store all the files we find in the above directory in a temp array
         int directorySize = tempFileArray.length;
 
-        //consolidate this in my arraylist
-        for(int i = 0; i < directorySize; i++){
+        //consolidate all the projects in my ArrayList
+        for (int i = 0; i < directorySize; i++){
 
             File fileToRead = new File(tempFileArray[i], "/info.txt");
 
             try {
 
-                BufferedReader buf = new BufferedReader(new FileReader(fileToRead));
-                String postalcode = buf.readLine();
+                BufferedReader buf = new BufferedReader(new FileReader(fileToRead)); //open reader on the info.txt file
+                String postalcode = buf.readLine(); //read the first line (which is the postalcode)
                 BrowseProjectsListItem newListItem = new BrowseProjectsListItem(postalcode);
                 list.add(newListItem);
 
@@ -94,6 +95,14 @@ public class BrowseProjects extends AppCompatActivity implements BrowseProjectsA
 
         Log.d(TAG, "I'm here in BrowseProjects's onListItemClicked");
 
+        //retrive the view that was clicked and get the textview inside (because it contains the postal code)
+        TextView mTextView = (TextView) view.findViewById(R.id.itemlist_browse_projects_textview);
+        String postalcode = mTextView.getText().toString();
+
+        //put postal code in intent and start Project Builder activity
+        Intent intent =  new Intent(BrowseProjects.this, ProjectBuilder.class);
+        intent.putExtra("postalcode", postalcode);
+        startActivity(intent);
     }
 
 }

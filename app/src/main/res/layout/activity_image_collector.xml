@@ -18,13 +18,14 @@
     </android.support.v7.widget.Toolbar>
 
     <HorizontalScrollView
+        android:id="@+id/horizontal_scroll_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/horizontalScrollView"
         android:layout_below="@+id/toolbar"
         android:layout_alignParentStart="true">
 
         <GridLayout
+            android:id="@+id/image_collector_grid"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 
