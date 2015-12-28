@@ -35,7 +35,7 @@ public class UploadFiles extends AsyncTask<Void, Integer, Boolean> {
 
     private DropboxAPI.UploadRequest mRequest;
     private Context mContext;
-    private final ProgressDialog mDialog;
+    private ProgressDialog mDialog;
 
     private String mErrorMsg;
 
@@ -50,9 +50,12 @@ public class UploadFiles extends AsyncTask<Void, Integer, Boolean> {
         mFiles = files;
         mDirSize = files.size(); //get the size of arraylist
         counter = 0;
+    }
 
+    @Override
+    protected void onPreExecute() {
         //sets progress dialog
-        mDialog = new ProgressDialog(context);
+        mDialog = new ProgressDialog(mContext);
         mDialog.setMax(mDirSize);
         mDialog.setMessage("Uploading " + mFiles.get(counter).getName());
         mDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);

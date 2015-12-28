@@ -5,18 +5,22 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.Image;
 import android.net.Uri;
 import android.nfc.Tag;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
@@ -32,6 +36,10 @@ public class ImageCollector extends AppCompatActivity {
     private Uri mCapturedImageURI = null;
     int buttonId = -1;
     String buttonTag = null;
+
+    //for updating thumbnails
+    //File[] tempFileArray = null;
+    //int directorySize = 0;
 
     // Activity result key for camera
     static final int REQUEST_IMAGE_CAPTURE = 1;
@@ -55,21 +63,30 @@ public class ImageCollector extends AppCompatActivity {
         if (mToolbar != null){
             setSupportActionBar(mToolbar);
             mToolbar.setNavigationIcon(R.drawable.ic_image);
-            getSupportActionBar().setTitle("Acquire these pictures");
+            getSupportActionBar().setTitle("Capture these images");
         }
 
-        //get the parent view of all the thumbnails
-        //TODO: resolve View and ViewGroups?
-        View view = findViewById(R.id.image_collector_grid);
+        //update the thumbnails if pictures already exist
+        final ViewGroup parent = (ViewGroup) findViewById(R.id.image_collector_grid);
 
+        //need this to detect when views have beeen drawn, otherwise getheight() & getwidth() returns 0
+        parent.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+
+               updateThumbnails(parent);
+            }
+        });
     }
 
-    private void updateThumbnails(View view){
+    private void updateThumbnails(ViewGroup parent){
 
         Log.d(TAG, "I'm here in ImageCollector's updateThumbnails");
 
+        //get the local image directory for the project
         File imageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
                 "TNCAssistant/" + postalcode);
+
 
         Log.d(TAG, "imageDir is: " + imageDir.toString());
 
@@ -79,23 +96,32 @@ public class ImageCollector extends AppCompatActivity {
         Log.d(TAG, "directorySize: " + String.valueOf(directorySize));
 
         if (directorySize == 0) //means there are no images to update
-                return;
+            return;
 
+        //update thumbnails of all the images on file
         for (int i = 0; i < directorySize; i++) {
 
-            int endIndex= tempFileArray[i].getName().indexOf('.'); //get index so i can remove .jpg below
+            int endIndex = tempFileArray[i].getName().indexOf('.'); //get index so i can remove .jpg below
 
-            // i expect start index to be 0, imageName should be img_xxxyyyzz
+            //start index to be 0, imageName should be img_xxxyyyzz
             String imageName = tempFileArray[i].getName().substring(0, endIndex);
             Log.d(TAG, "Image name is: " + imageName);
 
+            //retrieve the filepath for the [i]th image
             mCurrentPhotoPath = tempFileArray[i].getAbsolutePath();
-            Log.d(TAG, "File is:" + tempFileArray[i].getAbsolutePath());
+            Log.d(TAG, "File is: " + tempFileArray[i].getAbsolutePath());
 
-            ImageButton mImageButton = (ImageButton) view.findViewWithTag(imageName);
+            //find the thumbnail that fits the [i]th image
+            for (int j = 0; j < parent.getChildCount(); j++){
 
-            if (mImageButton != null)
-                setImageFromFilePath(mImageButton);
+                View thisChild = parent.getChildAt(j);
+                Log.d(TAG, "thisChild's TAG is: " + thisChild.getTag().toString());
+
+                if((thisChild.getTag().toString()).equals(imageName)){
+                    setImageFromFilePath((ImageButton)thisChild);
+                    break;
+                }
+            }
         }
     }
 
@@ -128,7 +154,7 @@ public class ImageCollector extends AppCompatActivity {
 
         File imageFile = new File(imageDir, buttonTag + ".jpg");
         mCurrentPhotoPath = imageFile.getAbsolutePath();
-        Log.d(TAG, "File is:" + imageFile.getAbsolutePath());
+        Log.d(TAG, "File is: " + imageFile.getAbsolutePath());
 
         //creates the Uri to be input as part of Camera Activity Intent
         mCapturedImageURI = Uri.fromFile(imageFile);
@@ -170,6 +196,9 @@ public class ImageCollector extends AppCompatActivity {
 
         Log.d(TAG, "ImageButton height is " + String.valueOf(targetH) +
                 " , and ImageButton width is " + String.valueOf(targetW));
+
+        if (targetW == 0 || targetH == 0) //to avoid divide by zero crash
+            return;
 
         // Set Bitmap options
         BitmapFactory.Options bmOptions = new BitmapFactory.Options();

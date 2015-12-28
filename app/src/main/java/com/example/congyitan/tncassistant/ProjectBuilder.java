@@ -1,10 +1,12 @@
 package com.example.congyitan.tncassistant;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -91,6 +93,20 @@ public class ProjectBuilder extends AppCompatActivity implements ProjectBuilderA
     }
 
     @Override
+    public void onBackPressed() {
+        new AlertDialog.Builder(this)
+                .setTitle("Quit building project?")
+                //.setMessage("Are you sure you want to exit?")
+                .setNegativeButton(android.R.string.no, null)
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface arg0, int arg1) {
+                        ProjectBuilder.super.onBackPressed();
+                    }
+                }).create().show();
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_project_builder, menu);
@@ -149,9 +165,10 @@ public class ProjectBuilder extends AppCompatActivity implements ProjectBuilderA
 
         if(position == 1) {
             Intent intent = new Intent(ProjectBuilder.this, ImageCollector.class);
-            if(mData != null)
-                intent.putExtras(mData);
-            startActivity(intent);
+
+            mData.putString("postalcode", mPostalcode);
+            intent.putExtras(mData);
+            startActivityForResult(intent, PROJECTBUILDER_REQUEST);
         }
     }
 

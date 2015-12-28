@@ -280,16 +280,16 @@ public class ProjectInfo extends AppCompatActivity {
                         tcspinner.setAdapter(adapter);
 
                         switch (tempString) {
-                            case "Tampines":
+                            case "Tampines Town Council":
                                 tcspinner.setSelection(0);
                                 break;
-                            case "Sembawang":
+                            case "Sembawang Town Council":
                                 tcspinner.setSelection(1);
                                 break;
-                            case "Jurong":
+                            case "Jurong East Town Council":
                                 tcspinner.setSelection(2);
                                 break;
-                            case "Marine Parade":
+                            case "Marine Parade Town Council":
                                 tcspinner.setSelection(3);
                                 break;
                             case "Comm-Indst":

@@ -4,10 +4,13 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -46,7 +49,7 @@ public class NewProjectDialog extends DialogFragment{
     @Override
     public Dialog onCreateDialog(final Bundle savedInstanceState) {
 
-        Boolean showError = getArguments().getBoolean("showerror");
+        int showError = getArguments().getInt("showerror");
 
         // Use the Builder class for convenient dialog construction
         AlertDialog.Builder newProjectDialog = new AlertDialog.Builder(getActivity());
@@ -58,15 +61,23 @@ public class NewProjectDialog extends DialogFragment{
         newProjectDialog.setTitle(R.string.new_project_title);
 
         //inflate view so that findViewById on the next line works (is using final dangerous)
-        final View view = View.inflate(getActivity(),R.layout.dialog_new_project, null);
+        View mView = View.inflate(getActivity(),R.layout.dialog_new_project, null);
+        newProjectDialog.setView(mView);
 
-        if(showError)
+        //get the EditText view object
+        final EditText postalcodeET = (EditText) mView.findViewById(R.id.postalcodeET);
+
+        if(showError == 1)
         {
-            TextView showErrorText = (TextView) view.findViewById(R.id.error_display);
+            TextView showErrorText = (TextView) mView.findViewById(R.id.error_display);
             showErrorText.setText("Postal code must be 6 digits long");
         }
 
-        newProjectDialog.setView(view);
+        if(showError == 2)
+        {
+            TextView showErrorText = (TextView) mView.findViewById(R.id.error_display);
+            showErrorText.setText("Project already exists on device");
+        }
 
         //set OK button
         newProjectDialog.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
@@ -75,7 +86,6 @@ public class NewProjectDialog extends DialogFragment{
                 Bundle mData = new Bundle();
 
                 //get the text that the user just input
-                EditText postalcodeET = (EditText) view.findViewById(R.id.postalcodeET);
                 String postalcode = postalcodeET.getText().toString();
 
                 Log.d(TAG, "User input postal code: " + postalcode); //for debugging
@@ -97,4 +107,12 @@ public class NewProjectDialog extends DialogFragment{
         return newProjectDialog.create();
     }
 
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState){
+        super.onActivityCreated(savedInstanceState);
+
+        Log.d(TAG, "I'm here in NewProjectDialog's onActivityCreated");
+
+        getDialog().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+    }
 }

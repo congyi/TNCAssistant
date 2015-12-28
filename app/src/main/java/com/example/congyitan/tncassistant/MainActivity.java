@@ -3,6 +3,7 @@ package com.example.congyitan.tncassistant;
 
 import android.app.DialogFragment;
 import android.app.FragmentManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
@@ -12,7 +13,9 @@ import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.dropbox.client2.DropboxAPI;
@@ -42,8 +45,8 @@ public class MainActivity extends AppCompatActivity  implements NewProjectDialog
     private Button dropBox;
     DropboxAPI<AndroidAuthSession> mApi;
 
-    private View buttonView;
-    private Boolean showError = false;
+    private View buttonView; //this is the NEW PROJECT button view
+    private Integer showError = 0;
 
     //for Log.d ; debugging
     private static final String TAG = "MainActivity";
@@ -67,32 +70,55 @@ public class MainActivity extends AppCompatActivity  implements NewProjectDialog
     //called when user presses the "New Project" button on MainActivity
     public void newProject(View view) {
 
-        buttonView = view;
+        buttonView = view; //store this view to be retrieved in onDialogOK(Bundle mData)
 
-        if (!showError) {
+        if (showError == 0) { //0 means no error to show
 
             Bundle bundle = new Bundle();
-            bundle.putBoolean("showerror", false);
+            bundle.putInt("showerror", 0);
 
             DialogFragment newFragment = new NewProjectDialog();
             newFragment.setArguments(bundle);
             newFragment.show(getFragmentManager(), "New Project Dialog");
+        }
 
-        } else {
+        if (showError == 1) { //1 means postal code is too short
 
             Bundle bundle = new Bundle();
-            bundle.putBoolean("showerror", true);
+            bundle.putInt("showerror", 1);
 
             DialogFragment newFragment = new NewProjectDialog();
             newFragment.setArguments(bundle);
-            newFragment.show(getFragmentManager(), "New Project Dialog Error");
+            newFragment.show(getFragmentManager(), "New Project Dialog Error 1");
+        }
+
+        if (showError == 2) { //2 means postal code already exists locally
+
+            Bundle bundle = new Bundle();
+            bundle.putInt("showerror", 2);
+
+            DialogFragment newFragment = new NewProjectDialog();
+            newFragment.setArguments(bundle);
+            newFragment.show(getFragmentManager(), "New Project Dialog Error 2");
         }
     }
 
+
     //called when user presses the "Browse Projects" button on MainActivity
     public void browseProjects(View view) throws DropboxException {
-        Intent intent = new Intent(MainActivity.this, BrowseProjects.class);
-        startActivity(intent);
+
+        //Get the project directory
+        File projectDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS), "TNCAssistant/");
+
+        File[] tempArray = projectDir.listFiles();
+
+        if(!projectDir.exists() || tempArray.length == 0){
+            showToast("There are no projects here. Create one!");
+            return;
+        } else {
+            Intent intent = new Intent(MainActivity.this, BrowseProjects.class);
+            startActivity(intent);
+        }
     }
 
     //called when user presses the "Connect to Dropbox" button on MainActivity
@@ -114,30 +140,51 @@ public class MainActivity extends AppCompatActivity  implements NewProjectDialog
     @Override
     public void onDialogOK(Bundle mData) {
 
-        String testString = mData.getString("postalcode");
+        String userInput = mData.getString("postalcode");
 
-        if (testString == null || testString.length() != 6) {
+        if (userInput == null || userInput.length() != 6) {
 
-            showError = true;
+            showError = 1;
             newProject(buttonView);
-
+        } else if(doesProjectExist(userInput))
+        {
+            showError = 2;
+            newProject(buttonView);
         } else {
 
-        //write file to storage
-        createProjectFile(mData);
+            //write file to storage
+            createProjectFile(mData);
 
-        //start activity to build project: ProjectBuilder
-        Intent intent = new Intent(MainActivity.this, ProjectBuilder.class);
-        intent.putExtras(mData);
-        startActivity(intent);
+            //start activity to build project: ProjectBuilder
+            Intent intent = new Intent(MainActivity.this, ProjectBuilder.class);
+            intent.putExtras(mData);
+            startActivity(intent);
         }
     }
 
+    //check if project already exists locally (on device)
+    private boolean doesProjectExist(String userInput){
+
+        //Get the project directory
+        File projectDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS), "TNCAssistant/");
+
+        File[] tempArray = projectDir.listFiles();
+
+        if(!projectDir.exists() || tempArray.length == 0)
+            return false;
+
+        for (int i = 0; i < tempArray.length; i++){
+            if (tempArray[i].getName().equals(userInput))
+                return true;
+        }
+
+        return false;
+    }
     //called when user pressed cancel in NewProjectDialog
     @Override
     public void onDialogCancel() {
         //user pressed cancel in NewProjectDialog
-        showError = false;
+        showError = 0;
     }
 
     @Override
@@ -196,6 +243,7 @@ public class MainActivity extends AppCompatActivity  implements NewProjectDialog
         if (!newProjectDir.exists()) {
             if (!newProjectDir.mkdirs()) {
                 Log.d(TAG, "Failed to create directory");
+                showToast("Tried and failed to create directory for Documents");
                 return false;
             }
         }
@@ -224,6 +272,8 @@ public class MainActivity extends AppCompatActivity  implements NewProjectDialog
         if (!imageDir.exists()) {
             if (!imageDir.mkdirs()) {
                 Log.d(TAG, "Failed to create directory");
+                showToast("Tried and failed to create directory for Images");
+                return false;
             }
         }
 
