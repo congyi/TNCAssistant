@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.dropbox.client2.DropboxAPI;
@@ -39,11 +40,14 @@ public class UploadFiles extends AsyncTask<Void, Integer, Boolean> {
 
     private String mErrorMsg;
 
+    //for Log.d ; debugging
+    private static final String TAG = "UploadFiles";
+
     //Constructor for class
     public UploadFiles(Context context, DropboxAPI<?> api, String dropboxPath,
                        ArrayList<File> files) {
 
-        mContext = context.getApplicationContext(); //Get context this way so we don't accidentally leak activities
+        mContext = context; //Get context this way so we don't accidentally leak activities
         mApi = api; //get the Dropbox API
         mPath = dropboxPath;
 
@@ -54,9 +58,11 @@ public class UploadFiles extends AsyncTask<Void, Integer, Boolean> {
 
     @Override
     protected void onPreExecute() {
-        //sets progress dialog
+//sets progress dialog
         mDialog = new ProgressDialog(mContext);
-        mDialog.setMax(mDirSize);
+        mDialog.setCancelable(false);
+        mDialog.setIndeterminate(false);
+        mDialog.setMax(100);
         mDialog.setMessage("Uploading " + mFiles.get(counter).getName());
         mDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         mDialog.setProgress(0);
@@ -159,8 +165,10 @@ public class UploadFiles extends AsyncTask<Void, Integer, Boolean> {
 
     @Override
     protected void onProgressUpdate(Integer... progress) {
-        mDialog.setMessage("Uploading " + mFiles.get(counter).getName());
-        int percent = (int)((counter/mDirSize * 100) + 0.5);
+
+        int percent = (int) ((double) progress[0]/(double) mDirSize * 100);
+        mDialog.setMessage("Uploading " + mFiles.get(progress[0]).getName());
+        Log.d(TAG, "counter is " + String.valueOf(progress[0]) + ", mDirSize is " + String.valueOf(mDirSize) + ", percent is " + String.valueOf(percent));
         mDialog.setProgress(percent);
     }
 
