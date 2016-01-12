@@ -286,7 +286,7 @@ public class ProjectInfo extends AppCompatActivity {
                             case "Sembawang Town Council":
                                 tcspinner.setSelection(1);
                                 break;
-                            case "Jurong East Town Council":
+                            case "Jurong Town Council":
                                 tcspinner.setSelection(2);
                                 break;
                             case "Marine Parade Town Council":

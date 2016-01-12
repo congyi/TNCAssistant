@@ -1,11 +1,13 @@
 package com.example.congyitan.tncassistant;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -91,18 +93,15 @@ public class BrowseProjects extends AppCompatActivity implements BrowseProjectsA
     }
 
     @Override
-    public void onListItemClicked(View view, int position) {
+    public void onListItemClicked(View view, final String postalcode, int position) {
 
         Log.d(TAG, "I'm here in BrowseProjects's onListItemClicked");
 
-        //retrive the view that was clicked and get the textview inside (because it contains the postal code)
-        TextView mTextView = (TextView) view.findViewById(R.id.itemlist_browse_projects_textview);
-        String postalcode = mTextView.getText().toString();
-
         //put postal code in intent and start Project Builder activity
-        Intent intent =  new Intent(BrowseProjects.this, ProjectBuilder.class);
+        Intent intent = new Intent(BrowseProjects.this, ProjectBuilder.class);
         intent.putExtra("postalcode", postalcode);
         startActivity(intent);
+
     }
 
 }

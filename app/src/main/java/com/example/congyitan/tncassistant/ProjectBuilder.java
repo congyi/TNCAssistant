@@ -96,7 +96,7 @@ public class ProjectBuilder extends AppCompatActivity implements ProjectBuilderA
     public void onBackPressed() {
         new AlertDialog.Builder(this)
                 .setTitle("Quit building project?")
-                //.setMessage("Are you sure you want to exit?")
+                        //.setMessage("Are you sure you want to exit?")
                 .setNegativeButton(android.R.string.no, null)
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
 
@@ -218,8 +218,8 @@ public class ProjectBuilder extends AppCompatActivity implements ProjectBuilderA
         }
 
         //if required info not present, just exit immediately
-        if(mTownCouncil == null || mProjectPhase == null || mBlkno == null){
-            showToast("Please fill in Project Phase, Town Council, and Blk No in Project Info");
+        if(mTownCouncil == null || mProjectPhase == null || mBlkno == null || mStreetname == null){
+            showToast("Please fill in Project Phase, Town Council, Street Name and Blk No in Project Info");
             return;
         }
 
@@ -242,7 +242,7 @@ public class ProjectBuilder extends AppCompatActivity implements ProjectBuilderA
 
         //define Dropbox directory to upload to
         String uploadDir = "/HDB Testing and Commissioning/" +
-                mProjectPhase + "/Blocks/" + mTownCouncil + "/" + mBlkno + "/" ;
+                mProjectPhase + "/Blocks/" + mTownCouncil + "/" + mBlkno + " " + mStreetname + "/" ;
 
         //upload all the files
         UploadFiles upload = new UploadFiles(this, mApi, uploadDir, filesToUpload);

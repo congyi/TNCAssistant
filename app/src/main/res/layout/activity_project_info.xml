@@ -121,7 +121,8 @@
                 android:ems="6"
                 android:layout_below="@+id/blkno"
                 android:layout_alignStart="@+id/blkno"
-                android:inputType="none"/>
+                android:inputType="none"
+                android:singleLine="true"/>
 
             <TextView
                 android:id="@+id/postalcode"
@@ -141,7 +142,7 @@
                 android:focusable="false"
                 android:layout_above="@+id/divider3"
                 android:layout_alignStart="@+id/postalcode"
-                android:layout_alignParentEnd="false" />
+                android:layout_alignParentEnd="false"/>
 
             <View
                 android:id="@+id/divider3"
@@ -167,7 +168,7 @@
                 android:layout_alignStart="@+id/streetname"
                 android:singleLine="true"
                 android:layout_marginRight="10dp"
-                android:layout_alignParentEnd="true" />
+                android:layout_alignParentEnd="true"/>
 
         </RelativeLayout>
     </ScrollView>
