@@ -83,6 +83,11 @@ public class BrowseProjectsAdapter extends RecyclerView.Adapter<BrowseProjectsAd
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
 
+                            int position = getAdapterPosition();
+
+                            mList.remove(position);
+                            notifyItemRemoved(position);
+
                             //get the Documents directory of TNCAssistant
                             File docDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS),
                                     "TNCAssistant/" + postalcode + "/");
@@ -114,6 +119,7 @@ public class BrowseProjectsAdapter extends RecyclerView.Adapter<BrowseProjectsAd
             for (int i = 0; i < vg.getChildCount(); i++) {
 
                 View thisChild = vg.getChildAt(i);
+
                 if (thisChild instanceof TextView) {
                     textView = (TextView) thisChild; //Found it! there's only 1 textview
                     postalcode = textView.getText().toString();
@@ -126,10 +132,7 @@ public class BrowseProjectsAdapter extends RecyclerView.Adapter<BrowseProjectsAd
             //check if user pressed delete
             if(view.getId() == R.id.itemlist_browse_projects_delete) {
                 //user pressed delete, so remove item from recyclerview and delete from file
-                mList.remove(getAdapterPosition());
-                notifyItemRemoved(getAdapterPosition());
                 deleteProject(postalcode);
-                return;
 
             } else
                 //user did not press delete
