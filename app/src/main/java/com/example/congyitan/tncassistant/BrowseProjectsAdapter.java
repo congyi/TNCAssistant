@@ -83,6 +83,7 @@ public class BrowseProjectsAdapter extends RecyclerView.Adapter<BrowseProjectsAd
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
 
+                            //remove project from arraylist
                             int position = getAdapterPosition();
 
                             mList.remove(position);
@@ -94,7 +95,7 @@ public class BrowseProjectsAdapter extends RecyclerView.Adapter<BrowseProjectsAd
 
                             recursiveDelete(docDir);
 
-                            //get the Documents directory of TNCAssistant
+                            //get the Pictures directory of TNCAssistant
                             File imageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
                                     "TNCAssistant/" + postalcode + "/");
 

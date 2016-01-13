@@ -58,7 +58,7 @@ public class UploadFiles extends AsyncTask<Void, Integer, Boolean> {
 
     @Override
     protected void onPreExecute() {
-//sets progress dialog
+        //sets progress dialog
         mDialog = new ProgressDialog(mContext);
         mDialog.setCancelable(false);
         mDialog.setIndeterminate(false);

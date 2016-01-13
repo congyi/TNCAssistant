@@ -5,9 +5,7 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.Image;
 import android.net.Uri;
-import android.nfc.Tag;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
@@ -15,7 +13,6 @@ import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -65,16 +62,25 @@ public class ImageCollector extends AppCompatActivity {
             mToolbar.setNavigationIcon(R.drawable.ic_image);
             getSupportActionBar().setTitle("Capture these images");
         }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
 
         //update the thumbnails if pictures already exist
         final ViewGroup parent = (ViewGroup) findViewById(R.id.image_collector_grid);
+
+        //get the local image directory for the project
+        final File imageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
+                "TNCAssistant/" + postalcode);
 
         //need this to detect when views have beeen drawn, otherwise getheight() & getwidth() returns 0
         parent.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
             @Override
             public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
 
-               updateThumbnails(parent);
+                UpdateThumbnails updater = new UpdateThumbnails(parent, imageDir);
             }
         });
     }
@@ -281,5 +287,70 @@ public class ImageCollector extends AppCompatActivity {
     private void showToast(String msg) {
         Toast toastMessage = Toast.makeText(this, msg, Toast.LENGTH_SHORT);
         toastMessage.show();
+    }
+
+    private class UpdateThumbnails extends AsyncTask<Void, ViewGroup, Void>{
+
+        private File mImageDir;
+        private ViewGroup mParent;
+        File[] tempFileArray;
+        int directorySize;
+        int childCount;
+
+
+        private UpdateThumbnails(ViewGroup parent, File imageDir) {
+
+            mImageDir = imageDir;
+            mParent = parent;
+            File[] tempFileArray = mImageDir.listFiles();
+            directorySize = tempFileArray.length;
+            childCount = mParent.getChildCount();
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            boolean success = false;
+
+            if (directorySize == 0) //means there are no images to update
+                return null;
+
+            //update thumbnails of all the images on file
+            for (int i = 0; i < directorySize; i++) {
+
+                int endIndex = tempFileArray[i].getName().indexOf('.'); //get index so i can remove .jpg below
+
+                //start index to be 0, imageName should be img_xxxyyyzz
+                String imageName = tempFileArray[i].getName().substring(0, endIndex);
+                Log.d(TAG, "Image name is: " + imageName);
+
+                //retrieve the filepath for the [i]th image
+                mCurrentPhotoPath = tempFileArray[i].getAbsolutePath();
+                Log.d(TAG, "File is: " + tempFileArray[i].getAbsolutePath());
+
+                //find the thumbnail that fits the [i]th image
+                for (int j = 0; j < childCount; j++){
+
+                    success = publishProgress(mParent);
+
+                }
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onProgressUpdate(ViewGroup... progress) {
+
+            ViewGroup parent = progress[0];
+            View thisChild = mParent.getChildAt(j);
+
+            if((thisChild.getTag().toString()).equals(imageName)){
+                setImageFromFilePath((ImageButton)thisChild);
+
+            }
+
+        }
+
     }
 }
