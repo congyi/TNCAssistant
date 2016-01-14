@@ -1,4 +1,4 @@
-package com.example.congyitan.tncassistant;
+package com.example.congyitan.tncassistant.utilities;
 
 
 import android.content.Context;
@@ -10,10 +10,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewParent;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.example.congyitan.tncassistant.BrowseProjects;
+import com.example.congyitan.tncassistant.R;
 
 import java.io.File;
 import java.util.Collections;

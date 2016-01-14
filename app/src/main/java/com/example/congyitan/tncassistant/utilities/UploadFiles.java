@@ -1,4 +1,4 @@
-package com.example.congyitan.tncassistant;
+package com.example.congyitan.tncassistant.utilities;
 
 import android.app.ProgressDialog;
 import android.content.Context;

@@ -6,7 +6,6 @@ import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -22,6 +21,8 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 import java.io.File;
+
+
 
 public class ImageCollector extends AppCompatActivity {
 
@@ -80,7 +81,7 @@ public class ImageCollector extends AppCompatActivity {
             @Override
             public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
 
-                UpdateThumbnails updater = new UpdateThumbnails(parent, imageDir);
+                updateThumbnails(parent);
             }
         });
     }
@@ -289,68 +290,4 @@ public class ImageCollector extends AppCompatActivity {
         toastMessage.show();
     }
 
-    private class UpdateThumbnails extends AsyncTask<Void, ViewGroup, Void>{
-
-        private File mImageDir;
-        private ViewGroup mParent;
-        File[] tempFileArray;
-        int directorySize;
-        int childCount;
-
-
-        private UpdateThumbnails(ViewGroup parent, File imageDir) {
-
-            mImageDir = imageDir;
-            mParent = parent;
-            File[] tempFileArray = mImageDir.listFiles();
-            directorySize = tempFileArray.length;
-            childCount = mParent.getChildCount();
-        }
-
-        @Override
-        protected Void doInBackground(Void... params) {
-
-            boolean success = false;
-
-            if (directorySize == 0) //means there are no images to update
-                return null;
-
-            //update thumbnails of all the images on file
-            for (int i = 0; i < directorySize; i++) {
-
-                int endIndex = tempFileArray[i].getName().indexOf('.'); //get index so i can remove .jpg below
-
-                //start index to be 0, imageName should be img_xxxyyyzz
-                String imageName = tempFileArray[i].getName().substring(0, endIndex);
-                Log.d(TAG, "Image name is: " + imageName);
-
-                //retrieve the filepath for the [i]th image
-                mCurrentPhotoPath = tempFileArray[i].getAbsolutePath();
-                Log.d(TAG, "File is: " + tempFileArray[i].getAbsolutePath());
-
-                //find the thumbnail that fits the [i]th image
-                for (int j = 0; j < childCount; j++){
-
-                    success = publishProgress(mParent);
-
-                }
-            }
-
-            return null;
-        }
-
-        @Override
-        protected void onProgressUpdate(ViewGroup... progress) {
-
-            ViewGroup parent = progress[0];
-            View thisChild = mParent.getChildAt(j);
-
-            if((thisChild.getTag().toString()).equals(imageName)){
-                setImageFromFilePath((ImageButton)thisChild);
-
-            }
-
-        }
-
-    }
 }

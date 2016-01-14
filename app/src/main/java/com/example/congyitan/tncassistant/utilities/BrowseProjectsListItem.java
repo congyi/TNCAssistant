@@ -1,11 +1,11 @@
-package com.example.congyitan.tncassistant;
+package com.example.congyitan.tncassistant.utilities;
 
 /**
  * An object of this class represents one item on the list in ProjectBuilder
  * Created by Congyi Tan on 12/11/2015.
  */
 
-class BrowseProjectsListItem {
+public class BrowseProjectsListItem {
 
     String postalcode;
 
@@ -20,7 +20,7 @@ class BrowseProjectsListItem {
     }
 
     //constructor
-    BrowseProjectsListItem(String postalcode) {
+    public BrowseProjectsListItem(String postalcode) {
         this.postalcode = postalcode;
     }
 }
