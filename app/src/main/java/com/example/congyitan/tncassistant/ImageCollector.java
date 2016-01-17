@@ -1,6 +1,7 @@
 package com.example.congyitan.tncassistant;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
@@ -17,30 +18,35 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.Toast;
+
+import com.example.congyitan.tncassistant.utilities.ImageAdapter;
 
 import java.io.File;
 
 
-
-public class ImageCollector extends AppCompatActivity {
+public class ImageCollector extends AppCompatActivity implements ImageAdapter.ImageAdapterListener {
 
     //for Log.d ; debugging
     private static final String TAG = "ImageCollector";
 
     // Required for camera operations in order to save the image file on resume.
     String mCurrentPhotoPath, postalcode;
-    private Uri mCapturedImageURI = null;
-    int buttonId = -1;
-    String buttonTag = null;
 
-    //for updating thumbnails
-    //File[] tempFileArray = null;
-    //int directorySize = 0;
+    private Uri mCapturedImageURI = null;
+    private Context mContext;
+
+    int buttonId = -1;
+    int mGridWidth = 0;
+    String buttonTag = null;
 
     // Activity result key for camera
     static final int REQUEST_IMAGE_CAPTURE = 1;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +56,8 @@ public class ImageCollector extends AppCompatActivity {
 
         Bundle mData = getIntent().getExtras();
         postalcode = mData.getString("postalcode");
+
+        mContext = ImageCollector.this;
 
         //inflate layout
         setContentView(R.layout.activity_image_collector);
@@ -63,28 +71,33 @@ public class ImageCollector extends AppCompatActivity {
             mToolbar.setNavigationIcon(R.drawable.ic_image);
             getSupportActionBar().setTitle("Capture these images");
         }
+
+        //get the gridview and put images in it
+        final GridView imageGrid = (GridView) findViewById(R.id.image_collector_grid);
+
+        //need this to detect when views have been drawn, otherwise getheight() & getwidth() returns 0
+        imageGrid.getViewTreeObserver().addOnGlobalLayoutListener(
+                new ViewTreeObserver.OnGlobalLayoutListener() {
+                    @Override
+                    public void onGlobalLayout() {
+
+                        Log.d(TAG, "I'm here in ImageCollector's imageGridOnLayoutChangeListener");
+
+                        mGridWidth = imageGrid.getWidth();
+
+                        Log.d(TAG, "ImageGrid width is " + String.valueOf(mGridWidth));
+
+                        imageGrid.setAdapter(new ImageAdapter(mContext, mGridWidth));
+
+                        imageGrid.getViewTreeObserver()
+                                .removeOnGlobalLayoutListener(this);
+
+                        // updateThumbnails(imageGrid);
+                    }
+                });
+
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-        //update the thumbnails if pictures already exist
-        final ViewGroup parent = (ViewGroup) findViewById(R.id.image_collector_grid);
-
-        //get the local image directory for the project
-        final File imageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
-                "TNCAssistant/" + postalcode);
-
-        //need this to detect when views have beeen drawn, otherwise getheight() & getwidth() returns 0
-        parent.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
-            @Override
-            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
-
-                updateThumbnails(parent);
-            }
-        });
-    }
 
     private void updateThumbnails(ViewGroup parent){
 
@@ -132,14 +145,18 @@ public class ImageCollector extends AppCompatActivity {
         }
     }
 
-    //called when imageButton is pressed
-    public void takePicture(View view) {
+    @Override
+    public void imageButtonPressed(View v) {
 
-        buttonId = view.getId();
-        buttonTag = view.getTag().toString();
+        buttonId = v.getId();
+        //buttonTag = v.getTag().toString();
         Log.d(TAG, "I'm here in takePicture and buttonId =" + String.valueOf(buttonId));
         dispatchTakePictureIntent();
     }
+
+    //called when imageButton is pressed
+    //public void takePicture(View view) {
+   // }
 
     //starts image capture process
     private void dispatchTakePictureIntent() {
@@ -289,5 +306,6 @@ public class ImageCollector extends AppCompatActivity {
         Toast toastMessage = Toast.makeText(this, msg, Toast.LENGTH_SHORT);
         toastMessage.show();
     }
+
 
 }

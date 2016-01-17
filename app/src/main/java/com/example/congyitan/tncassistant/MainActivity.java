@@ -180,6 +180,7 @@ public class MainActivity extends AppCompatActivity  implements NewProjectDialog
 
         return false;
     }
+
     //called when user pressed cancel in NewProjectDialog
     @Override
     public void onDialogCancel() {
