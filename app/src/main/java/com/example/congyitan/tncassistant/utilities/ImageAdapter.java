@@ -4,14 +4,13 @@ package com.example.congyitan.tncassistant.utilities;
  * Created by Congyi Tan on 1/17/2016.
  */
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,10 +20,9 @@ import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageButton;
 
-
-import com.example.congyitan.tncassistant.ImageCollector;
 import com.example.congyitan.tncassistant.R;
 
+import java.io.File;
 import java.lang.ref.WeakReference;
 
 public class ImageAdapter extends BaseAdapter {
@@ -33,8 +31,11 @@ public class ImageAdapter extends BaseAdapter {
     private static final String TAG = "ImageAdapter";
 
     private Context mContext;
-    private int mIBHeight, mGridWidth, mIBWidth;
+    private Resources mResources;
+    private int mIBHeight, mGridWidth, mIBWidth, mImageDirectorySize;
     private float scaleFactor;
+    private File mImageDir;
+    private File mTempFileArray[];
     private static final int padding  = 5;
 
     private ImageAdapterListener mListener;
@@ -52,12 +53,20 @@ public class ImageAdapter extends BaseAdapter {
     };
 
     // Constructor
-    public ImageAdapter(Context c, int GridWidth){
+    public ImageAdapter(Context c, int gridWidth, File imageDir){
 
         Log.d(TAG, "I'm here in ImageAdapter's constructor");
 
         mContext = c;
-        mGridWidth =  GridWidth;
+        mResources = c.getResources();
+
+        mGridWidth =  gridWidth;
+        mImageDir = imageDir;
+
+
+        mTempFileArray = mImageDir.listFiles();
+        mImageDirectorySize = mTempFileArray.length;
+
         setIBDimensions();
     }
 
@@ -66,14 +75,15 @@ public class ImageAdapter extends BaseAdapter {
         return mThumbIds.length;
     }
 
+    //not used
     @Override
     public Object getItem(int position) {
-        return mThumbIds[position];
+        return null;
     }
 
     @Override
     public long getItemId(int position) {
-        return 0;
+        return mThumbIds[position];
     }
 
     // create a new ImageView for each item referenced by the Adapter
@@ -92,28 +102,59 @@ public class ImageAdapter extends BaseAdapter {
         else {
             imageButton = (ImageButton) convertView;
         }
-
-        Log.d(TAG, "mThumbsIds is " +  mThumbIds[position]);
-
-        BitmapWorkerTask placeImage = new BitmapWorkerTask(imageButton, position);
-        placeImage.execute();
-
-        //imageButton.setImageBitmap(
-                //decodeSampledBitmapFromResource(mContext.getResources(), mThumbIds[position]));
+        //Log.d(TAG, "mThumbsIds is " + mThumbIds[position]);
+        loadBitmap(imageButton, position);
 
         return imageButton;
     }
 
-    private Bitmap decodeSampledBitmapFromResource(Resources res, int resId) {
+    public void loadBitmap(ImageButton imageButton, int resId) {
 
+        Bitmap mPlaceHolderBitmap = decodeSampledBitmapFromResource(mResources, resId);
+
+        if (cancelPotentialWork(resId,imageButton)) {
+            final BitmapWorkerTask task = new BitmapWorkerTask(imageButton, resId);
+            final AsyncDrawable asyncDrawable =
+                    new AsyncDrawable(mResources, mPlaceHolderBitmap, task);
+            imageButton.setImageDrawable(asyncDrawable);
+            task.execute(resId);
+        }
+    }
+
+    private Bitmap decodeSampledBitmapFromResource(Resources res, int resId) {
 
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = false;
         options.inSampleSize = (int) Math.ceil(scaleFactor); //ceil to scale it down a little more than needed
-        // Calculate inSampleSize
-       //options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
 
         return BitmapFactory.decodeResource(res, resId, options);
+    }
+
+    private Bitmap decodeSampledBitmapFromFile(String imagePath) {
+
+        float imageScaleFactor;
+        Drawable d = Drawable.createFromPath(imagePath);
+
+        imageScaleFactor = Math.max(d.getIntrinsicWidth()/mIBWidth,d.getIntrinsicHeight()/mIBHeight);
+
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = false;
+        options.inSampleSize = (int) Math.ceil(imageScaleFactor); //ceil to scale it down a little more than needed
+
+        return BitmapFactory.decodeFile(imagePath, options);
+    }
+
+    private String getImageNameFromFile (File inputFile){
+
+        String outputName = null;
+
+        int endIndex = inputFile.getName().indexOf('.'); //get index so i can remove .jpg below
+
+        //start index to be 0, imageName should be img_xxxyyyzz
+        outputName = inputFile.getName().substring(0, endIndex);
+        //Log.d(TAG, "Image name is: " + imageName);
+
+        return outputName;
     }
 
     private void setIBDimensions(){
@@ -123,48 +164,137 @@ public class ImageAdapter extends BaseAdapter {
         //ceil to make it a little bigger than needed
         mIBWidth = (int) Math.ceil((mGridWidth - (4 * padding))/2);
 
-        //pick a random image from Drawable (they should all be the same)
+        //pick a random image from Drawable Resources(they should all be the same)
         //get its width and divide it by the ImageButton height to get the scaleFactor
-        Drawable d = mContext.getResources().getDrawable(R.drawable.img_ballast, null);
+        Drawable d = mResources.getDrawable(R.drawable.img_ballast, null);
         scaleFactor = (float) d.getIntrinsicWidth() / (float) mIBWidth;
 
         //with the scaleFactor, we can determine the height of ImageButton:
         //Add padding to top and bottom
         //ceil to make it a little bigger than needed
-        mIBHeight= ((int) Math.ceil((float) d.getIntrinsicHeight() / scaleFactor)) + (2 * padding);
+        mIBHeight = ((int) Math.ceil((float) d.getIntrinsicHeight() / scaleFactor)) + (2 * padding);
 
     }
 
-    class BitmapWorkerTask extends AsyncTask<Void, Void, Bitmap> {
+    //The cancelPotentialWork method checks if another running task is already
+    // associated with the ImageView. If so, it attempts to cancel the previous
+    // task by calling cancel(). In a small number of cases, the new task data matches
+    // the existing task and nothing further needs to happen.
+    public static boolean cancelPotentialWork(int resId, ImageButton imageButton) {
+
+        final BitmapWorkerTask bitmapWorkerTask = getBitmapWorkerTask(imageButton);
+
+        if (bitmapWorkerTask != null) {
+            final int bitmapData = bitmapWorkerTask.data;
+            // If bitmapData is not yet set or it differs from the new data
+            if (bitmapData == 0 || bitmapData != resId) {
+                // Cancel previous task
+                bitmapWorkerTask.cancel(true);
+            } else {
+                // The same work is already in progress
+                return false;
+            }
+        }
+
+        // No task associated with the ImageButton, or an existing task was cancelled
+        return true;
+    }
+
+    //getBitmapWorkerTask() is used above to retrieve the task associated with a particular
+    // ImageView:
+    private static BitmapWorkerTask getBitmapWorkerTask(ImageButton imageButton) {
+        if (imageButton != null) {
+            final Drawable drawable = imageButton.getDrawable();
+            if (drawable instanceof AsyncDrawable) {
+                final AsyncDrawable asyncDrawable = (AsyncDrawable) drawable;
+                return asyncDrawable.getBitmapWorkerTask();
+            }
+        }
+        return null;
+    }
+
+    static class AsyncDrawable extends BitmapDrawable {
+
+        private final WeakReference<BitmapWorkerTask> bitmapWorkerTaskReference;
+
+        //Constructor
+        public AsyncDrawable(Resources res, Bitmap bitmap,
+                             BitmapWorkerTask bitmapWorkerTask) {
+            super(res, bitmap);
+            bitmapWorkerTaskReference =
+                    new WeakReference<BitmapWorkerTask>(bitmapWorkerTask);
+        }
+
+        public BitmapWorkerTask getBitmapWorkerTask() {
+            return bitmapWorkerTaskReference.get();
+        }
+    }
+
+    class BitmapWorkerTask extends AsyncTask<Integer, Void, Bitmap> {
 
         private final WeakReference<ImageButton> imageButtonReference;
-
+        private int data = 0;
         private int mPosition;
 
+        //constructor
         public BitmapWorkerTask(ImageButton imageButton, int position) {
             // Use a WeakReference to ensure the ImageButton can be garbage collected
             imageButtonReference = new WeakReference<ImageButton>(imageButton);
             mPosition = position;
+
         }
 
         // Decode image in background.
         @Override
-        protected Bitmap doInBackground(Void... params) {
+        protected Bitmap doInBackground(Integer... params) {
 
-            return decodeSampledBitmapFromResource
-                    (mContext.getResources(), mThumbIds[mPosition]);
+            //Check if there are images in the Pictures Directory
+            //If not, means nothing to update -> so return template Drawable
+            if (mImageDirectorySize == 0) {
+                return decodeSampledBitmapFromResource (mResources, (int) getItemId(mPosition));
+            }
+
+            else {
+
+                //get the ThumbsId[position] resource name so we can compare to our file
+                String thumbsIdName = mResources.getResourceEntryName((int) getItemId(mPosition));
+                //Log.d(TAG,"thumbsIdName is " + thumbsIdName);
+
+                //check the Pictures Directory to see if there's a fileName that matches
+                //if so, set the Bitmap to the imageButton
+                for (int i = 0; i < mImageDirectorySize; i++) {
+
+                    //start index to be 0, imageName should be img_xxxyyyzz
+                    String thisImageName = getImageNameFromFile(mTempFileArray[i]);
+                    //Log.d(TAG,"thisImageName is " + thisImageName);
+
+                    if(thisImageName.equals(thumbsIdName)){
+                        String imagePath = mTempFileArray[i].getAbsolutePath();
+                        return decodeSampledBitmapFromFile(imagePath);
+                    }
+                }
+
+                //means there's no matching bitmap on file for this image
+                //so load the default template
+                return decodeSampledBitmapFromResource (mResources, (int) getItemId(mPosition));
+            }
         }
 
         // Once complete, see if ImageView is still around and set bitmap.
         @Override
         protected void onPostExecute(Bitmap bitmap) {
+
+            if (isCancelled()) {
+                bitmap = null;
+            }
+
             if (imageButtonReference != null && bitmap != null) {
 
-                Animation myFadeInAnimation = AnimationUtils.loadAnimation(mContext, R.anim.fadein);
                 final ImageButton imageButton = imageButtonReference.get();
+                final BitmapWorkerTask bitmapWorkerTask = getBitmapWorkerTask(imageButton);
 
-                if (imageButton != null) {
-
+                if (this == bitmapWorkerTask && imageButton != null) {
+                    Animation myFadeInAnimation = AnimationUtils.loadAnimation(mContext, R.anim.fadein);
                     imageButton.setImageBitmap(bitmap);
                     imageButton.setAnimation(myFadeInAnimation);
                     mListener = (ImageAdapterListener) mContext;
@@ -172,7 +302,7 @@ public class ImageAdapter extends BaseAdapter {
                         @Override
                         public void onClick(View v) {
 
-                            mListener.imageButtonPressed(v);
+                            mListener.imageButtonPressed(v, (int) getItemId(mPosition));
                         }
                     });
                 }
@@ -181,6 +311,7 @@ public class ImageAdapter extends BaseAdapter {
     }
 
     public interface ImageAdapterListener {
-         void imageButtonPressed(View v);
+         void imageButtonPressed(View v, int resId);
     }
+
 }

@@ -34,18 +34,22 @@ public class ImageCollector extends AppCompatActivity implements ImageAdapter.Im
     private static final String TAG = "ImageCollector";
 
     // Required for camera operations in order to save the image file on resume.
-    String mCurrentPhotoPath, postalcode;
 
     private Uri mCapturedImageURI = null;
     private Context mContext;
 
-    int buttonId = -1;
-    int mGridWidth = 0;
-    String buttonTag = null;
+    int mGridWidth = 0; //initialise to 0; this will be checked and changed later
+
+    ImageButton mImageButton;
+
+    String mImageName = null;
+    String mCurrentPhotoPath;
+    String mPostalCode;
+
+    ImageAdapter mAdapter;
 
     // Activity result key for camera
     static final int REQUEST_IMAGE_CAPTURE = 1;
-
 
 
     @Override
@@ -54,8 +58,8 @@ public class ImageCollector extends AppCompatActivity implements ImageAdapter.Im
 
         Log.d(TAG, "I'm here in ImageCollector's OnCreate");
 
-        Bundle mData = getIntent().getExtras();
-        postalcode = mData.getString("postalcode");
+        Bundle data = getIntent().getExtras();
+        mPostalCode = data.getString("postalcode");
 
         mContext = ImageCollector.this;
 
@@ -75,19 +79,23 @@ public class ImageCollector extends AppCompatActivity implements ImageAdapter.Im
         //get the gridview and put images in it
         final GridView imageGrid = (GridView) findViewById(R.id.image_collector_grid);
 
+        //get the local image directory for the project
+        final File imageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
+                "TNCAssistant/" + mPostalCode);
+
         //need this to detect when views have been drawn, otherwise getheight() & getwidth() returns 0
         imageGrid.getViewTreeObserver().addOnGlobalLayoutListener(
                 new ViewTreeObserver.OnGlobalLayoutListener() {
                     @Override
                     public void onGlobalLayout() {
-
-                        Log.d(TAG, "I'm here in ImageCollector's imageGridOnLayoutChangeListener");
+                        //Log.d(TAG, "I'm here in ImageCollector's imageGridOnLayoutChangeListener");
 
                         mGridWidth = imageGrid.getWidth();
+                        //Log.d(TAG, "ImageGrid width is " + String.valueOf(mGridWidth));
 
-                        Log.d(TAG, "ImageGrid width is " + String.valueOf(mGridWidth));
+                        mAdapter = new ImageAdapter(mContext, mGridWidth, imageDir);
 
-                        imageGrid.setAdapter(new ImageAdapter(mContext, mGridWidth));
+                        imageGrid.setAdapter(mAdapter);
 
                         imageGrid.getViewTreeObserver()
                                 .removeOnGlobalLayoutListener(this);
@@ -98,14 +106,13 @@ public class ImageCollector extends AppCompatActivity implements ImageAdapter.Im
 
     }
 
-
     private void updateThumbnails(ViewGroup parent){
 
         Log.d(TAG, "I'm here in ImageCollector's updateThumbnails");
 
         //get the local image directory for the project
         File imageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
-                "TNCAssistant/" + postalcode);
+                "TNCAssistant/" + mPostalCode);
 
 
         Log.d(TAG, "imageDir is: " + imageDir.toString());
@@ -146,17 +153,14 @@ public class ImageCollector extends AppCompatActivity implements ImageAdapter.Im
     }
 
     @Override
-    public void imageButtonPressed(View v) {
+    public void imageButtonPressed(View v, int resId) {
 
-        buttonId = v.getId();
-        //buttonTag = v.getTag().toString();
-        Log.d(TAG, "I'm here in takePicture and buttonId =" + String.valueOf(buttonId));
+        mImageButton = (ImageButton) v;
+        mImageName = mContext.getResources().getResourceEntryName(resId);
+        Log.d(TAG, "I'm here in takePicture and imageName = " + mImageName);
+
         dispatchTakePictureIntent();
     }
-
-    //called when imageButton is pressed
-    //public void takePicture(View view) {
-   // }
 
     //starts image capture process
     private void dispatchTakePictureIntent() {
@@ -167,7 +171,7 @@ public class ImageCollector extends AppCompatActivity implements ImageAdapter.Im
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
         File imageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
-                "TNCAssistant/" + postalcode);
+                "TNCAssistant/" + mPostalCode);
 
         // Create the storage directory if it does not exist
         if (!imageDir.exists()) {
@@ -176,7 +180,7 @@ public class ImageCollector extends AppCompatActivity implements ImageAdapter.Im
             return;
             }
 
-        File imageFile = new File(imageDir, buttonTag + ".jpg");
+        File imageFile = new File(imageDir, mImageName + ".jpg");
         mCurrentPhotoPath = imageFile.getAbsolutePath();
         Log.d(TAG, "File is: " + imageFile.getAbsolutePath());
 
@@ -199,10 +203,6 @@ public class ImageCollector extends AppCompatActivity implements ImageAdapter.Im
 
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
 
-            //Identify which picture was taken
-            ImageButton mImageButton = (ImageButton) findViewById(buttonId);
-
-            //Show the thumb-sized image
             setImageFromFilePath(mImageButton);
         }
         else
@@ -232,15 +232,16 @@ public class ImageCollector extends AppCompatActivity implements ImageAdapter.Im
         int photoH = bmOptions.outHeight;
 
         // Determine how much to scale down the image
-        int scaleFactor = Math.min(photoW / targetW, photoH / targetH);
+        int scaleFactor = Math.max(photoW / targetW, photoH / targetH);
 
         // Decode the image file into a Bitmap sized to fill the View
         bmOptions.inJustDecodeBounds = false;
         bmOptions.inSampleSize = scaleFactor;
 
-        //Get the Bitmap image from camera
+        //fill the imageButton with the bitmap
         Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
         imageButton.setImageBitmap(bitmap);
+        mAdapter.notifyDataSetChanged(); //let GridView adapter know that there was a change
     }
 
     @Override
@@ -276,10 +277,12 @@ public class ImageCollector extends AppCompatActivity implements ImageAdapter.Im
             savedInstanceState.putString("mCapturedImageURI", mCapturedImageURI.toString());
         if (mCurrentPhotoPath != null)
             savedInstanceState.putString("mCurrentPhotoPath", mCurrentPhotoPath);
-        if (buttonId != -1)
-            savedInstanceState.putInt("buttonId", buttonId);
-        if (postalcode != null)
-            savedInstanceState.putString("postalcode", postalcode);
+        //if (mButtonId != -1)
+        //    savedInstanceState.putInt("buttonId", mButtonId);
+        if (mImageName != null)
+            savedInstanceState.putString("mImageName", mImageName);
+        if (mPostalCode != null)
+            savedInstanceState.putString("mPostalCode", mPostalCode);
 
     }
 
@@ -294,10 +297,12 @@ public class ImageCollector extends AppCompatActivity implements ImageAdapter.Im
                 mCapturedImageURI = Uri.parse(savedInstanceState.getString("mCapturedImageURI"));
             if (savedInstanceState.getString("mCurrentPhotoPath") != null)
                 mCurrentPhotoPath = savedInstanceState.getString("mCurrentPhotoPath");
-            if (savedInstanceState.getInt("buttonId") != -1)
-                buttonId = savedInstanceState.getInt("buttonId");
-            if (savedInstanceState.getString("postalcode") != null)
-                postalcode = savedInstanceState.getString("postalcode");
+            //if (savedInstanceState.getInt("buttonId") != -1)
+            //   mButtonId = savedInstanceState.getInt("buttonId");
+            if (savedInstanceState.getString("mPostalCode") != null)
+                mPostalCode = savedInstanceState.getString("mPostalCode");
+            if (savedInstanceState.getString("mImageName") != null)
+                mImageName = savedInstanceState.getString("mImageName");
         }
     }
 
