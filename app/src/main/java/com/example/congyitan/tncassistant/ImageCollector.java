@@ -17,7 +17,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.GridView;
 import android.widget.ImageButton;
@@ -91,7 +90,7 @@ public class ImageCollector extends AppCompatActivity implements ImageAdapter.Im
                         //Log.d(TAG, "I'm here in ImageCollector's imageGridOnLayoutChangeListener");
 
                         mGridWidth = imageGrid.getWidth();
-                        //Log.d(TAG, "ImageGrid width is " + String.valueOf(mGridWidth));
+                        Log.d(TAG, "ImageGrid width is " + String.valueOf(mGridWidth));
 
                         mAdapter = new ImageAdapter(mContext, mGridWidth, imageDir);
 
@@ -106,58 +105,11 @@ public class ImageCollector extends AppCompatActivity implements ImageAdapter.Im
 
     }
 
-    private void updateThumbnails(ViewGroup parent){
-
-        Log.d(TAG, "I'm here in ImageCollector's updateThumbnails");
-
-        //get the local image directory for the project
-        File imageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
-                "TNCAssistant/" + mPostalCode);
-
-
-        Log.d(TAG, "imageDir is: " + imageDir.toString());
-
-        File[] tempFileArray = imageDir.listFiles();
-        int directorySize = tempFileArray.length;
-
-        Log.d(TAG, "directorySize: " + String.valueOf(directorySize));
-
-        if (directorySize == 0) //means there are no images to update
-            return;
-
-        //update thumbnails of all the images on file
-        for (int i = 0; i < directorySize; i++) {
-
-            int endIndex = tempFileArray[i].getName().indexOf('.'); //get index so i can remove .jpg below
-
-            //start index to be 0, imageName should be img_xxxyyyzz
-            String imageName = tempFileArray[i].getName().substring(0, endIndex);
-            Log.d(TAG, "Image name is: " + imageName);
-
-            //retrieve the filepath for the [i]th image
-            mCurrentPhotoPath = tempFileArray[i].getAbsolutePath();
-            Log.d(TAG, "File is: " + tempFileArray[i].getAbsolutePath());
-
-            //find the thumbnail that fits the [i]th image
-            for (int j = 0; j < parent.getChildCount(); j++){
-
-                View thisChild = parent.getChildAt(j);
-                Log.d(TAG, "thisChild's TAG is: " + thisChild.getTag().toString());
-
-                if((thisChild.getTag().toString()).equals(imageName)){
-                    setImageFromFilePath((ImageButton)thisChild);
-                    break;
-                }
-            }
-        }
-    }
-
     @Override
     public void imageButtonPressed(View v, int resId) {
 
         mImageButton = (ImageButton) v;
         mImageName = mContext.getResources().getResourceEntryName(resId);
-        Log.d(TAG, "I'm here in takePicture and imageName = " + mImageName);
 
         dispatchTakePictureIntent();
     }
@@ -186,7 +138,7 @@ public class ImageCollector extends AppCompatActivity implements ImageAdapter.Im
 
         //creates the Uri to be input as part of Camera Activity Intent
         mCapturedImageURI = Uri.fromFile(imageFile);
-        Log.d(TAG, "mCapturedImageURI is " + mCapturedImageURI);
+        Log.d(TAG, "mCapturedImageURI is " + mCapturedImageURI + " and mImageName is " + mImageName);
 
         // set the image file name
         takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, mCapturedImageURI);
@@ -212,6 +164,9 @@ public class ImageCollector extends AppCompatActivity implements ImageAdapter.Im
     //Scale the photo down and fit it to our image views. Drastically increases performance
     private void setImageFromFilePath(ImageButton imageButton) {
 
+        mAdapter.updateImageButtonfromCamera(imageButton,mCurrentPhotoPath); //let GridView adapter know that there was a change
+
+        /*
         Log.d(TAG, "I'm here in ImageCollector's setFullImageFromFilePath");
 
         // Get the dimensions of the ImageButton
@@ -228,6 +183,7 @@ public class ImageCollector extends AppCompatActivity implements ImageAdapter.Im
         BitmapFactory.Options bmOptions = new BitmapFactory.Options();
         bmOptions.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
+
         int photoW = bmOptions.outWidth;
         int photoH = bmOptions.outHeight;
 
@@ -240,8 +196,7 @@ public class ImageCollector extends AppCompatActivity implements ImageAdapter.Im
 
         //fill the imageButton with the bitmap
         Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
-        imageButton.setImageBitmap(bitmap);
-        mAdapter.notifyDataSetChanged(); //let GridView adapter know that there was a change
+        */
     }
 
     @Override
@@ -283,6 +238,9 @@ public class ImageCollector extends AppCompatActivity implements ImageAdapter.Im
             savedInstanceState.putString("mImageName", mImageName);
         if (mPostalCode != null)
             savedInstanceState.putString("mPostalCode", mPostalCode);
+        if (mImageButton != null)
+            savedInstanceState.putString("mPostalCode", mPostalCode);
+
 
     }
 

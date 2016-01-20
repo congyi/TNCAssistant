@@ -19,6 +19,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 
 import com.example.congyitan.tncassistant.R;
 
@@ -33,8 +34,6 @@ public class ImageAdapter extends BaseAdapter {
     private Context mContext;
     private Resources mResources;
     private int mIBHeight, mGridWidth, mIBWidth, mImageDirectorySize;
-    private float scaleFactor;
-    private File mImageDir;
     private File mTempFileArray[];
     private static final int padding  = 5;
 
@@ -61,10 +60,8 @@ public class ImageAdapter extends BaseAdapter {
         mResources = c.getResources();
 
         mGridWidth =  gridWidth;
-        mImageDir = imageDir;
 
-
-        mTempFileArray = mImageDir.listFiles();
+        mTempFileArray = imageDir.listFiles();
         mImageDirectorySize = mTempFileArray.length;
 
         setIBDimensions();
@@ -102,7 +99,8 @@ public class ImageAdapter extends BaseAdapter {
         else {
             imageButton = (ImageButton) convertView;
         }
-        //Log.d(TAG, "mThumbsIds is " + mThumbIds[position]);
+
+        //this is where the AsyncTask begins
         loadBitmap(imageButton, position);
 
         return imageButton;
@@ -121,25 +119,30 @@ public class ImageAdapter extends BaseAdapter {
         }
     }
 
-    private Bitmap decodeSampledBitmapFromResource(Resources res, int resId) {
+    public Bitmap decodeSampledBitmapFromResource(Resources res, int resId) {
 
+        // First decode with inJustDecodeBounds=true to check dimensions
         BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeResource(res, resId, options);
+
+        // Calculate inSampleSize
+        options.inSampleSize = calculateInSampleSize(options, mIBWidth, mIBHeight);
         options.inJustDecodeBounds = false;
-        options.inSampleSize = (int) Math.ceil(scaleFactor); //ceil to scale it down a little more than needed
 
         return BitmapFactory.decodeResource(res, resId, options);
     }
 
-    private Bitmap decodeSampledBitmapFromFile(String imagePath) {
+    public Bitmap decodeSampledBitmapFromFile(String imagePath) {
 
-        float imageScaleFactor;
-        Drawable d = Drawable.createFromPath(imagePath);
-
-        imageScaleFactor = Math.max(d.getIntrinsicWidth()/mIBWidth,d.getIntrinsicHeight()/mIBHeight);
-
+        // First decode with inJustDecodeBounds=true to check dimensions
         BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(imagePath, options);
+
+        // Calculate inSampleSize
+        options.inSampleSize = calculateInSampleSize(options, mIBWidth, mIBHeight);
         options.inJustDecodeBounds = false;
-        options.inSampleSize = (int) Math.ceil(imageScaleFactor); //ceil to scale it down a little more than needed
 
         return BitmapFactory.decodeFile(imagePath, options);
     }
@@ -159,6 +162,10 @@ public class ImageAdapter extends BaseAdapter {
 
     private void setIBDimensions(){
 
+        Log.d(TAG, "I'm here in ImageAdapter's setIBDimensions");
+
+        float IBScaleFactor;
+
         //Since there are two columns in the GridView, we take the GridView.width - paddings, and divide by 2
         //to get the width of the ImageButton
         //ceil to make it a little bigger than needed
@@ -167,19 +174,21 @@ public class ImageAdapter extends BaseAdapter {
         //pick a random image from Drawable Resources(they should all be the same)
         //get its width and divide it by the ImageButton height to get the scaleFactor
         Drawable d = mResources.getDrawable(R.drawable.img_ballast, null);
-        scaleFactor = (float) d.getIntrinsicWidth() / (float) mIBWidth;
+        IBScaleFactor = (float) d.getIntrinsicWidth() / (float) mIBWidth;
 
         //with the scaleFactor, we can determine the height of ImageButton:
         //Add padding to top and bottom
         //ceil to make it a little bigger than needed
-        mIBHeight = ((int) Math.ceil((float) d.getIntrinsicHeight() / scaleFactor)) + (2 * padding);
+        mIBHeight = ((int) Math.ceil((float) d.getIntrinsicHeight() / IBScaleFactor));
+
+        Log.d(TAG, "mIBWidth: " + mIBWidth + ", mIBHeight: " + mIBHeight);
 
     }
 
     //The cancelPotentialWork method checks if another running task is already
-    // associated with the ImageView. If so, it attempts to cancel the previous
-    // task by calling cancel(). In a small number of cases, the new task data matches
-    // the existing task and nothing further needs to happen.
+    //associated with the ImageView. If so, it attempts to cancel the previous
+    //task by calling cancel(). In a small number of cases, the new task data matches
+    //the existing task and nothing further needs to happen.
     public static boolean cancelPotentialWork(int resId, ImageButton imageButton) {
 
         final BitmapWorkerTask bitmapWorkerTask = getBitmapWorkerTask(imageButton);
@@ -290,14 +299,16 @@ public class ImageAdapter extends BaseAdapter {
 
             if (imageButtonReference != null && bitmap != null) {
 
+                Log.d(TAG, "size of bitmap: " + bitmap.getAllocationByteCount());
+
                 final ImageButton imageButton = imageButtonReference.get();
                 final BitmapWorkerTask bitmapWorkerTask = getBitmapWorkerTask(imageButton);
 
                 if (this == bitmapWorkerTask && imageButton != null) {
+
                     Animation myFadeInAnimation = AnimationUtils.loadAnimation(mContext, R.anim.fadein);
-                    imageButton.setImageBitmap(bitmap);
-                    imageButton.setAnimation(myFadeInAnimation);
                     mListener = (ImageAdapterListener) mContext;
+
                     imageButton.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -305,10 +316,63 @@ public class ImageAdapter extends BaseAdapter {
                             mListener.imageButtonPressed(v, (int) getItemId(mPosition));
                         }
                     });
+
+                    imageButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+                    imageButton.setImageBitmap(bitmap);
+                    imageButton.setAnimation(myFadeInAnimation);
+
                 }
             }
         }
     }
+
+    private float calculateScaleFactor(BitmapFactory.Options options, int reqWidth, int reqHeight) {
+        // Raw height and width of image
+        final int height = options.outHeight;
+        final int width = options.outWidth;
+        float scaleFactor;
+
+        scaleFactor = Math.max(height/reqHeight, width/reqWidth);
+
+        return scaleFactor;
+    }
+
+    public static int calculateInSampleSize(
+            BitmapFactory.Options options, int reqWidth, int reqHeight) {
+        // Raw height and width of image
+        final int height = options.outHeight;
+        final int width = options.outWidth;
+        int inSampleSize = 1;
+
+        if (height > reqHeight || width > reqWidth) {
+
+            final int halfHeight = height / 2;
+            final int halfWidth = width / 2;
+
+            // Calculate the largest inSampleSize value that is a power of 2 and keeps both
+            // height and width larger than the requested height and width.
+            while ((halfHeight / inSampleSize) > reqHeight
+                    && (halfWidth / inSampleSize) > reqWidth) {
+                inSampleSize *= 2;
+            }
+        }
+
+        Log.d(TAG,"inSampleSize is "+ inSampleSize);
+
+        return inSampleSize;
+    }
+
+   public void updateImageButtonfromCamera (ImageButton imageButton, String imagePath){
+
+       Bitmap bitmap = decodeSampledBitmapFromFile(imagePath);
+
+       imageButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+       imageButton.setImageBitmap(bitmap);
+
+       notifyDataSetChanged();
+    }
+
+
 
     public interface ImageAdapterListener {
          void imageButtonPressed(View v, int resId);

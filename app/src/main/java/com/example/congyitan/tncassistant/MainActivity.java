@@ -153,7 +153,10 @@ public class MainActivity extends AppCompatActivity  implements NewProjectDialog
         } else {
 
             //write file to storage
-            createProjectFile(mData);
+            boolean createNewProjectOutcome = createProjectFile(mData);
+
+            if(!createNewProjectOutcome)
+                return;
 
             //start activity to build project: ProjectBuilder
             Intent intent = new Intent(MainActivity.this, ProjectBuilder.class);
@@ -237,22 +240,27 @@ public class MainActivity extends AppCompatActivity  implements NewProjectDialog
         //get the Bundle data from NewProjectDialog
         String postalcode = newProjectData.getString("postalcode");
 
+        Log.d(TAG,"postalcode in createProjectFile is " + postalcode);
+
         //Create the required directory for file
         File newProjectDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS), "TNCAssistant/" + postalcode);
 
         // Create the storage directory if it does not exist
-        if (!newProjectDir.exists()) {
-            if (!newProjectDir.mkdirs()) {
-                Log.d(TAG, "Failed to create directory");
-                showToast("Tried and failed to create directory for Documents");
-                return false;
-            }
-        }
+        if (!newProjectDir.exists())
+            newProjectDir.mkdirs();
+
         //debugging test to see if directory was created
         Log.d(TAG, "Directory is:" + newProjectDir.getAbsolutePath());
 
-        //Create the txt file
-        File newProjectFile = new File(newProjectDir, "info.txt");
+        File newProjectFile;
+
+        if(newProjectDir.isDirectory())
+            newProjectFile = new File(newProjectDir, "info.txt"); //Create the txt file
+        else{
+            Log.d(TAG, "Something went wrong while creating New Project Documents directory.");
+            showToast("Something went wrong while creating New Project Documents directory.");
+            return false;
+        }
 
         //Write data into the txt file
         try {
