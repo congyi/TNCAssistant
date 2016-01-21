@@ -20,6 +20,7 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.GridView;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.congyitan.tncassistant.utilities.ImageAdapter;
@@ -38,6 +39,7 @@ public class ImageCollector extends AppCompatActivity implements ImageAdapter.Im
     private Context mContext;
 
     int mGridWidth = 0; //initialise to 0; this will be checked and changed later
+    int mThumbPosition;
 
     ImageButton mImageButton;
 
@@ -99,23 +101,21 @@ public class ImageCollector extends AppCompatActivity implements ImageAdapter.Im
                         imageGrid.getViewTreeObserver()
                                 .removeOnGlobalLayoutListener(this);
 
-                        // updateThumbnails(imageGrid);
                     }
                 });
-
     }
 
     @Override
-    public void imageButtonPressed(View v, int resId) {
+    public void imageButtonPressed(View v, int resId, int position) {
 
         mImageButton = (ImageButton) v;
+        mThumbPosition = position;
         mImageName = mContext.getResources().getResourceEntryName(resId);
-
-        dispatchTakePictureIntent();
+        dispatchTakePictureIntent(position);
     }
 
     //starts image capture process
-    private void dispatchTakePictureIntent() {
+    private void dispatchTakePictureIntent(int position) {
 
         Log.d(TAG, "I'm here in ImageCollector's dispatchTakePictureIntent");
 
@@ -155,49 +155,31 @@ public class ImageCollector extends AppCompatActivity implements ImageAdapter.Im
 
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
 
-            setImageFromFilePath(mImageButton);
+            int iBWidth = mImageButton.getWidth();
+            int iBHeight = mImageButton.getHeight();
+
+            // First decode with inJustDecodeBounds=true to check dimensions
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inJustDecodeBounds = true;
+            BitmapFactory.decodeFile(mCurrentPhotoPath, options);
+
+            // Calculate inSampleSize
+            options.inSampleSize = ImageAdapter.calculateInSampleSize(options, iBWidth, iBHeight);
+            options.inJustDecodeBounds = false;
+
+            mImageButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+            mImageButton.setImageBitmap(BitmapFactory.decodeFile(mCurrentPhotoPath, options));
+
+            GridView imageGrid = (GridView) findViewById(R.id.image_collector_grid);
+            imageGrid.setAdapter(mAdapter);
+            //mAdapter.loadBitmap(mImageButton, mThumbPosition);
+            //mAdapter.notifyDataSetChanged();
         }
+
         else
             Log.d(TAG, "Image Capture Failed or Cancelled");
     }
 
-    //Scale the photo down and fit it to our image views. Drastically increases performance
-    private void setImageFromFilePath(ImageButton imageButton) {
-
-        mAdapter.updateImageButtonfromCamera(imageButton,mCurrentPhotoPath); //let GridView adapter know that there was a change
-
-        /*
-        Log.d(TAG, "I'm here in ImageCollector's setFullImageFromFilePath");
-
-        // Get the dimensions of the ImageButton
-        int targetW = imageButton.getWidth();
-        int targetH = imageButton.getHeight();
-
-        Log.d(TAG, "ImageButton height is " + String.valueOf(targetH) +
-                " , and ImageButton width is " + String.valueOf(targetW));
-
-        if (targetW == 0 || targetH == 0) //to avoid divide by zero crash
-            return;
-
-        // Set Bitmap options
-        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-        bmOptions.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
-
-        int photoW = bmOptions.outWidth;
-        int photoH = bmOptions.outHeight;
-
-        // Determine how much to scale down the image
-        int scaleFactor = Math.max(photoW / targetW, photoH / targetH);
-
-        // Decode the image file into a Bitmap sized to fill the View
-        bmOptions.inJustDecodeBounds = false;
-        bmOptions.inSampleSize = scaleFactor;
-
-        //fill the imageButton with the bitmap
-        Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
-        */
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -232,8 +214,8 @@ public class ImageCollector extends AppCompatActivity implements ImageAdapter.Im
             savedInstanceState.putString("mCapturedImageURI", mCapturedImageURI.toString());
         if (mCurrentPhotoPath != null)
             savedInstanceState.putString("mCurrentPhotoPath", mCurrentPhotoPath);
-        //if (mButtonId != -1)
-        //    savedInstanceState.putInt("buttonId", mButtonId);
+        if (mThumbPosition != -1)
+            savedInstanceState.putInt("mThumbPosition", mThumbPosition);
         if (mImageName != null)
             savedInstanceState.putString("mImageName", mImageName);
         if (mPostalCode != null)
@@ -255,8 +237,8 @@ public class ImageCollector extends AppCompatActivity implements ImageAdapter.Im
                 mCapturedImageURI = Uri.parse(savedInstanceState.getString("mCapturedImageURI"));
             if (savedInstanceState.getString("mCurrentPhotoPath") != null)
                 mCurrentPhotoPath = savedInstanceState.getString("mCurrentPhotoPath");
-            //if (savedInstanceState.getInt("buttonId") != -1)
-            //   mButtonId = savedInstanceState.getInt("buttonId");
+            if (savedInstanceState.getInt("mThumbPosition") != -1)
+               mThumbPosition = savedInstanceState.getInt("mThumbPosition");
             if (savedInstanceState.getString("mPostalCode") != null)
                 mPostalCode = savedInstanceState.getString("mPostalCode");
             if (savedInstanceState.getString("mImageName") != null)
@@ -269,6 +251,4 @@ public class ImageCollector extends AppCompatActivity implements ImageAdapter.Im
         Toast toastMessage = Toast.makeText(this, msg, Toast.LENGTH_SHORT);
         toastMessage.show();
     }
-
-
 }

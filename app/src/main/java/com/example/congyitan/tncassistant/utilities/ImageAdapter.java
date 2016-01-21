@@ -51,6 +51,7 @@ public class ImageAdapter extends BaseAdapter {
             R.drawable.img_warninglabel
     };
 
+
     // Constructor
     public ImageAdapter(Context c, int gridWidth, File imageDir){
 
@@ -94,7 +95,6 @@ public class ImageAdapter extends BaseAdapter {
             //Log.d(TAG, "IMBWidth is " + String.valueOf(mIBWidth) + ", mIBHeight is " + String.valueOf(mIBHeight));
             imageButton.setLayoutParams(new GridView.LayoutParams(mIBWidth, mIBHeight));
             imageButton.setPadding(padding, padding, padding, padding);
-            imageButton.setScaleType(ImageButton.ScaleType.CENTER_INSIDE);
         }
         else {
             imageButton = (ImageButton) convertView;
@@ -106,16 +106,16 @@ public class ImageAdapter extends BaseAdapter {
         return imageButton;
     }
 
-    public void loadBitmap(ImageButton imageButton, int resId) {
+    public void loadBitmap(ImageButton imageButton, int position) {
 
-        Bitmap mPlaceHolderBitmap = decodeSampledBitmapFromResource(mResources, resId);
+        //Bitmap mPlaceHolderBitmap = decodeSampledBitmapFromResource(mResources, (int) getItemId(position));
 
-        if (cancelPotentialWork(resId,imageButton)) {
-            final BitmapWorkerTask task = new BitmapWorkerTask(imageButton, resId);
+        if (cancelPotentialWork(position,imageButton)) {
+            final BitmapWorkerTask task = new BitmapWorkerTask(imageButton, position);
             final AsyncDrawable asyncDrawable =
-                    new AsyncDrawable(mResources, mPlaceHolderBitmap, task);
+                    new AsyncDrawable(mResources, task);
             imageButton.setImageDrawable(asyncDrawable);
-            task.execute(resId);
+            task.execute(position);
         }
     }
 
@@ -162,7 +162,7 @@ public class ImageAdapter extends BaseAdapter {
 
     private void setIBDimensions(){
 
-        Log.d(TAG, "I'm here in ImageAdapter's setIBDimensions");
+        //Log.d(TAG, "I'm here in ImageAdapter's setIBDimensions");
 
         float IBScaleFactor;
 
@@ -194,7 +194,7 @@ public class ImageAdapter extends BaseAdapter {
         final BitmapWorkerTask bitmapWorkerTask = getBitmapWorkerTask(imageButton);
 
         if (bitmapWorkerTask != null) {
-            final int bitmapData = bitmapWorkerTask.data;
+            final int bitmapData = bitmapWorkerTask.mPosition;
             // If bitmapData is not yet set or it differs from the new data
             if (bitmapData == 0 || bitmapData != resId) {
                 // Cancel previous task
@@ -227,11 +227,9 @@ public class ImageAdapter extends BaseAdapter {
         private final WeakReference<BitmapWorkerTask> bitmapWorkerTaskReference;
 
         //Constructor
-        public AsyncDrawable(Resources res, Bitmap bitmap,
-                             BitmapWorkerTask bitmapWorkerTask) {
-            super(res, bitmap);
-            bitmapWorkerTaskReference =
-                    new WeakReference<BitmapWorkerTask>(bitmapWorkerTask);
+        public AsyncDrawable(Resources res, BitmapWorkerTask bitmapWorkerTask) {
+
+            bitmapWorkerTaskReference = new WeakReference<BitmapWorkerTask>(bitmapWorkerTask);
         }
 
         public BitmapWorkerTask getBitmapWorkerTask() {
@@ -242,14 +240,12 @@ public class ImageAdapter extends BaseAdapter {
     class BitmapWorkerTask extends AsyncTask<Integer, Void, Bitmap> {
 
         private final WeakReference<ImageButton> imageButtonReference;
-        private int data = 0;
         private int mPosition;
 
         //constructor
         public BitmapWorkerTask(ImageButton imageButton, int position) {
             // Use a WeakReference to ensure the ImageButton can be garbage collected
             imageButtonReference = new WeakReference<ImageButton>(imageButton);
-            mPosition = position;
 
         }
 
@@ -257,36 +253,29 @@ public class ImageAdapter extends BaseAdapter {
         @Override
         protected Bitmap doInBackground(Integer... params) {
 
-            //Check if there are images in the Pictures Directory
-            //If not, means nothing to update -> so return template Drawable
-            if (mImageDirectorySize == 0) {
-                return decodeSampledBitmapFromResource (mResources, (int) getItemId(mPosition));
-            }
+            mPosition = params[0];
 
-            else {
+            //get the ThumbsId[position] resource name so we can compare to our file
+            String thumbsIdName = mResources.getResourceEntryName((int) getItemId(mPosition));
+            //Log.d(TAG,"thumbsIdName is " + thumbsIdName);
 
-                //get the ThumbsId[position] resource name so we can compare to our file
-                String thumbsIdName = mResources.getResourceEntryName((int) getItemId(mPosition));
-                //Log.d(TAG,"thumbsIdName is " + thumbsIdName);
+            //check the Pictures Directory to see if there's a fileName that matches
+            //if so, set the Bitmap to the imageButton
+            for (int i = 0; i < mImageDirectorySize; i++) {
 
-                //check the Pictures Directory to see if there's a fileName that matches
-                //if so, set the Bitmap to the imageButton
-                for (int i = 0; i < mImageDirectorySize; i++) {
+                //start index to be 0, imageName should be img_xxxyyyzz
+                String fileImageName = getImageNameFromFile(mTempFileArray[i]);
+                //Log.d(TAG,"thisImageName is " + thisImageName);
 
-                    //start index to be 0, imageName should be img_xxxyyyzz
-                    String thisImageName = getImageNameFromFile(mTempFileArray[i]);
-                    //Log.d(TAG,"thisImageName is " + thisImageName);
-
-                    if(thisImageName.equals(thumbsIdName)){
-                        String imagePath = mTempFileArray[i].getAbsolutePath();
-                        return decodeSampledBitmapFromFile(imagePath);
-                    }
+                if(thumbsIdName.equals(fileImageName)){
+                    String fileImagePath = mTempFileArray[i].getAbsolutePath();
+                    return decodeSampledBitmapFromFile(fileImagePath);
                 }
-
-                //means there's no matching bitmap on file for this image
-                //so load the default template
-                return decodeSampledBitmapFromResource (mResources, (int) getItemId(mPosition));
             }
+
+            //means there's no matching bitmap on file for this image
+            //so load the default template
+            return decodeSampledBitmapFromResource (mResources, (int) getItemId(mPosition));
         }
 
         // Once complete, see if ImageView is still around and set bitmap.
@@ -299,7 +288,7 @@ public class ImageAdapter extends BaseAdapter {
 
             if (imageButtonReference != null && bitmap != null) {
 
-                Log.d(TAG, "size of bitmap: " + bitmap.getAllocationByteCount());
+                //Log.d(TAG, "size of bitmap: " + bitmap.getAllocationByteCount());
 
                 final ImageButton imageButton = imageButtonReference.get();
                 final BitmapWorkerTask bitmapWorkerTask = getBitmapWorkerTask(imageButton);
@@ -307,34 +296,24 @@ public class ImageAdapter extends BaseAdapter {
                 if (this == bitmapWorkerTask && imageButton != null) {
 
                     Animation myFadeInAnimation = AnimationUtils.loadAnimation(mContext, R.anim.fadein);
+
+                    imageButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+                    imageButton.setImageBitmap(bitmap);
+                    imageButton.setAnimation(myFadeInAnimation);
+
                     mListener = (ImageAdapterListener) mContext;
 
                     imageButton.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
 
-                            mListener.imageButtonPressed(v, (int) getItemId(mPosition));
+                            mListener.imageButtonPressed(v, (int) getItemId(mPosition), mPosition);
                         }
                     });
-
-                    imageButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-                    imageButton.setImageBitmap(bitmap);
-                    imageButton.setAnimation(myFadeInAnimation);
 
                 }
             }
         }
-    }
-
-    private float calculateScaleFactor(BitmapFactory.Options options, int reqWidth, int reqHeight) {
-        // Raw height and width of image
-        final int height = options.outHeight;
-        final int width = options.outWidth;
-        float scaleFactor;
-
-        scaleFactor = Math.max(height/reqHeight, width/reqWidth);
-
-        return scaleFactor;
     }
 
     public static int calculateInSampleSize(
@@ -357,25 +336,13 @@ public class ImageAdapter extends BaseAdapter {
             }
         }
 
-        Log.d(TAG,"inSampleSize is "+ inSampleSize);
+        //Log.d(TAG,"inSampleSize is "+ inSampleSize);
 
         return inSampleSize;
     }
 
-   public void updateImageButtonfromCamera (ImageButton imageButton, String imagePath){
-
-       Bitmap bitmap = decodeSampledBitmapFromFile(imagePath);
-
-       imageButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-       imageButton.setImageBitmap(bitmap);
-
-       notifyDataSetChanged();
-    }
-
-
-
     public interface ImageAdapterListener {
-         void imageButtonPressed(View v, int resId);
+         void imageButtonPressed(View v, int resId, int position);
     }
 
 }
