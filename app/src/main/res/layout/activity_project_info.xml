@@ -7,7 +7,8 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     android:orientation="vertical"
-    tools:context="com.example.congyitan.tncassistant.ProjectInfo">
+    tools:context="com.example.congyitan.tncassistant.ProjectInfo"
+    android:baselineAligned="false">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
@@ -166,9 +167,32 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/streetname"
                 android:layout_alignStart="@+id/streetname"
-                android:singleLine="true"
                 android:layout_marginRight="10dp"
                 android:layout_alignParentEnd="true"/>
+
+            <View
+                android:id="@+id/divider4"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="?android:attr/listDivider"
+                android:layout_below="@+id/streetnameET" />
+
+            <TextView
+                android:id="@+id/inspector"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Inspector"
+                android:layout_marginLeft="10dp"
+                android:layout_below="@+id/divider4"
+                android:layout_marginTop="10dp" />
+
+            <Spinner
+                android:id="@+id/inspectorSpinner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/inspector"
+                android:spinnerMode="dialog"
+                android:layout_marginLeft="10dp" />
 
         </RelativeLayout>
     </ScrollView>

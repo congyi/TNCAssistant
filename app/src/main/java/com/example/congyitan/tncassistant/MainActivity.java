@@ -2,20 +2,19 @@ package com.example.congyitan.tncassistant;
 
 
 import android.app.DialogFragment;
-import android.app.FragmentManager;
-import android.content.Context;
+
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
+
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.dropbox.client2.DropboxAPI;
@@ -24,6 +23,7 @@ import com.dropbox.client2.android.AndroidAuthSession;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+
 
 
 import com.dropbox.client2.exception.DropboxException;
@@ -48,8 +48,11 @@ public class MainActivity extends AppCompatActivity  implements NewProjectDialog
     private View buttonView; //this is the NEW PROJECT button view
     private Integer showError = 0;
 
+    private TextView seeLoggedInUser;
+
     //for Log.d ; debugging
     private static final String TAG = "MainActivity";
+    private String loggedinUser = "No Dropbox Connected";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +68,9 @@ public class MainActivity extends AppCompatActivity  implements NewProjectDialog
 
         //initialize the on-screen button. onClick listeners are attached to activity_main.xml
         dropBox = (Button)findViewById(R.id.auth_button);
+
+        seeLoggedInUser = (TextView)findViewById(R.id.dblogin_status);
+        showLoggedInUser();
     }
 
     //called when user presses the "New Project" button on MainActivity
@@ -102,7 +108,6 @@ public class MainActivity extends AppCompatActivity  implements NewProjectDialog
             newFragment.show(getFragmentManager(), "New Project Dialog Error 2");
         }
     }
-
 
     //called when user presses the "Browse Projects" button on MainActivity
     public void browseProjects(View view) throws DropboxException {
@@ -207,6 +212,7 @@ public class MainActivity extends AppCompatActivity  implements NewProjectDialog
                 // Store it locally in our app for later use
                 storeAuth(session);
                 setLoggedIn(true);
+                showLoggedInUser();
 
             } catch (IllegalStateException e) {
                 showToast("Couldn't authenticate with Dropbox:" + e.getLocalizedMessage());
@@ -338,11 +344,14 @@ public class MainActivity extends AppCompatActivity  implements NewProjectDialog
     private void logOut() {
         // Remove credentials from the session
         mApi.getSession().unlink();
-
         // Clear our stored keys
         clearKeys();
         // Change UI state to display logged out version
         setLoggedIn(false);
+
+        loggedinUser = "No Dropbox Connected";
+        //Show the logged in user (TextView not Toast)
+        showLoggedInUser();
     }
 
     private void clearKeys() {
@@ -371,18 +380,29 @@ public class MainActivity extends AppCompatActivity  implements NewProjectDialog
             String s = new String();
 
             try {
-                s = mApi.accountInfo().email.toString();
+                s = mApi.accountInfo().email;
 
             }catch (DropboxException e) {
                 e.printStackTrace();
             }
+
+            loggedinUser = s;
             return s;
         }
 
         /** The system calls this to perform work in the UI thread and delivers
          * the result from doInBackground() */
         protected void onPostExecute(String s) {
+
             showToast("Logged in as: " + s);
+            showLoggedInUser();
         }
     }
+
+    private void showLoggedInUser () {
+
+        seeLoggedInUser.setText(loggedinUser);
+    }
+
+
 }

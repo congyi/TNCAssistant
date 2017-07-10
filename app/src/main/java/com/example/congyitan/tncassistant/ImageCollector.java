@@ -17,7 +17,9 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -28,7 +30,7 @@ import com.example.congyitan.tncassistant.utilities.ImageAdapter;
 import java.io.File;
 
 
-public class ImageCollector extends AppCompatActivity implements ImageAdapter.ImageAdapterListener {
+public class ImageCollector extends AppCompatActivity {
 
     //for Log.d ; debugging
     private static final String TAG = "ImageCollector";
@@ -41,7 +43,7 @@ public class ImageCollector extends AppCompatActivity implements ImageAdapter.Im
     int mGridWidth = 0; //initialise to 0; this will be checked and changed later
     int mThumbPosition;
 
-    ImageButton mImageButton;
+    ImageView mImageView;
 
     String mImageName = null;
     String mCurrentPhotoPath;
@@ -49,9 +51,14 @@ public class ImageCollector extends AppCompatActivity implements ImageAdapter.Im
 
     ImageAdapter mAdapter;
 
+    GridView mImageGrid;
+
+    AdapterView<?> mParent;
+
+    File mImageDir;
+
     // Activity result key for camera
     static final int REQUEST_IMAGE_CAPTURE = 1;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,42 +85,48 @@ public class ImageCollector extends AppCompatActivity implements ImageAdapter.Im
         }
 
         //get the gridview and put images in it
-        final GridView imageGrid = (GridView) findViewById(R.id.image_collector_grid);
+        mImageGrid = (GridView) findViewById(R.id.image_collector_grid);
 
         //get the local image directory for the project
-        final File imageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
+        mImageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
                 "TNCAssistant/" + mPostalCode);
 
         //need this to detect when views have been drawn, otherwise getheight() & getwidth() returns 0
-        imageGrid.getViewTreeObserver().addOnGlobalLayoutListener(
+        mImageGrid.getViewTreeObserver().addOnGlobalLayoutListener(
                 new ViewTreeObserver.OnGlobalLayoutListener() {
                     @Override
                     public void onGlobalLayout() {
+
                         //Log.d(TAG, "I'm here in ImageCollector's imageGridOnLayoutChangeListener");
+                        mGridWidth = mImageGrid.getWidth();
+                        mAdapter = new ImageAdapter(mContext, mGridWidth, mImageDir);
 
-                        mGridWidth = imageGrid.getWidth();
-                        Log.d(TAG, "ImageGrid width is " + String.valueOf(mGridWidth));
+                        mImageGrid.setAdapter(mAdapter);
 
-                        mAdapter = new ImageAdapter(mContext, mGridWidth, imageDir);
-
-                        imageGrid.setAdapter(mAdapter);
-
-                        imageGrid.getViewTreeObserver()
-                                .removeOnGlobalLayoutListener(this);
+                        //Log.d(TAG, "ImageGrid width is " + String.valueOf(mGridWidth));
+                        mImageGrid.getViewTreeObserver().removeOnGlobalLayoutListener(this);
 
                     }
                 });
     }
 
     @Override
-    public void imageButtonPressed(View v, int resId, int position) {
+    protected void onStart(){
+        super.onStart();
 
-        mImageButton = (ImageButton) v;
-        mThumbPosition = position;
-        mImageName = mContext.getResources().getResourceEntryName(resId);
-        dispatchTakePictureIntent(position);
+        mImageGrid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                mImageView = (ImageView) view;
+                mThumbPosition = position;
+                mImageName = mContext.getResources().getResourceEntryName((int) id);
+                mParent = parent;
+
+                dispatchTakePictureIntent(position);
+            }
+        });
     }
-
     //starts image capture process
     private void dispatchTakePictureIntent(int position) {
 
@@ -155,25 +168,9 @@ public class ImageCollector extends AppCompatActivity implements ImageAdapter.Im
 
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
 
-            int iBWidth = mImageButton.getWidth();
-            int iBHeight = mImageButton.getHeight();
+            //update the view
+            mAdapter.loadBitmapFromCamera(mThumbPosition, mImageView, mImageDir);
 
-            // First decode with inJustDecodeBounds=true to check dimensions
-            BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inJustDecodeBounds = true;
-            BitmapFactory.decodeFile(mCurrentPhotoPath, options);
-
-            // Calculate inSampleSize
-            options.inSampleSize = ImageAdapter.calculateInSampleSize(options, iBWidth, iBHeight);
-            options.inJustDecodeBounds = false;
-
-            mImageButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-            mImageButton.setImageBitmap(BitmapFactory.decodeFile(mCurrentPhotoPath, options));
-
-            GridView imageGrid = (GridView) findViewById(R.id.image_collector_grid);
-            imageGrid.setAdapter(mAdapter);
-            //mAdapter.loadBitmap(mImageButton, mThumbPosition);
-            //mAdapter.notifyDataSetChanged();
         }
 
         else
@@ -220,10 +217,6 @@ public class ImageCollector extends AppCompatActivity implements ImageAdapter.Im
             savedInstanceState.putString("mImageName", mImageName);
         if (mPostalCode != null)
             savedInstanceState.putString("mPostalCode", mPostalCode);
-        if (mImageButton != null)
-            savedInstanceState.putString("mPostalCode", mPostalCode);
-
-
     }
 
     @Override

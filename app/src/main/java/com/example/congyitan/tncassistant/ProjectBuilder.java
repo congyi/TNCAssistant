@@ -191,7 +191,6 @@ public class ProjectBuilder extends AppCompatActivity implements ProjectBuilderA
         SharedPreferences prefs = getSharedPreferences(ACCOUNT_PREFS_NAME, 0);
         String key = prefs.getString(ACCESS_KEY_NAME, null);
         String secret = prefs.getString(ACCESS_SECRET_NAME, null); //this secret refers to the auth token
-
         //check to see if there was keys stored --> user logged in at MainActivity
         if (key == null || secret == null || key.length() == 0 || secret.length() == 0){
             showToast("No Dropbox account was linked");
