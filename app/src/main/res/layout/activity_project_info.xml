@@ -20,9 +20,9 @@
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
 
     <ScrollView
+        android:id="@+id/scrollView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/scrollView">
+        android:layout_height="match_parent">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -32,193 +32,193 @@
                 android:id="@+id/projectphase"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Project Phase"
                 android:layout_marginLeft="10dp"
-                android:layout_marginTop="10dp" />
+                android:layout_marginTop="10dp"
+                android:text="Project Phase" />
 
             <RadioGroup
                 android:id="@+id/phase_group"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_below="@+id/projectphase"
-                android:orientation="horizontal"
-                android:layout_marginLeft="10dp"
                 android:layout_marginBottom="10dp"
-                android:layout_marginTop="10dp">
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
 
                 <RadioButton
                     android:id="@+id/phase5"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Ph 5 (5MW)"
                     android:checked="false"
-                    android:onClick="onPhaseRadioButtonClicked"/>
+                    android:onClick="onPhaseRadioButtonClicked"
+                    android:text="Ph 5 (5MW)" />
 
                 <RadioButton
                     android:id="@+id/phase6"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Ph 6 (20MW)"
+                    android:layout_marginLeft="10dp"
                     android:checked="false"
                     android:onClick="onPhaseRadioButtonClicked"
-                    android:layout_marginLeft="10dp" />
+                    android:text="Ph 6 (20MW)" />
 
                 <RadioButton
                     android:id="@+id/sn1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="SolarNova 1"
+                    android:layout_marginLeft="10dp"
                     android:checked="false"
                     android:onClick="onPhaseRadioButtonClicked"
-                    android:layout_marginLeft="10dp" />
+                    android:text="SolarNova 1" />
 
             </RadioGroup>
 
             <View
                 android:id="@+id/divider1"
-                android:layout_below="@id/phase_group"
                 android:layout_width="match_parent"
                 android:layout_height="2dp"
-                android:background="?android:attr/listDivider"/>
+                android:layout_below="@id/phase_group"
+                android:background="?android:attr/listDivider" />
 
             <TextView
+                android:id="@+id/towncouncilarea"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Town Council/Area"
-                android:id="@+id/towncouncilarea"
-                android:layout_below="@+id/divider1"
                 android:layout_alignParentStart="true"
-                android:layout_margin="10dp" />
+                android:layout_below="@+id/divider1"
+                android:layout_margin="10dp"
+                android:text="Town Council/Area" />
 
             <Spinner
                 android:id="@+id/tc_spinner"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/towncouncilarea"
-                android:spinnerMode="dialog"
-                android:layout_marginLeft="10dp" />
+                android:layout_marginLeft="10dp"
+                android:spinnerMode="dialog" />
 
             <View
                 android:id="@+id/divider2"
                 android:layout_width="match_parent"
                 android:layout_height="2dp"
-                android:layout_margin="5dp"
                 android:layout_below="@+id/tc_spinner"
-                android:background="?android:attr/listDivider"/>
+                android:layout_margin="5dp"
+                android:background="?android:attr/listDivider" />
 
             <TextView
                 android:id="@+id/blkno"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Blk No"
                 android:layout_below="@id/divider2"
                 android:layout_marginLeft="10dp"
-                android:layout_marginTop="10dp" />
+                android:layout_marginTop="10dp"
+                android:text="Blk No" />
 
             <EditText
                 android:id="@+id/blknoET"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:ems="6"
-                android:layout_below="@+id/blkno"
                 android:layout_alignStart="@+id/blkno"
+                android:layout_below="@+id/blkno"
+                android:ems="6"
                 android:inputType="none"
-                android:singleLine="true"/>
+                android:singleLine="true" />
 
             <TextView
                 android:id="@+id/postalcode"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Postal Code"
                 android:layout_below="@+id/divider2"
-                android:layout_toEndOf="@+id/towncouncilarea"
+                android:layout_marginLeft="10dp"
                 android:layout_marginTop="10dp"
-                android:layout_marginLeft="10dp" />
+                android:layout_toEndOf="@+id/towncouncilarea"
+                android:text="Postal Code" />
 
             <EditText
                 android:id="@+id/postalcodeET"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:inputType="none"
-                android:focusable="false"
                 android:layout_above="@+id/divider3"
+                android:layout_alignParentEnd="false"
                 android:layout_alignStart="@+id/postalcode"
-                android:layout_alignParentEnd="false"/>
+                android:focusable="false"
+                android:inputType="none" />
 
             <View
                 android:id="@+id/divider3"
                 android:layout_width="match_parent"
                 android:layout_height="2dp"
-                android:background="?android:attr/listDivider"
-                android:layout_below="@id/blknoET"/>
+                android:layout_below="@id/blknoET"
+                android:background="?android:attr/listDivider" />
 
             <TextView
                 android:id="@+id/streetname"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Street name"
-                android:layout_marginLeft="10dp"
                 android:layout_below="@+id/divider3"
-                android:layout_marginTop="10dp" />
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="10dp"
+                android:text="Street name" />
 
             <EditText
                 android:id="@+id/streetnameET"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/streetname"
+                android:layout_alignParentEnd="true"
                 android:layout_alignStart="@+id/streetname"
-                android:layout_marginRight="10dp"
-                android:layout_alignParentEnd="true"/>
+                android:layout_below="@id/streetname"
+                android:layout_marginRight="10dp" />
 
             <View
                 android:id="@+id/divider4"
                 android:layout_width="match_parent"
                 android:layout_height="2dp"
-                android:background="?android:attr/listDivider"
-                android:layout_below="@+id/streetnameET" />
+                android:layout_below="@+id/streetnameET"
+                android:background="?android:attr/listDivider" />
 
             <TextView
                 android:id="@+id/inspector"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Inspector"
-                android:layout_marginLeft="10dp"
                 android:layout_below="@+id/divider4"
-                android:layout_marginTop="10dp" />
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="10dp"
+                android:text="Inspector" />
 
             <Spinner
                 android:id="@+id/inspectorSpinner"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/inspector"
-                android:spinnerMode="dialog"
-                android:layout_marginLeft="10dp" />
+                android:layout_marginLeft="10dp"
+                android:spinnerMode="dialog" />
 
             <View
                 android:id="@+id/divider5"
                 android:layout_width="match_parent"
                 android:layout_height="2dp"
-                android:background="?android:attr/listDivider"
-                android:layout_below="@+id/inspectorSpinner" />
+                android:layout_below="@+id/inspectorSpinner"
+                android:background="?android:attr/listDivider" />
 
             <TextView
                 android:id="@+id/passdate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Pass Date"
-                android:layout_marginLeft="10dp"
                 android:layout_below="@+id/divider5"
-                android:layout_marginTop="10dp" />
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="10dp"
+                android:text="Pass Date" />
 
             <TextView
                 android:id="@+id/passdatePicker"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="DD/MM/YYYY"
-                android:layout_marginLeft="10dp"
                 android:layout_below="@+id/passdate"
-                android:layout_marginTop="10dp"
-                android:textColor="#000000"/>
+                android:layout_marginLeft="10dp"
+                android:text="DD/MM/YYYY"
+                android:textColor="#000000"
+                android:textSize="16sp"/>
 
         </RelativeLayout>
     </ScrollView>
