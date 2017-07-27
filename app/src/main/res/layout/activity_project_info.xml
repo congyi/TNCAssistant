@@ -194,6 +194,32 @@
                 android:spinnerMode="dialog"
                 android:layout_marginLeft="10dp" />
 
+            <View
+                android:id="@+id/divider5"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="?android:attr/listDivider"
+                android:layout_below="@+id/inspectorSpinner" />
+
+            <TextView
+                android:id="@+id/passdate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Pass Date"
+                android:layout_marginLeft="10dp"
+                android:layout_below="@+id/divider5"
+                android:layout_marginTop="10dp" />
+
+            <TextView
+                android:id="@+id/passdatePicker"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="DD/MM/YYYY"
+                android:layout_marginLeft="10dp"
+                android:layout_below="@+id/passdate"
+                android:layout_marginTop="10dp"
+                android:textColor="#000000"/>
+
         </RelativeLayout>
     </ScrollView>
 </LinearLayout>

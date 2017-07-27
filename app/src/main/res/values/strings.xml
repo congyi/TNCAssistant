@@ -51,6 +51,16 @@
     <string-array name="sn1_array">
         <item>Default</item>
     </string-array>
+
+    <string-array name="inspector_array">
+        <item>TAN Congyi</item>
+        <item>Stanley PHUA</item>
+        <item>Norhisham Bin HABDIN</item>
+        <item>KOH Jun Yong</item>
+        <item>Md Fahmie Bin IDRUS</item>
+        <item>                  </item>
+    </string-array>
+
     <string name="title_activity_browse_projects">BrowseProjects</string>
 
 </resources>
