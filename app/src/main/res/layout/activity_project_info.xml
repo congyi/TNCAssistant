@@ -220,6 +220,34 @@
                 android:textColor="#000000"
                 android:textSize="16sp"/>
 
+            <View
+                android:id="@+id/divider6"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_below="@+id/passdatePicker"
+                android:layout_marginLeft="10dp"
+                android:background="?android:attr/listDivider" />
+
+            <TextView
+                android:id="@+id/notes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/divider6"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="10dp"
+                android:text="Notes" />
+
+            <EditText
+                android:id="@+id/notesET"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignStart="@+id/notes"
+                android:layout_below="@id/notes"
+                android:inputType="textMultiLine"
+                android:lines="5"
+                android:layout_marginRight="10dp" />
+
         </RelativeLayout>
     </ScrollView>
 </LinearLayout>

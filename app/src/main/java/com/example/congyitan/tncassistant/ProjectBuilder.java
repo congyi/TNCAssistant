@@ -1,5 +1,6 @@
 package com.example.congyitan.tncassistant;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -18,21 +19,22 @@ import android.view.View;
 
 import android.widget.Toast;
 
-import com.dropbox.client2.DropboxAPI;
-import com.dropbox.client2.android.AndroidAuthSession;
-import com.dropbox.client2.session.AccessTokenPair;
-import com.dropbox.client2.session.AppKeyPair;
+import com.dropbox.core.v2.DbxClientV2;
+import com.dropbox.core.v2.files.FileMetadata;
+import com.example.congyitan.tncassistant.dropbox.DropboxClientFactory;
 import com.example.congyitan.tncassistant.utilities.ProjectBuilderAdapter;
 import com.example.congyitan.tncassistant.utilities.ProjectBuilderListItem;
-import com.example.congyitan.tncassistant.utilities.UploadFiles;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import com.example.congyitan.tncassistant.dropbox.UploadFileTask;
 
 public class ProjectBuilder extends AppCompatActivity implements ProjectBuilderAdapter.ProjectBuilderClickListener {
 
@@ -40,23 +42,26 @@ public class ProjectBuilder extends AppCompatActivity implements ProjectBuilderA
     private RecyclerView.LayoutManager mLayoutManager;
     private ProjectBuilderAdapter myProjectBuilderAdapter;
 
-    //variables to store data
-    Bundle mData;
-    String mTownCouncil, mProjectPhase, mBlkno, mStreetname, mPostalcode;
-
-    // Dropbox API stuff. You don't need to change these, leave them alone.
-    private static final String ACCOUNT_PREFS_NAME = "prefs";
-    private static final String ACCESS_KEY_NAME = "ACCESS_KEY";
-    private static final String ACCESS_SECRET_NAME = "ACCESS_SECRET";
-
-    // Replace this with your app key and secret assigned by Dropbox.
-    private final String APP_KEY = "oipcgzvnkmgvy0v";
-    private final String APP_SECRET = "seizvlgz3jguucc";
-
     //for Log.d ; debugging
     private static final String TAG = "ProjectBuilder";
 
     static final int PROJECTBUILDER_REQUEST = 1; //the request code
+
+    //variables to store data
+    Bundle mData;
+    String mTownCouncil, mProjectPhase, mBlkno, mStreetname, mPostalcode;
+
+
+/*    // Dropbox API stuff. You don't need to change these, leave them alone.
+    private static final String ACCOUNT_PREFS_NAME = "prefs";
+    private static final String ACCESS_KEY_NAME = "ACCESS_KEY";
+    private static final String ACCESS_SECRET_NAME = "ACCESS_SECRET";*/
+
+/*
+    // Replace this with your app key and secret assigned by Dropbox.
+    private final String APP_KEY = "oipcgzvnkmgvy0v";
+    private final String APP_SECRET = "seizvlgz3jguucc";
+*/
 
 
     @Override
@@ -185,70 +190,6 @@ public class ProjectBuilder extends AppCompatActivity implements ProjectBuilderA
         }
     }
 
-    private void saveFilestoDropbox (){
-
-        //get the Dropbox access token that was stored (if any)
-        SharedPreferences prefs = getSharedPreferences(ACCOUNT_PREFS_NAME, 0);
-        String key = prefs.getString(ACCESS_KEY_NAME, null);
-        String secret = prefs.getString(ACCESS_SECRET_NAME, null); //this secret refers to the auth token
-        //check to see if there was keys stored --> user logged in at MainActivity
-        if (key == null || secret == null || key.length() == 0 || secret.length() == 0){
-            showToast("No Dropbox account was linked");
-            return;
-        }
-
-        //start a session that IS LINKED (to the login in MainActivity)
-        AppKeyPair newKeyPair = new AppKeyPair(APP_KEY,APP_SECRET);
-        AndroidAuthSession thisSession =  new AndroidAuthSession(newKeyPair,secret);
-
-        //create a DropboxAPI object based on the newly linked session directly above
-        DropboxAPI<AndroidAuthSession> mApi = new DropboxAPI<AndroidAuthSession>(thisSession);
-
-        //get the local directory for the project documents
-        File projectDir = new File (Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS),
-                "TNCAssistant/" + String.valueOf(mPostalcode));
-
-        //extract project info from info.txt. this gives us the required info to form the Dropbox upload directory.
-        File projectInfoFile = new File(projectDir,"/info.txt");
-
-        if(projectInfoFile.exists())
-            extractProjectInfo(projectInfoFile);
-        else{
-            showToast("Something went wrong locating your project file");
-            return;
-        }
-
-        //if required info not present, just exit immediately
-        if(mTownCouncil == null || mProjectPhase == null || mBlkno == null || mStreetname == null){
-            showToast("Please fill in Project Phase, Town Council, Street Name and Blk No in Project Info");
-            return;
-        }
-
-        //create an arraylist of files in the local documents directory
-        ArrayList<File> filesToUpload = new ArrayList<File>(Arrays.asList(projectDir.listFiles()));
-
-        //get the local directory for the project images
-        File imageDir = new File (Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
-                "TNCAssistant/" + String.valueOf(mPostalcode));
-
-        //store list of files in a temp array
-        File[] tempArray = imageDir.listFiles();
-        int directorySize = tempArray.length; //gets the number of files in the local image directory
-
-        Log.d(TAG,"Image directorySize is: " + directorySize);
-
-        //consolidate this in my arraylist
-        for(int i = 0; i < directorySize; i++)
-            filesToUpload.add(tempArray[i]);
-
-        //define Dropbox directory to upload to
-        String uploadDir = "/HDB Testing and Commissioning/" +
-                mProjectPhase + "/Blocks/" + mTownCouncil + "/" + mBlkno + " " + mStreetname + "/" ;
-
-        //upload all the files
-        UploadFiles upload = new UploadFiles(this, mApi, uploadDir, filesToUpload);
-        upload.execute();
-    }
 
     private void extractProjectInfo(File fileToExtract){
 
@@ -340,27 +281,7 @@ public class ProjectBuilder extends AppCompatActivity implements ProjectBuilderA
 
     }
 
-    /**
-     * Shows keeping the access keys returned from Trusted Authenticator in a local
-     * store, rather than storing user name & password, and re-authenticating each
-     * time (which is not to be done, ever).
-     */
-    private void loadAuth(AndroidAuthSession session) {
-        SharedPreferences prefs = getSharedPreferences(ACCOUNT_PREFS_NAME, 0);
-        String key = prefs.getString(ACCESS_KEY_NAME, null);
-        String secret = prefs.getString(ACCESS_SECRET_NAME, null);
-        if (key == null || secret == null || key.length() == 0 || secret.length() == 0) return;
-
-        if (key.equals("oauth2:")) {
-            // If the key is set to "oauth2:", then we can assume the token is for OAuth 2.
-            session.setOAuth2AccessToken(secret);
-        } else {
-            // Still support using old OAuth 1 tokens.
-            session.setAccessTokenPair(new AccessTokenPair(key, secret));
-        }
-    }
-
-    //for Dropbox API to work - do not change
+/*    //for Dropbox API to work - do not change
     private void checkAppKeySetup() {
         // Check to make sure that we have a valid app key
         if (APP_KEY.startsWith("CHANGE") ||
@@ -369,7 +290,109 @@ public class ProjectBuilder extends AppCompatActivity implements ProjectBuilderA
             finish();
             return;
         }
+    }*/
+
+    private void saveFilestoDropbox (){
+
+        SharedPreferences prefs = getSharedPreferences("dropbox-sample", MODE_PRIVATE);
+        String accessToken = prefs.getString("access-token", null);
+
+ /*       //get the Dropbox access token that was stored (if any)
+        SharedPreferences prefs = getSharedPreferences(ACCOUNT_PREFS_NAME, 0);
+        String key = prefs.getString(ACCESS_KEY_NAME, null);
+        String secret = prefs.getString(ACCESS_SECRET_NAME, null); //this secret refers to the auth token
+        //check to see if there was keys stored --> user logged in at MainActivity*/
+        if (accessToken == null || accessToken.length() == 0){
+            showToast("Could not retrieve access token");
+            return;
+        }
+
+        //get the local directory for the project documents
+        File projectDir = new File (Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS),
+                "TNCAssistant/" + String.valueOf(mPostalcode));
+
+        //extract project info from info.txt. this gives us the required info to form the Dropbox upload directory.
+        File projectInfoFile = new File(projectDir,"/info.txt");
+
+        if(projectInfoFile.exists())
+            extractProjectInfo(projectInfoFile);
+        else{
+            showToast("Something went wrong locating your project file");
+            return;
+        }
+
+        //if required info not present, just exit immediately
+        if(mTownCouncil == null || mProjectPhase == null || mBlkno == null || mStreetname == null){
+            showToast("Please fill in Project Phase, Town Council, Street Name and Blk No in Project Info");
+            return;
+        }
+
+        //create an arraylist of files in the local documents directory
+        ArrayList<File> filesToUpload = new ArrayList<File>(Arrays.asList(projectDir.listFiles()));
+
+        //get the local directory for the project images
+        File imageDir = new File (Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
+                "TNCAssistant/" + String.valueOf(mPostalcode));
+
+        //store list of files in a temp array
+        File[] tempArray = imageDir.listFiles();
+        int directorySize = tempArray.length; //gets the number of files in the local image directory
+
+        Log.d(TAG,"Image directorySize is: " + directorySize);
+
+        //consolidate this in my arraylist
+        for(int i = 0; i < directorySize; i++)
+            filesToUpload.add(tempArray[i]);
+
+        //define Dropbox directory to upload to
+        String uploadDir = "/HDB Testing and Commissioning/" +
+                mProjectPhase + "/Blocks/" + mTownCouncil + "/" + mBlkno + " " + mStreetname + "/" ;
+
+        uploadFiles(uploadDir, filesToUpload);
+
     }
+
+    private void uploadFiles(String uploadDir,  ArrayList<File> filesToUpload ) {
+        final ProgressDialog dialog = new ProgressDialog(this);
+        dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        dialog.setCancelable(false);
+        dialog.setMessage("Uploading...");
+        dialog.show();
+
+        Log.d(TAG,"inside uploadFiles()");
+        //Log.d(TAG,"Local image directory is: " + imageDir.toString());
+        Log.d(TAG,"Upload directory is: " + uploadDir);
+
+        new UploadFileTask(this, DropboxClientFactory.getClient(), uploadDir, filesToUpload, new UploadFileTask.Callback(){
+            @Override
+            public void onUploadComplete(FileMetadata result) {
+
+                if(result != null) {
+                    dialog.dismiss();
+
+                    //String message = result.getName() + " size " + result.getSize() + " modified " +
+                            //DateFormat.getDateTimeInstance().format(result.getClientModified());
+                    Toast.makeText(ProjectBuilder.this, "Upload completed.", Toast.LENGTH_SHORT)
+                            .show();
+                }
+
+                // Reload the folder
+                //loadData();
+            }
+
+            @Override
+            public void onError(Exception e) {
+                dialog.dismiss();
+
+                Log.e(TAG, "Failed to upload files.", e);
+                Toast.makeText(ProjectBuilder.this,
+                        "An error has occurred",
+                        Toast.LENGTH_SHORT)
+                        .show();
+            }
+        }).execute();
+    }
+
 }
 
 

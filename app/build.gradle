@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 23
-    buildToolsVersion '25.0.0'
+    //buildToolsVersion '25.0.0'
 
     defaultConfig {
         applicationId "com.example.congyitan.tncassistant"
@@ -10,6 +10,7 @@ android {
         targetSdkVersion 22
         versionCode 1
         versionName "1.0"
+        multiDexEnabled true
     }
     buildTypes {
         release {
@@ -23,11 +24,20 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
 
-    compile 'com.android.support:appcompat-v7:23.0.1'
-    compile 'com.android.support:recyclerview-v7:23.0.1'
-    compile 'com.android.support:design:23.0.1'
+    implementation 'com.android.support:appcompat-v7:23.0.1'
+    implementation 'com.android.support:recyclerview-v7:23.0.1'
+    implementation 'com.android.support:design:23.0.1'
+    implementation 'com.squareup.okio:okio:1.13.0'
+    implementation 'com.squareup.picasso:picasso:2.5.2'
+    implementation 'com.jakewharton.picasso:picasso2-okhttp3-downloader:1.1.0'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.7.0'
+    //implementation 'com.squareup.okhttp:okhttp:2.7.5'
+    //implementation 'com.squareup.okhttp3:okhttp:3.9.1'
 
-    compile files('libs/dropbox-android-sdk-1.6.3.jar')
-    compile files('libs/httpmime-4.0.3.jar')
-    compile files('libs/json_simple-1.1.jar')
+    implementation files('libs/dropbox-core-sdk-3.0.6.jar')
+    implementation files('libs/httpmime-4.0.3.jar')
+    implementation files('libs/json_simple-1.1.jar')
+    //implementation files('libs/okio-1.13.0.jar')
+    //compile files('libs/picasso-2.5.2.jar')
+    //compile files('libs/okhttp-3.9.1.jar')
 }

@@ -4,6 +4,7 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.CAMERA" />
 
     <uses-feature android:name="android.hardware.camera" />
@@ -27,22 +28,24 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".ProjectBuilder"
             android:label="@string/title_activity_project_builder"
             android:parentActivityName=".MainActivity" >
             <intent-filter>
                 <action android:name="com.example.congyitan.tncassistant.ProjectBuilder" />
-
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".ImageCollector"
             android:label="@string/title_activity_image_collector"
             android:parentActivityName=".ProjectBuilder" >
             android:theme="@style/AppTheme" >
         </activity>
+
         <activity
             android:name=".ProjectInfo"
             android:label="@string/title_activity_project_info"
@@ -52,10 +55,15 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.congyitan.tncassistant.ProjectBuilder" />
         </activity>
+
         <activity
-            android:name="com.dropbox.client2.android.AuthActivity"
+            android:name=".dropbox.FilesActivity"
+            android:label="Files Activity" />
+
+        <activity
+            android:name="com.dropbox.core.android.AuthActivity"
             android:configChanges="orientation|keyboard"
-            android:launchMode="singleTask" >
+            android:launchMode="singleTask">
             <intent-filter>
 
                 <!-- Change this to be db- followed by your app key -->
@@ -67,6 +75,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".BrowseProjects"
             android:label="@string/title_activity_browse_projects"
@@ -76,6 +85,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.congyitan.tncassistant.MainActivity" />
         </activity>
+
     </application>
 
 </manifest>
