@@ -90,7 +90,7 @@ public class ImageAdapter extends BaseAdapter {
             // if it's not recycled, initialize some attributes
             //Log.d(TAG, "IMBWidth is " + String.valueOf(mIBWidth) + ", mIBHeight is " + String.valueOf(mIBHeight));
             imageView.setLayoutParams(new GridView.LayoutParams(mIBWidth, mIBHeight));
-            imageView.setPadding(padding, padding, padding, padding);
+            imageView.setPadding(padding, padding, 0, 0);
         }
         else {
             imageView = (ImageView) convertView;
@@ -219,8 +219,6 @@ public class ImageAdapter extends BaseAdapter {
     }
 
     static class AsyncDrawable extends BitmapDrawable {
-
-
 
         private final WeakReference<BitmapWorkerTask> bitmapWorkerTaskReference;
 

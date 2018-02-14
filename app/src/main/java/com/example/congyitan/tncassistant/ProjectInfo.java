@@ -238,6 +238,20 @@ public class ProjectInfo extends AppCompatActivity {
 
                     tcspinner.setSelection(0);
                 }
+            } else //if nothing was read for project and town council, set to default
+            {
+                sn1.setChecked(true); //set checkbox for sn1
+                mProjectPhase = "SolarNova Phase 1";
+
+                tempString = buf.readLine(); //read in town council (if any)
+                Log.d(TAG, "town council is " + tempString);
+
+                ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                        R.array.sn1_array, android.R.layout.simple_spinner_item);
+                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                tcspinner.setAdapter(adapter);
+
+                tcspinner.setSelection(0);
             }
 
             //read in inspector(if any)
@@ -270,6 +284,11 @@ public class ProjectInfo extends AppCompatActivity {
                 }
             }
             else{
+                ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                        R.array.inspector_array, android.R.layout.simple_spinner_item);
+                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                inspectorspinner.setAdapter(adapter);
+
                 inspectorspinner.setSelection(0);
             }
 
