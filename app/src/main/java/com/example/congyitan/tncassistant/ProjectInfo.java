@@ -231,28 +231,60 @@ public class ProjectInfo extends AppCompatActivity {
                     tempString = buf.readLine(); //read in town council (if any)
                     Log.d(TAG, "town council is " + tempString);
 
-                    ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                            R.array.sn1_array, android.R.layout.simple_spinner_item);
-                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                    tcspinner.setAdapter(adapter);
+                    if(tempString != null){
+                        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                                R.array.sn1_array, android.R.layout.simple_spinner_item);
+                        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                        tcspinner.setAdapter(adapter);
 
-                    tcspinner.setSelection(0);
+                        switch (tempString) {
+                            case "Choa Chu Kang Town Council":
+                                tcspinner.setSelection(0);
+                                break;
+                            case "Sembawang Town Council":
+                                tcspinner.setSelection(1);
+                                break;
+                            case "Nee Soon Town Council":
+                                tcspinner.setSelection(2);
+                                break;
+                            case "Holland Bukit-Panjang Town Council":
+                                tcspinner.setSelection(3);
+                                break;
+                            case "Pasir Ris-Punggol Town Council":
+                                tcspinner.setSelection(4);
+                                break;
+                            case "Ang Mo Kio Town Council":
+                                tcspinner.setSelection(5);
+                                break;
+                            case "Marsiling-Yew Tee Town Council":
+                                tcspinner.setSelection(6);
+                                break;
+                            case "Ministry of Home Affairs":
+                                tcspinner.setSelection(7);
+                                break;
+                            case "Public Utilities Board":
+                                tcspinner.setSelection(8);
+                                break;
+                        }
+                    }
                 }
-            } else //if nothing was read for project and town council, set to default
-            {
-                sn1.setChecked(true); //set checkbox for sn1
-                mProjectPhase = "SolarNova Phase 1";
-
-                tempString = buf.readLine(); //read in town council (if any)
-                Log.d(TAG, "town council is " + tempString);
-
-                ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                        R.array.sn1_array, android.R.layout.simple_spinner_item);
-                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                tcspinner.setAdapter(adapter);
-
-                tcspinner.setSelection(0);
             }
+
+//            else //if nothing was read for project and town council, set to default
+//            {
+//                sn1.setChecked(true); //set checkbox for sn1
+//                mProjectPhase = "SolarNova Phase 1";
+//
+//                tempString = buf.readLine(); //read in town council (if any)
+//                Log.d(TAG, "town council is " + tempString);
+//
+//                ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+//                        R.array.sn1_array, android.R.layout.simple_spinner_item);
+//                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+//                tcspinner.setAdapter(adapter);
+//
+//                tcspinner.setSelection(0);
+//            }
 
             //read in inspector(if any)
             tempString = buf.readLine();

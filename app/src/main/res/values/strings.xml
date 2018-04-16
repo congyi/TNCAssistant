@@ -49,7 +49,16 @@
     </string-array>
 
     <string-array name="sn1_array">
-        <item>Default</item>
+        <item>Choa Chu Kang Town Council</item>
+        <item>Sembawang Town Council</item>
+        <item>Nee Soon Town Council</item>
+        <item>Holland Bukit-Panjang Town Council</item>
+        <item>Pasir Ris-Punggol Town Council</item>
+        <item>Ang Mo Kio Town Council</item>
+        <item>Marsiling-Yew Tee Town Council</item>
+        <item>Ministry of Home Affairs</item>
+        <item>Public Utilities Board</item>
+
     </string-array>
 
     <string-array name="inspector_array">

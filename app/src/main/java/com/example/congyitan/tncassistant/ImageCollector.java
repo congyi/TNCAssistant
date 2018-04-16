@@ -335,6 +335,4 @@ public class ImageCollector extends AppCompatActivity {
         bm = Bitmap.createScaledBitmap(bm, newWidth, newHeight, true);
         return bm;
     }
-
-
 }
